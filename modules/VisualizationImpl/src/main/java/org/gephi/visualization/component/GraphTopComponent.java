@@ -49,8 +49,6 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -232,11 +230,11 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
 
     private void activateWorkspaceVizEngine(final Workspace workspace) {
         CompletableFuture.runAsync(() -> doActivateWorkspaceVizEngine(workspace), vizExecutor)
-                .whenComplete((v, ex) -> {
-                    if (ex != null) {
-                        ex.printStackTrace();
-                    }
-                });
+            .whenComplete((v, ex) -> {
+                if (ex != null) {
+                    ex.printStackTrace();
+                }
+            });
     }
 
     private void doActivateWorkspaceVizEngine(final Workspace workspace) {
