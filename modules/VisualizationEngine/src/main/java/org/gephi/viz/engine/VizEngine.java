@@ -79,10 +79,9 @@ public class VizEngine<R extends RenderingTarget, I> {
     //World updaters:
     private final Set<WorldUpdater<R>> allUpdaters = new LinkedHashSet<>();
     private final List<WorldUpdater<R>> updatersPipeline = new ArrayList<>();
-    private ExecutorService updaterManagerThread;
     private ExecutorService updatersThreadPool;
     private final WorldUpdaterExecutionMode worldUpdatersExecutionMode =
-        WorldUpdaterExecutionMode.SINGLE_THREAD;
+        WorldUpdaterExecutionMode.CONCURRENT_ASYNCHRONOUS;
 
     //Input listeners:
     private final List<I> eventsQueue = Collections.synchronizedList(new ArrayList<>());
@@ -389,8 +388,6 @@ public class VizEngine<R extends RenderingTarget, I> {
         // Setup world updater threads
         if (worldUpdatersExecutionMode.isConcurrent()) {
             final int numThreads = Math.max(Math.min(updatersPipeline.size(), 4), 1);
-            updaterManagerThread = Executors.newSingleThreadExecutor(
-                runnable -> new Thread(runnable, "World Updater Manager Thread"));
             updatersThreadPool = Executors.newFixedThreadPool(numThreads, new ThreadFactory() {
                 private int id = 1;
 
@@ -400,7 +397,6 @@ public class VizEngine<R extends RenderingTarget, I> {
                 }
             });
         } else {
-            updaterManagerThread = null;
             updatersThreadPool = null;
         }
 
@@ -419,15 +415,10 @@ public class VizEngine<R extends RenderingTarget, I> {
         if (updatersThreadPool != null) {
             try {
                 updatersThreadPool.shutdown();
-                updaterManagerThread.shutdown();
 
                 final boolean terminated = updatersThreadPool.awaitTermination(5, TimeUnit.SECONDS);
                 if (!terminated) {
                     updatersThreadPool.shutdownNow();
-                }
-                final boolean managerTerminated = updaterManagerThread.awaitTermination(5, TimeUnit.SECONDS);
-                if (!managerTerminated) {
-                    updaterManagerThread.shutdownNow();
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(VizEngine.class.getName())
@@ -482,10 +473,11 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         //Call renderers for the current frame:
+        VizEngineModel localEngineModel = this.engineModel;
         for (RenderingLayer layer : ALL_LAYERS) {
             for (Renderer<R> renderer : renderersPipeline) {
                 if (renderer.getLayers().contains(layer)) {
-                    renderer.render(renderingTarget, layer);
+                    renderer.render(localEngineModel, renderingTarget, layer);
                 }
             }
         }
@@ -562,19 +554,14 @@ public class VizEngine<R extends RenderingTarget, I> {
             }
 
             final VizEngineModel localEngineModel = this.engineModel;
-            allUpdatersCompletableFuture = updaterManagerThread.submit(() -> {
-                localEngineModel.getGraphModel().getGraph().readLock();
 
-                // Create a world update future for each updated
-                final List<CompletableFuture<WorldUpdater<R>>> futures = new ArrayList<>();
-                updatersPipeline.forEach(
-                    updater -> futures.add(completableFutureOfUpdater(updater, localEngineModel)));
+            // Create a world update future for each updated
+            final List<CompletableFuture<WorldUpdater<R>>> futures = new ArrayList<>();
+            updatersPipeline.forEach(
+                updater -> futures.add(completableFutureOfUpdater(updater, localEngineModel)));
 
-                // Wait until all world updates are done
-                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-
-                localEngineModel.getGraphModel().getGraph().readUnlock();
-            });
+            allUpdatersCompletableFuture = CompletableFuture
+                .allOf(futures.toArray(new CompletableFuture[0]));
 
             lastWorldUpdateMillis = TimeUtils.getTimeMillis();
         }
