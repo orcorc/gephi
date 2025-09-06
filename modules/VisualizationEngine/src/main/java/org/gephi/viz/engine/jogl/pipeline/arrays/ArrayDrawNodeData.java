@@ -10,6 +10,7 @@ import com.jogamp.opengl.GL2ES2;
 import java.nio.FloatBuffer;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
@@ -43,20 +44,22 @@ public class ArrayDrawNodeData extends AbstractNodeData {
     }
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                           VizEngineModel model,
                            float[] mvpFloats) {
         //First we draw outside circle (for border) and then inside circle:
         //FIXME: all node parts should be drawn at the same time, otherwise internal parts of nodes can cover external parts!
-        drawArraysInternal(gl, layer, engine, mvpFloats, true);
-        drawArraysInternal(gl, layer, engine, mvpFloats, false);
+        drawArraysInternal(gl, layer, engine, model, mvpFloats, true);
+        drawArraysInternal(gl, layer, engine, model, mvpFloats, false);
     }
 
     public void drawArraysInternal(final GL2ES2 gl,
                                    final RenderingLayer layer,
                                    final VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                                   final VizEngineModel model,
                                    final float[] mvpFloats,
                                    final boolean isRenderingOutsideCircle) {
         final int instanceCount =
-            setupShaderProgramForRenderingLayer(gl, layer, engine, mvpFloats, isRenderingOutsideCircle);
+            setupShaderProgramForRenderingLayer(gl, layer, engine, model, mvpFloats, isRenderingOutsideCircle);
 
         if (instanceCount <= 0) {
             diskModel.stopUsingProgram(gl);

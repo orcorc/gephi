@@ -21,6 +21,7 @@ import java.nio.IntBuffer;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.models.NodeDiskModel;
 import org.gephi.viz.engine.jogl.models.NodeDiskVertexDataGenerator;
@@ -163,15 +164,16 @@ public abstract class AbstractNodeData {
     protected int setupShaderProgramForRenderingLayer(final GL2ES2 gl,
                                                       final RenderingLayer layer,
                                                       final VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                                                      final VizEngineModel model,
                                                       final float[] mvpFloats,
                                                       final boolean isRenderingOutsideCircle) {
-        final boolean someSelection = engine.getGraphSelection().someNodesOrEdgesSelection();
+        final boolean someSelection = model.getGraphSelection().someNodesOrEdgesSelection();
         final boolean renderingUnselectedNodes = layer.isBack();
         if (!someSelection && renderingUnselectedNodes) {
             return 0;
         }
 
-        final float[] backgroundColorFloats = engine.getBackgroundColor();
+        final float[] backgroundColorFloats = model.getRenderingOptions().getBackgroundColor();
 
         final int instanceCount;
         final float sizeMultiplier = isRenderingOutsideCircle ? 1f : INSIDE_CIRCLE_SIZE;
@@ -179,7 +181,7 @@ public abstract class AbstractNodeData {
         if (renderingUnselectedNodes) {
             instanceCount = instanceCounter.unselectedCountToDraw;
             final float colorLightenFactor =
-                engine.getRenderingOptions().getLightenNonSelectedFactor();
+                model.getRenderingOptions().getLightenNonSelectedFactor();
             final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
             diskModel.useProgramWithSelectionUnselected(
                 gl,

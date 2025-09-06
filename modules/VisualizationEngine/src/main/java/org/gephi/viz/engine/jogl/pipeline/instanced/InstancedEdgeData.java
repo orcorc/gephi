@@ -9,6 +9,7 @@ import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelDirected;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected;
@@ -49,23 +50,26 @@ public class InstancedEdgeData extends AbstractEdgeData {
     }
 
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                              VizEngineModel model,
                               float[] mvpFloats) {
-        drawUndirected(gl, engine, layer, mvpFloats);
-        drawDirected(gl, engine, layer, mvpFloats);
+        drawUndirected(gl, engine, model, layer, mvpFloats);
+        drawDirected(gl, engine, model, layer, mvpFloats);
     }
 
-    private void drawUndirected(GL3ES3 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine, RenderingLayer layer,
+    private void drawUndirected(GL3ES3 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine, VizEngineModel model,
+                                RenderingLayer layer,
                                 float[] mvpFloats) {
-        final int instanceCount = setupShaderProgramForRenderingLayerUndirected(gl, layer, engine, mvpFloats);
+        final int instanceCount = setupShaderProgramForRenderingLayerUndirected(gl, layer, engine, model, mvpFloats);
 
         lineModelUndirected.drawInstanced(gl, instanceCount);
         lineModelUndirected.stopUsingProgram(gl);
         unsetupUndirectedVertexArrayAttributes(gl);
     }
 
-    private void drawDirected(GL3ES3 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine, RenderingLayer layer,
+    private void drawDirected(GL3ES3 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine, VizEngineModel model,
+                              RenderingLayer layer,
                               float[] mvpFloats) {
-        final int instanceCount = setupShaderProgramForRenderingLayerDirected(gl, layer, engine, mvpFloats);
+        final int instanceCount = setupShaderProgramForRenderingLayerDirected(gl, layer, engine, model, mvpFloats);
 
         lineModelDirected.drawInstanced(gl, instanceCount);
         lineModelDirected.stopUsingProgram(gl);

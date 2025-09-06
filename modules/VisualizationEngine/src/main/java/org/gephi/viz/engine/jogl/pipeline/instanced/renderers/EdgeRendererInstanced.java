@@ -2,6 +2,7 @@ package org.gephi.viz.engine.jogl.pipeline.instanced.renderers;
 
 import com.jogamp.newt.event.NEWTEvent;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.availability.InstancedDraw;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractEdgeRenderer;
@@ -36,12 +37,12 @@ public class EdgeRendererInstanced extends AbstractEdgeRenderer {
     private final float[] mvpFloats = new float[16];
 
     @Override
-    public void render(JOGLRenderingTarget target, RenderingLayer layer) {
+    public void render(VizEngineModel model, JOGLRenderingTarget target, RenderingLayer layer) {
         engine.getModelViewProjectionMatrixFloats(mvpFloats);
         edgeData.drawInstanced(
             target.getDrawable().getGL().getGL3ES3(),
             layer,
-            engine, mvpFloats
+            engine, model, mvpFloats
         );
     }
 

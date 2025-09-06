@@ -17,6 +17,7 @@ import java.nio.FloatBuffer;
 import java.util.Arrays;
 import java.util.EnumSet;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.models.NodeDiskVertexDataGenerator;
 import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
@@ -119,7 +120,7 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
     }
 
     @Override
-    public void render(JOGLRenderingTarget target, RenderingLayer layer) {
+    public void render(VizEngineModel model, JOGLRenderingTarget target, RenderingLayer layer) {
         final GL2ES2 gl = target.getDrawable().getGL().getGL2ES2();
 
         if (render) {

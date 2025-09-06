@@ -19,6 +19,7 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelDirected;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected;
@@ -94,22 +95,23 @@ public abstract class AbstractEdgeData {
     protected int setupShaderProgramForRenderingLayerUndirected(final GL2ES2 gl,
                                                                 final RenderingLayer layer,
                                                                 final VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                                                                final VizEngineModel model,
                                                                 final float[] mvpFloats) {
-        final boolean someSelection = engine.getGraphSelection().someNodesOrEdgesSelection();
+        final boolean someSelection = model.getGraphSelection().someNodesOrEdgesSelection();
         final boolean renderingUnselectedEdges = layer.isBack();
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
 
-        final float[] backgroundColorFloats = engine.getBackgroundColor();
+        final float[] backgroundColorFloats = model.getRenderingOptions().getBackgroundColor();
 
-        final GraphRenderingOptions renderingOptions = engine.getRenderingOptions();
+        final GraphRenderingOptions renderingOptions = model.getRenderingOptions();
 
         final float edgeScale = renderingOptions.getEdgeScale();
         final float nodeScale = renderingOptions.getNodeScale();
         float lightenNonSelectedFactor = renderingOptions.getLightenNonSelectedFactor();
 
-        final GraphIndex graphIndex = engine.getGraphIndex();
+        final GraphIndex graphIndex = model.getGraphIndex();
 
         final boolean weightEnabled = renderingOptions.isEdgeWeightEnabled();
         final float minWeight = weightEnabled ? graphIndex.getEdgesMinWeight() : 0f;
@@ -186,22 +188,23 @@ public abstract class AbstractEdgeData {
     protected int setupShaderProgramForRenderingLayerDirected(final GL2ES2 gl,
                                                               final RenderingLayer layer,
                                                               final VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
+                                                              final VizEngineModel model,
                                                               final float[] mvpFloats) {
-        final boolean someSelection = engine.getGraphSelection().someNodesOrEdgesSelection();
+        final boolean someSelection = model.getGraphSelection().someNodesOrEdgesSelection();
         final boolean renderingUnselectedEdges = layer.isBack();
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
 
-        final float[] backgroundColorFloats = engine.getBackgroundColor();
+        final float[] backgroundColorFloats = model.getRenderingOptions().getBackgroundColor();
 
-        final GraphRenderingOptions renderingOptions = engine.getRenderingOptions();
+        final GraphRenderingOptions renderingOptions = model.getRenderingOptions();
 
         final float edgeScale = renderingOptions.getEdgeScale();
         final float nodeScale = renderingOptions.getNodeScale();
         float lightenNonSelectedFactor = renderingOptions.getLightenNonSelectedFactor();
 
-        final GraphIndex graphIndex = engine.getGraphIndex();
+        final GraphIndex graphIndex = model.getGraphIndex();
 
         final boolean weightEnabled = renderingOptions.isEdgeWeightEnabled();
         final float minWeight = weightEnabled ? graphIndex.getEdgesMinWeight() : 0f;
