@@ -97,10 +97,10 @@ public class RectangleSelectionArrayDraw implements Renderer<JOGLRenderingTarget
     private boolean render = false;
 
     @Override
-    public void worldUpdated(JOGLRenderingTarget target) {
+    public void worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
         final GL2ES2 gl = target.getDrawable().getGL().getGL2ES2();
 
-        final GraphSelection graphSelection = engine.getGraphSelection();
+        final GraphSelection graphSelection = model.getGraphSelection();
 
         if (graphSelection.getMode() != GraphSelection.GraphSelectionMode.RECTANGLE_SELECTION) {
             return;

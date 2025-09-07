@@ -87,6 +87,7 @@ public class VizEngine<R extends RenderingTarget, I> {
     private ExecutorService updatersThreadPool;
     private final WorldUpdaterExecutionMode worldUpdatersExecutionMode =
         WorldUpdaterExecutionMode.CONCURRENT_ASYNCHRONOUS;
+    private Future<VizEngineModel> allUpdatersCompletableFuture = null;
 
     //Input listeners:
     private final List<I> eventsQueue = Collections.synchronizedList(new ArrayList<>());
@@ -95,12 +96,15 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     //Model, can't be null
     private volatile VizEngineModel engineModel;
+    // Model last used by renderers for drawing; only updated after a completed world update
+    private VizEngineModel lastRenderedModel;
 
     //Settings:
     private int maxWorldUpdatesPerSecond = DEFAULT_MAX_WORLD_UPDATES_PER_SECOND;
 
     public VizEngine(R renderingTarget) {
         this.engineModel = VizEngineModel.createEmptyModel();
+        this.lastRenderedModel = this.engineModel;
         this.openGLOptions = new OpenGLOptions();
         this.renderingTarget = Objects.requireNonNull(renderingTarget, "renderingTarget mandatory");
         loadModelViewProjection();
@@ -431,7 +435,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         inputListenersPipeline.clear();
 
         this.renderingTarget.stop();
-        if (updatersThreadPool != null) {
+        if (worldUpdatersExecutionMode.isConcurrent()) {
             try {
                 updatersThreadPool.shutdown();
 
@@ -462,17 +466,14 @@ public class VizEngine<R extends RenderingTarget, I> {
         this.isDestroyed = true;
     }
 
-    private Future<?> allUpdatersCompletableFuture = null;
-
-    private CompletableFuture<WorldUpdater<R>> completableFutureOfUpdater(final WorldUpdater<R> updater,
-                                                                          final VizEngineModel engineModel) {
-        return CompletableFuture.supplyAsync(() -> {
+    private CompletableFuture<Void> buildUpdaterFuture(final WorldUpdater<R> updater,
+                                                       final VizEngineModel engineModel) {
+        return CompletableFuture.runAsync(() -> {
             try {
                 updater.updateWorld(engineModel);
             } catch (Throwable t) {
                 Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
             }
-            return updater;
         }, updatersThreadPool);
     }
 
@@ -483,37 +484,42 @@ public class VizEngine<R extends RenderingTarget, I> {
             return;
         }
 
+        // Choose model for this frame:
+        // - Async updaters: render previous stable model until a world update completes
+        // - Sync updaters: use current engine model
+        VizEngineModel localEngineModel = (!worldUpdatersExecutionMode.isConcurrent())
+            ? this.engineModel
+            : (lastRenderedModel != null ? lastRenderedModel : this.engineModel);
+
         renderingTarget.frameStart();
 
         processInputEvents();
 
-        if (updatersThreadPool == null) {
-            runWorldUpdatersSynchronous();
+        if (!worldUpdatersExecutionMode.isConcurrent()) {
+            runWorldUpdatersSynchronous(localEngineModel);
         } else {
-            checkConcurrentWorldUpdateIsDone();
+            localEngineModel = checkConcurrentWorldUpdateIsDone(localEngineModel);
         }
 
-        //Call renderers for the current frame:
-        VizEngineModel localEngineModel = this.engineModel;
-        for (RenderingLayer layer : ALL_LAYERS) {
-            for (Renderer<R> renderer : renderersPipeline) {
-                if (renderer.getLayers().contains(layer)) {
-                    renderer.render(localEngineModel, renderingTarget, layer);
-                }
-            }
+        //Call renderers for the current frame in precomputed order:
+        for (RendererWithLayer<R> call : orderedRendererCalls) {
+            call.renderer.render(localEngineModel, renderingTarget, call.layer);
         }
 
         //Schedule next concurrent world update:
-        if (updatersThreadPool != null) {
-            scheduleNextConcurrentWorldUpdateIfDone();
+        if (worldUpdatersExecutionMode.isConcurrent()) {
+            scheduleNextConcurrentWorldUpdateIfDone(this.engineModel);
         }
+
+        // Commit model used for rendering this frame
+        lastRenderedModel = localEngineModel;
 
         renderingTarget.frameEnd();
     }
 
     private long lastWorldUpdateMillis = 0;
 
-    private void runWorldUpdatersSynchronous() {
+    private void runWorldUpdatersSynchronous(VizEngineModel model) {
         //Control max world updates per second
         if (maxWorldUpdatesPerSecond >= 1) {
             if (TimeUtils.getTimeMillis() < lastWorldUpdateMillis + 1000 / maxWorldUpdatesPerSecond) {
@@ -522,49 +528,48 @@ public class VizEngine<R extends RenderingTarget, I> {
             }
         }
 
-        final VizEngineModel model = this.engineModel;
         for (WorldUpdater<R> worldUpdater : updatersPipeline) {
             worldUpdater.updateWorld(model);
         }
         lastWorldUpdateMillis = TimeUtils.getTimeMillis();
 
         for (Renderer<R> renderer : renderersPipeline) {
-            renderer.worldUpdated(renderingTarget);
+            renderer.worldUpdated(model, renderingTarget);
         }
     }
 
-    private void checkConcurrentWorldUpdateIsDone() {
+    private VizEngineModel checkConcurrentWorldUpdateIsDone(VizEngineModel fallBackModel) {
         if (allUpdatersCompletableFuture != null) {
             if (worldUpdatersExecutionMode.isSynchronous()) {
-                try {
-                    allUpdatersCompletableFuture.get();
-
-                    allUpdatersCompletableFuture = null;
-
-                    //Notify renderers when next concurrent synchronous world data update is done:
-                    for (Renderer<R> renderer : renderersPipeline) {
-                        renderer.worldUpdated(renderingTarget);
-                    }
-                } catch (Throwable t) {
-                    Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
-                }
+                return runWorldUpdated();
             } else {
                 //Notify renderers if next concurrent asynchronous world data update is done:
                 final boolean worldUpdateDone =
                     allUpdatersCompletableFuture.isDone();
                 if (worldUpdateDone) {
-                    allUpdatersCompletableFuture = null;
-
-                    for (Renderer<R> renderer : renderersPipeline) {
-                        renderer.worldUpdated(renderingTarget);
-                    }
+                    return runWorldUpdated();
                 }
             }
         }
-
+        return fallBackModel;
     }
 
-    private void scheduleNextConcurrentWorldUpdateIfDone() {
+    private VizEngineModel runWorldUpdated() {
+        try {
+            VizEngineModel modelUsedByUpdaters = allUpdatersCompletableFuture.get();
+            allUpdatersCompletableFuture = null;
+
+            for (Renderer<R> renderer : renderersPipeline) {
+                renderer.worldUpdated(modelUsedByUpdaters, renderingTarget);
+            }
+            return modelUsedByUpdaters;
+        } catch (Throwable t) {
+            Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+            throw new RuntimeException(t);
+        }
+    }
+
+    private void scheduleNextConcurrentWorldUpdateIfDone(VizEngineModel model) {
         if (!updatersThreadPool.isShutdown() && allUpdatersCompletableFuture == null) {
             //Control max world updates per second
             if (maxWorldUpdatesPerSecond >= 1) {
@@ -574,15 +579,14 @@ public class VizEngine<R extends RenderingTarget, I> {
                 }
             }
 
-            final VizEngineModel localEngineModel = this.engineModel;
+            // Create a world update future for each updater
+            List<CompletableFuture<Void>> futures =
+                updatersPipeline.stream().map(u -> buildUpdaterFuture(u, model)).toList();
 
-            // Create a world update future for each updated
-            final List<CompletableFuture<WorldUpdater<R>>> futures = new ArrayList<>();
-            updatersPipeline.forEach(
-                updater -> futures.add(completableFutureOfUpdater(updater, localEngineModel)));
-
-            allUpdatersCompletableFuture = CompletableFuture
-                .allOf(futures.toArray(new CompletableFuture[0]));
+            // Associate local model to the future
+            allUpdatersCompletableFuture =
+                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                    .thenApply(ignored -> model);
 
             lastWorldUpdateMillis = TimeUtils.getTimeMillis();
         }

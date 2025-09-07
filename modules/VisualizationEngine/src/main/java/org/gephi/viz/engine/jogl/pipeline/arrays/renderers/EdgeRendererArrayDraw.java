@@ -29,7 +29,7 @@ public class EdgeRendererArrayDraw extends AbstractEdgeRenderer {
     }
 
     @Override
-    public void worldUpdated(JOGLRenderingTarget target) {
+    public void worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
         edgeData.updateBuffers();
     }
 

@@ -38,8 +38,6 @@ import org.joml.Vector3f;
 public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarget> {
     private final VizEngine<JOGLRenderingTarget, NEWTEvent> engine;
 
-    float radius;
-
     final float[] mvpFloats = new float[16];
 
     private static final int VERT_BUFFER = 0;
@@ -69,10 +67,10 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
     }
 
     @Override
-    public void worldUpdated(JOGLRenderingTarget target) {
+    public void worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
         final GL2ES2 gl = target.getDrawable().getGL().getGL2ES2();
 
-        final GraphSelection graphSelection = engine.getGraphSelection();
+        final GraphSelection graphSelection = model.getGraphSelection();
 
         if (graphSelection.getMode() != GraphSelection.GraphSelectionMode.SIMPLE_MOUSE_SELECTION &&
             graphSelection.getMode() != GraphSelection.GraphSelectionMode.MULTI_NODE_SELECTION) {
