@@ -478,7 +478,6 @@ public class VizEngine<R extends RenderingTarget, I> {
     }
 
 
-
     public void display() {
         if (isPaused) {
             return;
