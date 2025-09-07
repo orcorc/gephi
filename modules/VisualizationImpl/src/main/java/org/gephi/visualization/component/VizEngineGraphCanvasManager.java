@@ -155,6 +155,15 @@ public class VizEngineGraphCanvasManager {
         return model;
     }
 
+    public synchronized VizModel unloadWorkspace(Workspace workspace) {
+        if (!initialized) {
+            throw new IllegalStateException("Not initialized");
+        }
+        VizModel model = vizController.getModel(workspace);
+        model.unsetup();
+        return model;
+    }
+
     public synchronized void destroy(JComponent component) {
         if (glCanvas != null) {
             component.remove(glCanvas);

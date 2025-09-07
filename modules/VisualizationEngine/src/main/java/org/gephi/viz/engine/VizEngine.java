@@ -277,21 +277,25 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public void setTranslate(float x, float y) {
         translate.set(x, y);
+        engineModel.getRenderingOptions().setPan(translate);
         loadModelViewProjection();
     }
 
     public void setTranslate(Vector2fc value) {
         translate.set(value);
+        engineModel.getRenderingOptions().setPan(translate);
         loadModelViewProjection();
     }
 
     public void translate(float x, float y) {
         translate.add(x, y);
+        engineModel.getRenderingOptions().setPan(translate);
         loadModelViewProjection();
     }
 
     public void translate(Vector2fc value) {
         translate.add(value);
+        engineModel.getRenderingOptions().setPan(translate);
         loadModelViewProjection();
     }
 
@@ -389,6 +393,8 @@ public class VizEngine<R extends RenderingTarget, I> {
     public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
         this.engineModel = new VizEngineModel(graphModel,
             renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl());
+        // Sync local translate from new model's pan
+        this.translate.set(engineModel.getRenderingOptions().getPan());
         loadModelViewProjection();
     }
 

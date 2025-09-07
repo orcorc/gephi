@@ -218,7 +218,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
         if (workspace == null) {
             return;
         }
-        VizModel vizModel = controller.getModel(workspace);
+        VizModel vizModel = controller.getCanvasManager().unloadWorkspace(workspace);
         SwingUtilities.invokeLater(() -> {
             for (CollapseGroup group : groups) {
                 group.unsetup(vizModel);
