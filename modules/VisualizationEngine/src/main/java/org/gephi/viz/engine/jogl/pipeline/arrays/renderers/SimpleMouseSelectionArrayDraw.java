@@ -91,8 +91,6 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
                 mvp.getScale(scale);
 
                 graphSelection.setSimpleMouseSelectionMVPScale(scale.x);
-
-
             }
             mouseSelectionDiameter = graphSelection.getMouseSelectionEffectiveDiameter();
             final FloatBuffer floatBuffer = circleVertexDataBuffer.floatBuffer();
