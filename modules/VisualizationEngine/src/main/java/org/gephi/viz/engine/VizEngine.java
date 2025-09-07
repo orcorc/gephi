@@ -46,6 +46,10 @@ import org.joml.Vector3f;
 public class VizEngine<R extends RenderingTarget, I> {
 
     public static final int DEFAULT_MAX_WORLD_UPDATES_PER_SECOND = 60;
+    private static final RenderingLayer[] ALL_LAYERS = RenderingLayer.values();
+
+    private record RendererWithLayer<R extends RenderingTarget>(Renderer<R> renderer, RenderingLayer layer) {
+    }
 
     //Rendering target
     private final R renderingTarget;
@@ -75,6 +79,7 @@ public class VizEngine<R extends RenderingTarget, I> {
     //Renderers:
     private final Set<Renderer<R>> allRenderers = new LinkedHashSet<>();
     private final List<Renderer<R>> renderersPipeline = new ArrayList<>();
+    private final List<RendererWithLayer<R>> orderedRendererCalls = new ArrayList<>();
 
     //World updaters:
     private final Set<WorldUpdater<R>> allUpdaters = new LinkedHashSet<>();
@@ -159,6 +164,17 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     private void setupRenderersPipeline() {
         setupPipelineOfElements(allRenderers, renderersPipeline, "Renderer");
+    }
+
+    private void setupOrderedRendererCalls() {
+        orderedRendererCalls.clear();
+        for (RenderingLayer layer : ALL_LAYERS) {
+            for (Renderer<R> renderer : renderersPipeline) {
+                if (renderer.getLayers().contains(layer)) {
+                    orderedRendererCalls.add(new RendererWithLayer<>(renderer, layer));
+                }
+            }
+        }
     }
 
     private void setupWorldUpdatersPipeline() {
@@ -385,6 +401,9 @@ public class VizEngine<R extends RenderingTarget, I> {
             renderer.init(renderingTarget);
         });
 
+        // Setup ordered renderer calls, used then by display() to call renderers in the right order
+        setupOrderedRendererCalls();
+
         // Setup world updater threads
         if (worldUpdatersExecutionMode.isConcurrent()) {
             final int numThreads = Math.max(Math.min(updatersPipeline.size(), 4), 1);
@@ -438,6 +457,8 @@ public class VizEngine<R extends RenderingTarget, I> {
             renderer.dispose(renderingTarget);
         });
 
+        orderedRendererCalls.clear();
+
         this.isDestroyed = true;
     }
 
@@ -455,7 +476,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         }, updatersThreadPool);
     }
 
-    private static final RenderingLayer[] ALL_LAYERS = RenderingLayer.values();
+
 
     public void display() {
         if (isPaused) {
