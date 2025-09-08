@@ -1,5 +1,9 @@
 package org.gephi.viz.engine.spi;
 
+import org.gephi.viz.engine.VizEngineModel;
+import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.structure.GraphIndex;
+
 /**
  *
  * @param <R>
@@ -8,7 +12,7 @@ package org.gephi.viz.engine.spi;
  */
 public interface InputListener<R extends RenderingTarget, T> extends PipelinedExecutor<R> {
 
-    default void frameStart() {
+    default void frameStart(VizEngineModel model) {
 
     }
 
@@ -19,7 +23,7 @@ public interface InputListener<R extends RenderingTarget, T> extends PipelinedEx
      */
     boolean processEvent(T event);
 
-    default void frameEnd() {
+    default void frameEnd(VizEngineModel model) {
 
     }
 }
