@@ -1,8 +1,6 @@
 package org.gephi.viz.engine.spi;
 
 import org.gephi.viz.engine.VizEngineModel;
-import org.gephi.viz.engine.status.GraphSelection;
-import org.gephi.viz.engine.structure.GraphIndex;
 
 /**
  *

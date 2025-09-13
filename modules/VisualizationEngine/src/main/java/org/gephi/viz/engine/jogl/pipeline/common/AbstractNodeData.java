@@ -80,11 +80,12 @@ public abstract class AbstractNodeData {
     protected final boolean instancedRendering;
     protected final boolean indirectCommands;
 
-    // State:
+    // States
     protected final InstanceCounter instanceCounter = new InstanceCounter();
     protected float maxNodeSize = 0;
-    protected float maxNodeSizeToDraw = 0;
-    protected float currentNodeScale = 1f;
+    protected float currentNodeScale;
+    protected float currentZoom;
+    protected boolean someSelection;
 
     // Buffers for vertex attributes:
     protected static final int BATCH_NODES_SIZE = 32768;
@@ -163,25 +164,23 @@ public abstract class AbstractNodeData {
 
     protected int setupShaderProgramForRenderingLayer(final GL2ES2 gl,
                                                       final RenderingLayer layer,
-                                                      final VizEngine<JOGLRenderingTarget, NEWTEvent> engine,
-                                                      final VizEngineModel model,
+                                                      final NodeWorldData data,
                                                       final float[] mvpFloats,
                                                       final boolean isRenderingOutsideCircle) {
-        final boolean someSelection = model.getGraphSelection().someNodesOrEdgesSelection();
+        final boolean someSelection = data.hasSomeSelection();
         final boolean renderingUnselectedNodes = layer.isBack();
         if (!someSelection && renderingUnselectedNodes) {
             return 0;
         }
 
-        final float[] backgroundColorFloats = model.getRenderingOptions().getBackgroundColor();
+        final float[] backgroundColorFloats = data.getBackgroundColor();
 
         final int instanceCount;
         final float sizeMultiplier = isRenderingOutsideCircle ? 1f : INSIDE_CIRCLE_SIZE;
 
         if (renderingUnselectedNodes) {
             instanceCount = instanceCounter.unselectedCountToDraw;
-            final float colorLightenFactor =
-                model.getRenderingOptions().getLightenNonSelectedFactor();
+            final float colorLightenFactor = data.getLightenNonSelectedFactor();
             final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
             diskModel.useProgramWithSelectionUnselected(
                 gl,
@@ -192,7 +191,7 @@ public abstract class AbstractNodeData {
                 colorMultiplier
             );
 
-            setupSecondaryVertexArrayAttributes(gl, engine);
+            setupSecondaryVertexArrayAttributes(gl, data);
         } else {
             instanceCount = instanceCounter.selectedCountToDraw;
 
@@ -209,28 +208,36 @@ public abstract class AbstractNodeData {
                 diskModel.useProgram(gl, mvpFloats, sizeMultiplier, colorMultiplier);
             }
 
-            setupVertexArrayAttributes(gl, engine);
+            setupVertexArrayAttributes(gl, data);
         }
 
         return instanceCount;
     }
 
-    public abstract void update(GraphIndex graphIndex, GraphSelection graphSelection,
-                                GraphRenderingOptions renderingOptions, Rect2D viewBoundaries);
+    public NodeWorldData createWorldData(VizEngineModel model, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+        return new NodeWorldData(
+            someSelection,
+            model.getRenderingOptions().getBackgroundColor(),
+            maxNodeSize,
+            currentZoom,
+            model.getRenderingOptions().getLightenNonSelectedFactor(),
+            engine.getOpenGLOptions(),
+            engine.getRenderingTarget().getGlCapabilitiesSummary()
+        );
+    }
 
-    protected void updateData(final float zoom,
-                              final Rect2D viewBoundaries,
-                              final GraphIndex graphIndex,
-                              final GraphRenderingOptions renderingOptions,
-                              final GraphSelection selection) {
+    public void update(GraphIndex graphIndex, GraphSelection selection, GraphRenderingOptions renderingOptions,
+                       Rect2D viewBoundaries) {
         if (!renderingOptions.isShowNodes()) {
             instanceCounter.clearCount();
             return;
         }
 
-
-        //Selection:
-        final boolean someSelection = selection.someNodesOrEdgesSelection();
+        //Selection and other states updates
+        currentZoom = renderingOptions.getZoom();
+        someSelection = selection.someNodesOrEdgesSelection();
+        currentNodeScale = renderingOptions.getNodeScale();
+        ;
 
         // Get visible nodes
         graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
@@ -251,10 +258,9 @@ public abstract class AbstractNodeData {
         int newNodesCountSelected = 0;
 
         float newMaxNodeSize = 0;
-        final float nodeScale = renderingOptions.getNodeScale();
-        currentNodeScale = nodeScale;
+
         for (int j = 0; j < visibleNodesCount; j++) {
-            final float size = visibleNodesArray[j].size() * nodeScale;
+            final float size = visibleNodesArray[j].size() * currentNodeScale;
             newMaxNodeSize = Math.max(size, newMaxNodeSize);
         }
 
@@ -282,7 +288,7 @@ public abstract class AbstractNodeData {
                 }
 
                 if (indirectCommands) {
-                    fillNodeCommandData(node, zoom, commandIndex, instanceId);
+                    fillNodeCommandData(node, commandIndex, instanceId);
                     instanceId++;
                     commandIndex += INDIRECT_DRAW_COMMAND_INTS_COUNT;
 
@@ -315,7 +321,7 @@ public abstract class AbstractNodeData {
                 }
 
                 if (indirectCommands) {
-                    fillNodeCommandData(node, zoom, commandIndex, instanceId);
+                    fillNodeCommandData(node, commandIndex, instanceId);
                     instanceId++;
                     commandIndex += INDIRECT_DRAW_COMMAND_INTS_COUNT;
 
@@ -341,7 +347,7 @@ public abstract class AbstractNodeData {
                 }
 
                 if (indirectCommands) {
-                    fillNodeCommandData(node, zoom, commandIndex, instanceId);
+                    fillNodeCommandData(node, commandIndex, instanceId);
                     instanceId++;
                     commandIndex += INDIRECT_DRAW_COMMAND_INTS_COUNT;
 
@@ -384,10 +390,10 @@ public abstract class AbstractNodeData {
         attributesBufferBatch[index + 3] = size;
     }
 
-    protected void fillNodeCommandData(final Node node, final float zoom, final int index, final int instanceId) {
+    protected void fillNodeCommandData(final Node node, final int index, final int instanceId) {
         //Indirect Draw:
         //Choose LOD:
-        final float observedSize = node.size() * currentNodeScale * zoom;
+        final float observedSize = node.size() * currentNodeScale * currentZoom;
 
         final int circleVertexCount;
         final int firstVertex;
@@ -414,11 +420,10 @@ public abstract class AbstractNodeData {
     private NodesVAO nodesVAO;
     private NodesVAO nodesVAOSecondary;
 
-    public void setupVertexArrayAttributes(GL2ES2 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    public void setupVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAO == null) {
             nodesVAO = new NodesVAO(
-                engine.getRenderingTarget().getGlCapabilitiesSummary(),
-                engine.getOpenGLOptions(),
+                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
                 vertexGLBuffer, attributesGLBuffer
             );
         }
@@ -426,11 +431,10 @@ public abstract class AbstractNodeData {
         nodesVAO.use(gl);
     }
 
-    public void setupSecondaryVertexArrayAttributes(GL2ES2 gl, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    public void setupSecondaryVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAOSecondary == null) {
             nodesVAOSecondary = new NodesVAO(
-                engine.getRenderingTarget().getGlCapabilitiesSummary(),
-                engine.getOpenGLOptions(),
+                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
                 vertexGLBuffer, attributesGLBufferSecondary
             );
         }
