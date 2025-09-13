@@ -527,14 +527,14 @@ public class VizEngine<R extends RenderingTarget, I> {
                 }
             }
 
-            // Create a world update future for each updater
-            List<CompletableFuture<Void>> futures =
-                updatersPipeline.stream().map(u -> buildUpdaterFuture(u, model)).toList();
-
             // Associate local model to the future
             allUpdatersCompletableFuture = CompletableFuture.supplyAsync(() -> {
                 // Process input events
                 processInputEvents(model);
+
+                // Create a world update future for each updater
+                List<CompletableFuture<Void>> futures =
+                    updatersPipeline.stream().map(u -> buildUpdaterFuture(u, model)).toList();
 
                 // Execute all updaters and wait for them to finish
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
