@@ -241,7 +241,9 @@ public abstract class AbstractNodeData {
 
         // Get visible nodes
         graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
-        final int totalNodes = nodesCallback.getTotalCount();
+        final Node[] visibleNodesArray = nodesCallback.getNodesArray();
+        final int maxIndex = nodesCallback.getMaxIndex();
+        final int totalNodes = nodesCallback.getCount();
 
         attributesBuffer.ensureCapacity(totalNodes * ATTRIBS_STRIDE);
         if (indirectCommands) {
@@ -251,26 +253,22 @@ public abstract class AbstractNodeData {
         final FloatBuffer attribs = attributesBuffer.floatBuffer();
         final IntBuffer commands = indirectCommands ? commandsBuffer.intBuffer() : null;
 
-        final Node[] visibleNodesArray = nodesCallback.getNodesArray();
-        final int visibleNodesCount = nodesCallback.getCount();
 
         int newNodesCountUnselected = 0;
         int newNodesCountSelected = 0;
 
-        float newMaxNodeSize = 0;
-
-        for (int j = 0; j < visibleNodesCount; j++) {
-            final float size = visibleNodesArray[j].size() * currentNodeScale;
-            newMaxNodeSize = Math.max(size, newMaxNodeSize);
-        }
+        float newMaxNodeSize = nodesCallback.getMaxNodeSize() * currentNodeScale;
 
         int attributesIndex = 0;
         int commandIndex = 0;
         int instanceId = 0;
         if (someSelection) {
             //First non-selected (bottom):
-            for (int j = 0; j < visibleNodesCount; j++) {
+            for (int j = 0; j <= maxIndex; j++) {
                 final Node node = visibleNodesArray[j];
+                if (node == null) {
+                    continue;
+                }
 
                 final boolean selected = selection.isNodeOrNeighbourSelected(node);
                 if (selected) {
@@ -302,8 +300,11 @@ public abstract class AbstractNodeData {
             instanceId =
                 0;//Reset instance id, since we draw elements in 2 separate attribute buffers (main/selected and secondary/unselected)
             //Then selected ones (up):
-            for (int j = 0; j < visibleNodesCount; j++) {
+            for (int j = 0; j <= maxIndex; j++) {
                 final Node node = visibleNodesArray[j];
+                if (node == null) {
+                    continue;
+                }
 
                 final boolean selected = selection.isNodeOrNeighbourSelected(node);
                 if (!selected) {
@@ -333,8 +334,11 @@ public abstract class AbstractNodeData {
             }
         } else {
             //Just all nodes, no selection active:
-            for (int j = 0; j < visibleNodesCount; j++) {
+            for (int j = 0; j <= maxIndex; j++) {
                 final Node node = visibleNodesArray[j];
+                if (node == null) {
+                    continue;
+                }
 
                 newNodesCountSelected++;
 

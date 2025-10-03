@@ -14,46 +14,55 @@ import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
 public class EdgesCallback implements ElementsCallback<Edge> {
 
     private Edge[] edgesArray = new Edge[0];
-    private int nextIndex = 0;
+    private int maxIndex = 0;
+    private int edgeCount = 0;
 
     @Override
     public void start(Graph graph) {
         graph.readLock();
-        edgesArray = ensureEdgesArraySize(edgesArray, graph.getEdgeCount());
-        nextIndex = 0;
+        Arrays.fill(edgesArray, null);
+        edgesArray = ensureEdgesArraySize(edgesArray, graph.getModel().getMaxEdgeStoreId() + 1);
+        maxIndex = 0;
+        edgeCount = 0;
     }
 
     @Override
     public void accept(Edge edge) {
-        edgesArray[nextIndex++] = edge;
+        int storeId = edge.getStoreId();
+        if (storeId > maxIndex) {
+            maxIndex = storeId;
+        }
+        edgesArray[storeId] = edge;
     }
 
     @Override
     public void end(Graph graph) {
         graph.readUnlock();
+        // Count non-null edges
+        // This can't be done in accept as edges can be duplicated and accept is called via multiple threads (parallel stream)
+        for (Edge edge : edgesArray) {
+            if (edge != null) {
+                edgeCount++;
+            }
+        }
     }
 
     public void reset() {
         edgesArray = new Edge[0];
-        nextIndex = 0;
-    }
-
-    public Iterable<Edge> getEdges() {
-        return Arrays
-            .asList(edgesArray)
-            .subList(0, nextIndex);
+        maxIndex = 0;
+        edgeCount = 0;
     }
 
     public Edge[] getEdgesArray() {
         return edgesArray;
     }
 
-    public int getCount() {
-        return nextIndex;
+    public int getMaxIndex() {
+        return maxIndex;
     }
 
-    public int getTotalCount() {
-        return edgesArray.length;
+    public int getCount() {
+        return edgeCount;
     }
 
     protected Edge[] ensureEdgesArraySize(Edge[] array, int size) {

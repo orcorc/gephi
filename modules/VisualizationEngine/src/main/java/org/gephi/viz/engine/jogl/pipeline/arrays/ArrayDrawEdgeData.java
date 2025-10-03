@@ -211,23 +211,23 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     @Override
     protected void updateData(final Graph graph, final GraphSelection selection) {
 
-        int totalEdges = edgesCallback.getTotalCount();
+        int totalEdges = edgesCallback.getCount();
         final float[] attribs
             = attributesBuffer
             = ArrayUtils.ensureCapacityNoCopy(attributesBuffer, totalEdges * ATTRIBS_STRIDE);
 
         final Edge[] visibleEdgesArray = edgesCallback.getEdgesArray();
-        final int visibleEdgesCount = edgesCallback.getCount();
+        final int maxIndex = edgesCallback.getMaxIndex();
 
         int attribsIndex = 0;
         attribsIndex = updateUndirectedData(
             graph,
             selection,
-            visibleEdgesCount, visibleEdgesArray,
+            maxIndex, visibleEdgesArray,
             attribs, attribsIndex
         );
         updateDirectedData(
-            graph, selection, visibleEdgesCount, visibleEdgesArray,
+            graph, selection, maxIndex, visibleEdgesArray,
             attribs, attribsIndex
         );
     }
