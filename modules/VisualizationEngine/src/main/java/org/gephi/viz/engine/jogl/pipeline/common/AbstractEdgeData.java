@@ -437,6 +437,9 @@ public abstract class AbstractEdgeData {
             //Just all edges, no selection active:
             for (int j = 0; j <= maxIndex; j++) {
                 final Edge edge = visibleEdgesArray[j];
+                if (edge == null) {
+                    continue;
+                }
                 if (!edge.isDirected()) {
                     continue;
                 }
