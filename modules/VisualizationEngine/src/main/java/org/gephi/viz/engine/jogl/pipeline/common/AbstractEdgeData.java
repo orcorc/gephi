@@ -808,6 +808,10 @@ public abstract class AbstractEdgeData {
             case MIXED: {
                 final int s = edge.getSource().getRGBA();
                 final int t = edge.getTarget().getRGBA();
+                if (s == t) {
+                    colorInt = s;
+                    break;
+                }
                 final int b0 = ((s) & 0xFF) + ((t) & 0xFF);
                 final int b1 = ((s >>> 8) & 0xFF) + ((t >>> 8) & 0xFF);
                 final int b2 = ((s >>> 16) & 0xFF) + ((t >>> 16) & 0xFF);

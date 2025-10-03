@@ -43,7 +43,6 @@ public class InputActionsProcessor {
     }
 
     private void selectNodes(VizEngineModel model, final NodeIterable nodesIterable) {
-        GraphSelection.GraphSelectionMode mode = model.getGraphSelection().getMode();
         final GraphRenderingOptions renderingOptions = model.getRenderingOptions();
         final Graph graph = model.getGraphModel().getGraphVisible();
         final GraphSelection selection = model.getGraphSelection();

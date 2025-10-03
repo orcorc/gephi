@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;
 import org.gephi.graph.api.Graph;
@@ -18,7 +19,7 @@ public class GraphSelectionImpl implements GraphSelection {
     private final BitSet nodes = new BitSet();
     private final BitSet nodesWithNeighbours = new BitSet();
     private final BitSet edges = new BitSet();
-    private final List<Node> nodesList = new ArrayList<>();
+    private final Collection<Node> nodesList = new ConcurrentLinkedQueue<>();
 
     private GraphSelection.GraphSelectionMode selectionMode;
     private float simpleMouseSelectionDiameter = 1f;
@@ -80,14 +81,12 @@ public class GraphSelectionImpl implements GraphSelection {
 
     @Override
     public Collection<Node> getSelectedNodes() {
-        return Collections.unmodifiableList(nodesList);
+        return Collections.unmodifiableCollection(nodesList);
     }
 
     @Override
     public void setSelectedNodes(Graph graph, NodeIterable nodesIterable, boolean autoSelectNeighbours,
                                  boolean selectEdges) {
-        final Iterator<Node> nodeIterator = nodesIterable.iterator();
-
         // Resets
         nodes.clear();
         nodesWithNeighbours.clear();
@@ -96,27 +95,29 @@ public class GraphSelectionImpl implements GraphSelection {
 
         final boolean selectNeighbours = autoSelectNeighbours &&
             getMode() != GraphSelection.GraphSelectionMode.SINGLE_NODE_SELECTION;
-        while (nodeIterator.hasNext()) {
-            final Node node = nodeIterator.next();
 
-            nodes.set(node.getStoreId());
+        graph.readLock();
+        graph.getSpatialIndex().spatialIndexReadLock();
+        nodesIterable.parallelStream().forEach(node -> {
+            int storeId = node.getStoreId();
+            nodes.set(storeId);
             nodesList.add(node);
-            nodesWithNeighbours.set(node.getStoreId());
-            if (!selectEdges && !selectNeighbours) {
-                continue;
-            }
-            EdgeIterable edgeIterable = graph.getEdges(node);
-
-            for (Edge edge : edgeIterable) {
-                edges.set(edge.getStoreId());
-                if (selectNeighbours) {
-                    Node oppositeNode = graph.getOpposite(node, edge);
-                    if (oppositeNode != null && oppositeNode != node) {
-                        nodesWithNeighbours.set(oppositeNode.getStoreId());
+            nodesWithNeighbours.set(storeId);
+            if (selectEdges || selectNeighbours) {
+                EdgeIterable edgeIterable = graph.getEdges(node);
+                for (Edge edge : edgeIterable) {
+                    edges.set(edge.getStoreId());
+                    if (selectNeighbours) {
+                        Node oppositeNode = graph.getOpposite(node, edge);
+                        if (oppositeNode != null && oppositeNode != node) {
+                            nodesWithNeighbours.set(oppositeNode.getStoreId());
+                        }
                     }
                 }
             }
-        }
+        });
+        graph.getSpatialIndex().spatialIndexReadUnlock();
+        graph.readUnlock();
     }
 
     @Override
