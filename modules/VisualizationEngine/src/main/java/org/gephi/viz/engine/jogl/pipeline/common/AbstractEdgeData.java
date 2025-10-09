@@ -84,8 +84,6 @@ public abstract class AbstractEdgeData {
     protected float edgeBothSelectionColor;
     protected float edgeOutSelectionColor;
     protected float edgeInSelectionColor;
-    protected float minWeight;
-    protected float maxWeight;
     protected GraphRenderingOptions.EdgeColorMode edgeColorMode;
 
     public AbstractEdgeData(boolean instanced, boolean usesSecondaryBuffer) {
@@ -278,8 +276,8 @@ public abstract class AbstractEdgeData {
         return new EdgeWorldData(
             model.getRenderingOptions().getBackgroundColor(),
             someSelection,
-            edgeWeightEnabled ? minWeight : 0f,
-            edgeWeightEnabled ? maxWeight : 1f,
+            edgeWeightEnabled ? edgesCallback.getMinWeight() : 0f,
+            edgeWeightEnabled ? edgesCallback.getMaxWeight() : 1f,
             model.getRenderingOptions().getNodeScale(),
             model.getRenderingOptions().getEdgeScale(),
             model.getRenderingOptions().getLightenNonSelectedFactor(),
@@ -615,8 +613,6 @@ public abstract class AbstractEdgeData {
     private float getWeight(Edge edge, Graph graph) {
         if (edgeWeightEnabled) {
             float weight = (float) edge.getWeight(graph.getView());
-            this.minWeight = Math.min(this.minWeight, weight);
-            this.maxWeight = Math.max(this.maxWeight, weight);
             return weight;
         }
         return 1f;
