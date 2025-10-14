@@ -671,13 +671,19 @@ public class VizEngine<R extends RenderingTarget, I> {
             inputListener.frameStart(model);
         }
 
+        // Collect all events from queue into a list
+        List<I> events = new ArrayList<>();
         I event;
         while ((event = eventsQueue.poll()) != null) {
-            for (InputListener<R, I> inputListener : inputListenersPipeline) {
-                final boolean consumed = inputListener.processEvent(event);
-                if (consumed) {
-                    break;
-                }
+            events.add(event);
+        }
+
+        // Pass events through the pipeline
+        // Each listener can compress/consume events and return remaining ones
+        for (InputListener<R, I> inputListener : inputListenersPipeline) {
+            events = inputListener.processEvents(events);
+            if (events.isEmpty()) {
+                break; // All events consumed, stop propagation
             }
         }
 

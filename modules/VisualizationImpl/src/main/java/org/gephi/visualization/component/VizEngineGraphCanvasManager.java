@@ -10,7 +10,9 @@ import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import java.awt.BorderLayout;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import javax.swing.JComponent;
@@ -18,6 +20,7 @@ import org.gephi.graph.api.GraphModel;
 import org.gephi.project.api.Workspace;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
+import org.gephi.visualization.events.StandardVizEventManager;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineFactory;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
@@ -98,13 +101,20 @@ public class VizEngineGraphCanvasManager {
 
         engine.addInputListener(new InputListener<>() {
             @Override
-            public boolean processEvent(NEWTEvent inputEvent) {
-                if (engine != null && inputEvent instanceof MouseEvent && vizController.getVizEventManager() != null) {
-                    return vizController.getVizEventManager()
-                        .processMouseEvent(glCanvas, VizEngineGraphCanvasManager.this, engine, (MouseEvent) inputEvent);
+            public List<NEWTEvent> processEvents(List<NEWTEvent> inputEvents) {
+                if (engine!=null && vizController.getVizEventManager() != null) {
+                    StandardVizEventManager vizEventManager = vizController.getVizEventManager();
+                    List<NEWTEvent> remainingEvents = new ArrayList<>();
+                    for (NEWTEvent inputEvent : inputEvents) {
+                        if(!(inputEvent instanceof MouseEvent && vizEventManager.processMouseEvent(glCanvas, VizEngineGraphCanvasManager.this, engine,
+                            (MouseEvent) inputEvent))) {
+                            remainingEvents.add(inputEvent);
+                        }
+                    }
+                    return remainingEvents;
                 }
 
-                return false;
+                return inputEvents;
             }
 
             @Override

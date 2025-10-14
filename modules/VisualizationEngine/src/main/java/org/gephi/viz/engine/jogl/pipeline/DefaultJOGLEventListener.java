@@ -3,6 +3,8 @@ package org.gephi.viz.engine.jogl.pipeline;
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.NEWTEvent;
+import java.util.ArrayList;
+import java.util.List;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
@@ -66,7 +68,55 @@ public class DefaultJOGLEventListener implements InputListener<JOGLRenderingTarg
     }
 
     @Override
-    public boolean processEvent(NEWTEvent event) {
+    public List<NEWTEvent> processEvents(List<NEWTEvent> events) {
+        // Compress consecutive MOUSE_MOVED events - keep only the last one
+        List<NEWTEvent> compressed = compressMouseMoveEvents(events);
+        
+        // Process compressed events and return unconsumed ones
+        List<NEWTEvent> remaining = new ArrayList<>();
+        for (NEWTEvent event : compressed) {
+            boolean consumed = processEvent(event);
+            if (!consumed) {
+                remaining.add(event);
+            }
+        }
+        return remaining;
+    }
+
+    private List<NEWTEvent> compressMouseMoveEvents(List<NEWTEvent> events) {
+        if (events.isEmpty()) {
+            return events;
+        }
+
+        List<NEWTEvent> compressed = new ArrayList<>();
+        NEWTEvent lastMouseMove = null;
+
+        for (NEWTEvent event : events) {
+            if (event instanceof MouseEvent &&
+                event.getEventType() == MouseEvent.EVENT_MOUSE_MOVED) {
+                // This is a MOUSE_MOVED event, hold onto it
+                lastMouseMove = event;
+            } else {
+                // Not a MOUSE_MOVED event
+                // First, add any pending lastMouseMove
+                if (lastMouseMove != null) {
+                    compressed.add(lastMouseMove);
+                    lastMouseMove = null;
+                }
+                // Then add this event
+                compressed.add(event);
+            }
+        }
+
+        // Don't forget the last MOUSE_MOVED event if there was one
+        if (lastMouseMove != null) {
+            compressed.add(lastMouseMove);
+        }
+
+        return compressed;
+    }
+
+    private boolean processEvent(NEWTEvent event) {
         if (event instanceof KeyEvent) {
             return false;
         } else if (event instanceof MouseEvent mouseEvent) {
