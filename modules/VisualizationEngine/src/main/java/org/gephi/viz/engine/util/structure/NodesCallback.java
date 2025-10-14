@@ -39,12 +39,19 @@ public class NodesCallback implements ElementsCallback<Node> {
             maxNodeSize = size;
         }
         nodesArray[storeId] = node;
-        nodeCount++;
     }
 
     @Override
     public void end(Graph graph) {
         graph.readUnlock();
+        // Count non-null nodes
+        // This can't be done in accept as nodes can be duplicated and accept is called via multiple threads (parallel stream)
+        nodeCount = 0;
+        for (int i = 0; i <= maxIndex; i++) {
+            if (nodesArray[i] != null) {
+                nodeCount++;
+            }
+        }
     }
 
     public void reset() {
