@@ -84,8 +84,6 @@ public abstract class AbstractEdgeData {
     protected float edgeBothSelectionColor;
     protected float edgeOutSelectionColor;
     protected float edgeInSelectionColor;
-    protected float minWeight;
-    protected float maxWeight;
     protected GraphRenderingOptions.EdgeColorMode edgeColorMode;
 
     public AbstractEdgeData(boolean instanced, boolean usesSecondaryBuffer) {
@@ -278,8 +276,8 @@ public abstract class AbstractEdgeData {
         return new EdgeWorldData(
             model.getRenderingOptions().getBackgroundColor(),
             someSelection,
-            edgeWeightEnabled ? minWeight : 0f,
-            edgeWeightEnabled ? maxWeight : 1f,
+            edgeWeightEnabled ? edgesCallback.getMinWeight() : 0f,
+            edgeWeightEnabled ? edgesCallback.getMaxWeight() : 1f,
             model.getRenderingOptions().getNodeScale(),
             model.getRenderingOptions().getEdgeScale(),
             model.getRenderingOptions().getLightenNonSelectedFactor(),
@@ -328,18 +326,18 @@ public abstract class AbstractEdgeData {
     protected int updateDirectedData(
         final Graph graph,
         final GraphSelection selection,
-        final int visibleEdgesCount,
+        final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] attribs, int index
     ) {
-        return updateDirectedData(graph, selection, visibleEdgesCount, visibleEdgesArray,
+        return updateDirectedData(graph, selection, maxIndex, visibleEdgesArray,
             attribs, index, null);
     }
 
     protected int updateDirectedData(
         final Graph graph,
         final GraphSelection selection,
-        final int visibleEdgesCount,
+        final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] attribs, int index, final FloatBuffer directBuffer
     ) {
@@ -355,8 +353,11 @@ public abstract class AbstractEdgeData {
         int newEdgesCountSelected = 0;
         if (someSelection) {
             if (hideNonSelected) {
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (!edge.isDirected()) {
                         continue;
                     }
@@ -379,8 +380,11 @@ public abstract class AbstractEdgeData {
                 }
             } else {
                 //First non-selected (bottom):
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (!edge.isDirected()) {
                         continue;
                     }
@@ -402,8 +406,11 @@ public abstract class AbstractEdgeData {
                 }
 
                 //Then selected ones (up):
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (!edge.isDirected()) {
                         continue;
                     }
@@ -426,8 +433,11 @@ public abstract class AbstractEdgeData {
             }
         } else {
             //Just all edges, no selection active:
-            for (int j = 0; j < visibleEdgesCount; j++) {
+            for (int j = 0; j <= maxIndex; j++) {
                 final Edge edge = visibleEdgesArray[j];
+                if (edge == null) {
+                    continue;
+                }
                 if (!edge.isDirected()) {
                     continue;
                 }
@@ -460,17 +470,17 @@ public abstract class AbstractEdgeData {
     protected int updateUndirectedData(
         final Graph graph,
         final GraphSelection selection,
-        final int visibleEdgesCount,
+        final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] attribs, int index
     ) {
-        return updateUndirectedData(graph, selection, visibleEdgesCount, visibleEdgesArray, attribs, index, null);
+        return updateUndirectedData(graph, selection, maxIndex, visibleEdgesArray, attribs, index, null);
     }
 
     protected int updateUndirectedData(
         final Graph graph,
         final GraphSelection selection,
-        final int visibleEdgesCount,
+        final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] attribs, int index, final FloatBuffer directBuffer
     ) {
@@ -487,8 +497,11 @@ public abstract class AbstractEdgeData {
         //Undirected edges:
         if (someSelection) {
             if (hideNonSelected) {
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (edge.isDirected()) {
                         continue;
                     }
@@ -510,8 +523,11 @@ public abstract class AbstractEdgeData {
                 }
             } else {
                 //First non-selected (bottom):
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (edge.isDirected()) {
                         continue;
                     }
@@ -533,8 +549,11 @@ public abstract class AbstractEdgeData {
                 }
 
                 //Then selected ones (up):
-                for (int j = 0; j < visibleEdgesCount; j++) {
+                for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
+                    if (edge == null) {
+                        continue;
+                    }
                     if (edge.isDirected()) {
                         continue;
                     }
@@ -557,8 +576,11 @@ public abstract class AbstractEdgeData {
             }
         } else {
             //Just all edges, no selection active:
-            for (int j = 0; j < visibleEdgesCount; j++) {
+            for (int j = 0; j <= maxIndex; j++) {
                 final Edge edge = visibleEdgesArray[j];
+                if (edge == null) {
+                    continue;
+                }
                 if (edge.isDirected()) {
                     continue;
                 }
@@ -591,8 +613,6 @@ public abstract class AbstractEdgeData {
     private float getWeight(Edge edge, Graph graph) {
         if (edgeWeightEnabled) {
             float weight = (float) edge.getWeight(graph.getView());
-            this.minWeight = Math.min(this.minWeight, weight);
-            this.maxWeight = Math.max(this.maxWeight, weight);
             return weight;
         }
         return 1f;
@@ -787,6 +807,10 @@ public abstract class AbstractEdgeData {
             case MIXED: {
                 final int s = edge.getSource().getRGBA();
                 final int t = edge.getTarget().getRGBA();
+                if (s == t) {
+                    colorInt = s;
+                    break;
+                }
                 final int b0 = ((s) & 0xFF) + ((t) & 0xFF);
                 final int b1 = ((s >>> 8) & 0xFF) + ((t >>> 8) & 0xFF);
                 final int b2 = ((s >>> 16) & 0xFF) + ((t >>> 16) & 0xFF);
