@@ -45,8 +45,8 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         graph.readUnlock();
         // Count non-null edges
         // This can't be done in accept as edges can be duplicated and accept is called via multiple threads (parallel stream)
-        for (Edge edge : edgesArray) {
-            if (edge != null) {
+        for (int i = 0; i <= maxIndex; i++) {
+            if (edgesArray[i] != null) {
                 edgeCount++;
             }
         }
