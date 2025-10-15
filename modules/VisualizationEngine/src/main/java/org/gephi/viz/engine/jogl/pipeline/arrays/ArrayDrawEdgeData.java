@@ -209,7 +209,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     }
 
     @Override
-    protected void updateData(final Graph graph, final GraphSelection selection) {
+    protected void updateData(final GraphSelection selection) {
 
         int totalEdges = edgesCallback.getCount();
         final float[] attribs
@@ -217,17 +217,21 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             = ArrayUtils.ensureCapacityNoCopy(attributesBuffer, totalEdges * ATTRIBS_STRIDE);
 
         final Edge[] visibleEdgesArray = edgesCallback.getEdgesArray();
+        final float[] edgeWeightsArray = edgesCallback.getEdgeWeightsArray();
         final int maxIndex = edgesCallback.getMaxIndex();
+        final boolean directed = edgesCallback.isDirected();
+        final boolean undirected = edgesCallback.isUndirected();
 
         int attribsIndex = 0;
         attribsIndex = updateUndirectedData(
-            graph,
+            directed,
             selection,
-            maxIndex, visibleEdgesArray,
+            maxIndex, visibleEdgesArray, edgeWeightsArray,
             attribs, attribsIndex
         );
         updateDirectedData(
-            graph, selection, maxIndex, visibleEdgesArray,
+            undirected,
+            selection, maxIndex, visibleEdgesArray, edgeWeightsArray,
             attribs, attribsIndex
         );
     }

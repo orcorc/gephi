@@ -286,7 +286,7 @@ public abstract class AbstractEdgeData {
         );
     }
 
-    protected abstract void updateData(Graph graph, GraphSelection selection);
+    protected abstract void updateData(GraphSelection selection);
 
     public void update(GraphIndex graphIndex, GraphSelection selection, GraphRenderingOptions renderingOptions,
                        Rect2D viewBoundaries) {
@@ -317,33 +317,34 @@ public abstract class AbstractEdgeData {
         this.edgeOutSelectionColor = Float.intBitsToFloat(renderingOptions.getEdgeOutSelectionColor().getRGB());
 
         // Refresh visible edges
-        final Graph graph = graphIndex.getVisibleGraph();
         graphIndex.getVisibleEdges(edgesCallback, viewBoundaries);
 
-        updateData(graph, selection);
+        updateData(selection);
     }
 
     protected int updateDirectedData(
-        final Graph graph,
+        final boolean isUndirected,
         final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
+        final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateDirectedData(graph, selection, maxIndex, visibleEdgesArray,
+        return updateDirectedData(isUndirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray,
             attribs, index, null);
     }
 
     protected int updateDirectedData(
-        final Graph graph,
+        final boolean isUndirected,
         final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
+        final float[] edgeWeightsArray,
         final float[] attribs, int index, final FloatBuffer directBuffer
     ) {
         checkBufferIndexing(directBuffer, attribs, index);
 
-        if (graph.isUndirected()) {
+        if (isUndirected) {
             directedInstanceCounter.unselectedCount = 0;
             directedInstanceCounter.selectedCount = 0;
             return index;
@@ -369,7 +370,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountSelected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, selected, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -395,7 +396,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountUnselected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -421,7 +422,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountSelected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -444,7 +445,7 @@ public abstract class AbstractEdgeData {
 
                 newEdgesCountSelected++;
 
-                float weight = getWeight(edge, graph);
+                float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                 fillDirectedEdgeAttributesDataWithoutSelection(attribs, edge, index, weight);
                 index += ATTRIBS_STRIDE;
 
@@ -468,25 +469,27 @@ public abstract class AbstractEdgeData {
     }
 
     protected int updateUndirectedData(
-        final Graph graph,
+        final boolean isDirected,
         final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
+        final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateUndirectedData(graph, selection, maxIndex, visibleEdgesArray, attribs, index, null);
+        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs, index, null);
     }
 
     protected int updateUndirectedData(
-        final Graph graph,
+        final boolean isDirected,
         final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
+        final float[] edgeWeightsArray,
         final float[] attribs, int index, final FloatBuffer directBuffer
     ) {
         checkBufferIndexing(directBuffer, attribs, index);
 
-        if (graph.isDirected()) {
+        if (isDirected) {
             undirectedInstanceCounter.unselectedCount = 0;
             undirectedInstanceCounter.selectedCount = 0;
             return index;
@@ -512,7 +515,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountSelected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -538,7 +541,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountUnselected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -564,7 +567,7 @@ public abstract class AbstractEdgeData {
 
                     newEdgesCountSelected++;
 
-                    float weight = getWeight(edge, graph);
+                    float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                     fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
                     index += ATTRIBS_STRIDE;
 
@@ -587,7 +590,7 @@ public abstract class AbstractEdgeData {
 
                 newEdgesCountSelected++;
 
-                float weight = getWeight(edge, graph);
+                float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
                 fillUndirectedEdgeAttributesDataWithoutSelection(attribs, edge, index, weight);
                 index += ATTRIBS_STRIDE;
 
@@ -608,14 +611,6 @@ public abstract class AbstractEdgeData {
         undirectedInstanceCounter.selectedCount = newEdgesCountSelected;
 
         return index;
-    }
-
-    private float getWeight(Edge edge, Graph graph) {
-        if (edgeWeightEnabled) {
-            float weight = (float) edge.getWeight(graph.getView());
-            return weight;
-        }
-        return 1f;
     }
 
     private void checkBufferIndexing(final FloatBuffer directBuffer, final float[] attribs, final int index) {

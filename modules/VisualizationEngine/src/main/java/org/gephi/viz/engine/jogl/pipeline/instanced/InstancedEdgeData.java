@@ -149,7 +149,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
     }
 
     @Override
-    protected void updateData(final Graph graph, final GraphSelection selection) {
+    protected void updateData(final GraphSelection selection) {
         final int totalEdges = edgesCallback.getCount();
 
         attributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE);
@@ -157,15 +157,20 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final FloatBuffer attribsDirectBuffer = attributesBuffer.floatBuffer();
 
         final Edge[] visibleEdgesArray = edgesCallback.getEdgesArray();
+        final float[] edgeWeightsArray = edgesCallback.getEdgeWeightsArray();
         final int maxIndex = edgesCallback.getMaxIndex();
+        final boolean isDirected = edgesCallback.isDirected();
+        final boolean isUndirected = edgesCallback.isUndirected();
 
         updateUndirectedData(
-            graph, selection,
-            maxIndex, visibleEdgesArray, attributesBufferBatch, 0, attribsDirectBuffer
+            isDirected,
+            selection,
+            maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
         );
         updateDirectedData(
-            graph, selection,
-            maxIndex, visibleEdgesArray,
+            isUndirected,
+            selection,
+            maxIndex, visibleEdgesArray, edgeWeightsArray,
             attributesBufferBatch, 0, attribsDirectBuffer
         );
     }

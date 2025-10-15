@@ -19,14 +19,19 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private float minWeight = 0f;
     private float maxWeight = 1f;
     private Edge[] edgesArray = new Edge[0];
+    private float[] edgeWeightsArray = new float[0];
     private int maxIndex = 0;
     private int edgeCount = 0;
+    private boolean directed = false;
+    private boolean undirected = false;
 
     @Override
     public void start(Graph graph) {
-        graph.readLock();
+        directed = graph.isDirected();
+        undirected = graph.isUndirected();
         Arrays.fill(edgesArray, null);
         edgesArray = ensureEdgesArraySize(edgesArray, graph.getModel().getMaxEdgeStoreId() + 1);
+        edgeWeightsArray = ensureEdgeWeightArraySize(edgeWeightsArray, graph.getModel().getMaxEdgeStoreId() + 1);
         maxIndex = 0;
         edgeCount = 0;
     }
@@ -42,14 +47,6 @@ public class EdgesCallback implements ElementsCallback<Edge> {
 
     @Override
     public void end(Graph graph) {
-        graph.readUnlock();
-        // Count non-null edges
-        // This can't be done in accept as edges can be duplicated and accept is called via multiple threads (parallel stream)
-        for (int i = 0; i <= maxIndex; i++) {
-            if (edgesArray[i] != null) {
-                edgeCount++;
-            }
-        }
         // Refresh min/max edge weight (if needed)
         Column weightCol = graph.getModel().getEdgeTable().getColumn(3); //Weight column
         ColumnIndex edgeWeightIndex = graph.getModel().getEdgeIndex().getColumnIndex(weightCol);
@@ -60,16 +57,34 @@ public class EdgesCallback implements ElementsCallback<Edge> {
             minWeight = minValue != null ? minValue.floatValue() : 0f;
             maxWeight = maxValue != null ? maxValue.floatValue() : 1f;
         }
+
+        // Get actual edge weights
+        // And count non-null edges
+        for (int i = 0; i <= maxIndex; i++) {
+            Edge edge = edgesArray[i];
+            if (edge != null) {
+                edgeCount++;
+                double weight = edge.getWeight(graph.getView());
+                edgeWeightsArray[i] = (float) weight;
+            }
+        }
     }
 
     public void reset() {
         edgesArray = new Edge[0];
+        edgeWeightsArray = new float[0];
         maxIndex = 0;
         edgeCount = 0;
+        directed = false;
+        undirected = false;
     }
 
     public Edge[] getEdgesArray() {
         return edgesArray;
+    }
+
+    public float[] getEdgeWeightsArray() {
+        return edgeWeightsArray;
     }
 
     public int getMaxIndex() {
@@ -88,12 +103,33 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         return maxWeight;
     }
 
+    public boolean isDirected() {
+        return directed;
+    }
+
+    public boolean isUndirected() {
+        return undirected;
+    }
+
     protected Edge[] ensureEdgesArraySize(Edge[] array, int size) {
         if (size > array.length) {
             int newSize = getNextPowerOf2(size);
             System.out.println("Growing edge vector from " + array.length + " to " + newSize + " elements");
 
             final Edge[] newVector = new Edge[newSize];
+            System.arraycopy(array, 0, newVector, 0, array.length);
+
+            return newVector;
+        } else {
+            return array;
+        }
+    }
+
+    protected float[] ensureEdgeWeightArraySize(float[] array, int size) {
+        if (size > array.length) {
+            int newSize = getNextPowerOf2(size);
+
+            final float[] newVector = new float[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);
 
             return newVector;
