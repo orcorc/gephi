@@ -4,7 +4,9 @@ import com.jogamp.opengl.util.awt.TextRenderer;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
+import org.gephi.viz.engine.jogl.pipeline.common.VoidWorldData;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
@@ -20,7 +22,7 @@ import java.awt.geom.Rectangle2D;
 import java.util.EnumSet;
 
 @SuppressWarnings("rawtypes")
-public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget> {
+public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorldData> {
     public static final EnumSet<RenderingLayer> LAYERS = EnumSet.of(RenderingLayer.FRONT1);
 
     private final VizEngine engine;
@@ -39,27 +41,30 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget> {
 
     @Override
     public void init(JOGLRenderingTarget target) {
+        // TODO: Configurable font
         awtFont = new Font("Arial", Font.PLAIN, 80);
 
         // Antialiased + fractional metrics = nicer text
         textRenderer = new TextRenderer(awtFont, /*antialiased*/ true, /*fractionalMetrics*/ true);
 
-        final GLCapabilitiesSummary capabilities = engine.getLookup().lookup(GLCapabilitiesSummary.class);
-        final OpenGLOptions openGLOptions = engine.getLookup().lookup(OpenGLOptions.class);
+        final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
+        final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
 
         textRenderer.setUseVertexArrays(capabilities.isVAOSupported(openGLOptions));
         textRenderer.setSmoothing(true);
     }
 
     @Override
-    public void worldUpdated(JOGLRenderingTarget target) {
+    public VoidWorldData worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
         final GraphIndex graphIndex = engine.getGraphIndex();
         final Rect2D viewBoundaries = engine.getViewBoundaries();
         graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
+
+        return VoidWorldData.INSTANCE;
     }
 
     @Override
-    public void render(JOGLRenderingTarget target, RenderingLayer layer) {
+    public void render(VoidWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         engine.getModelViewProjectionMatrixFloats(mvp);
 
         textRenderer.begin3DRendering();
@@ -73,6 +78,8 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget> {
             final String text = node.getLabel();
             if (text == null || text.isEmpty()) continue;
 
+            // TODO: Configurable label scale
+            // TODO: Configurable label scale linked to node size or not
             final float sizeFactor = node.size() * 0.01f;
 
             final Rectangle2D bounds = textRenderer.getBounds(text);
@@ -84,6 +91,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget> {
             final float drawX = node.x() - (widthPx * sizeFactor) * 0.5f;
             final float drawY = node.y() - ((ascentPx - descentPx) * sizeFactor) * 0.5f;
 
+            // TODO: Use fixed color or node color
             textRenderer.setColor(0, 0, 0, 1);
             textRenderer.draw3D(
                     text,
