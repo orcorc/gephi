@@ -76,14 +76,16 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
         for (int i = 0; i < count; i++) {
             final Node node = nodes[i];
             final String text = node.getLabel();
-            if (text == null || text.isEmpty()) continue;
+            if (text == null || text.isEmpty()) {
+                continue;
+            }
 
             // TODO: Configurable label scale
             // TODO: Configurable label scale linked to node size or not
             final float sizeFactor = node.size() * 0.01f;
 
             final Rectangle2D bounds = textRenderer.getBounds(text);
-            final float widthPx  = (float) bounds.getWidth();
+            final float widthPx = (float) bounds.getWidth();
             final float ascentPx = (float) (-bounds.getY());
             final float heightPx = (float) bounds.getHeight();
             final float descentPx = heightPx - ascentPx;
@@ -94,11 +96,11 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
             // TODO: Use fixed color or node color
             textRenderer.setColor(0, 0, 0, 1);
             textRenderer.draw3D(
-                    text,
-                    drawX,
-                    drawY,
-                    0f,
-                    sizeFactor
+                text,
+                drawX,
+                drawY,
+                0f,
+                sizeFactor
             );
         }
 
