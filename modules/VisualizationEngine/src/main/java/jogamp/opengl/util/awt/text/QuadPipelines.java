@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -50,16 +51,16 @@ public final class QuadPipelines {
     /**
      * Creates a {@link QuadPipeline} based on the current OpenGL context.
      *
-     * @param gl Current OpenGL context
+     * @param gl      Current OpenGL context
      * @param program Shader program to use, or zero to use default
      * @return New quad pipeline for the version of OpenGL in use, not null
-     * @throws NullPointerException if context is null
-     * @throws IllegalArgumentException if shader program is negative
+     * @throws NullPointerException          if context is null
+     * @throws IllegalArgumentException      if shader program is negative
      * @throws UnsupportedOperationException if GL is unsupported
      */
     /*@Nonnull*/
     public QuadPipeline get(/*@Nonnull*/ final GL gl,
-                            /*@Nonnegative*/ final int program) {
+        /*@Nonnegative*/ final int program) {
 
         Check.notNull(gl, "Context cannot be null");
         Check.argument(program >= 0, "Program cannot be negative");

@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -40,19 +41,19 @@ final class GrayTexture2D extends Texture2D {
     /**
      * Creates a two-dimensional, grayscale texture.
      *
-     * @param gl Current OpenGL context
-     * @param width Size of texture on X axis
+     * @param gl     Current OpenGL context
+     * @param width  Size of texture on X axis
      * @param height Size of texture on Y axis
      * @param smooth True to interpolate samples
      * @param mipmap True for high quality
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if width or height is negative
      */
     GrayTexture2D(/*@Nonnull*/ final GL gl,
-                  /*@Nonnegative*/ final int width,
-                  /*@Nonnegative*/ final int height,
-                  final boolean smooth,
-                  final boolean mipmap) {
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                               final boolean smooth,
+                               final boolean mipmap) {
         super(gl, width, height, smooth, mipmap);
     }
 

@@ -25,11 +25,11 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
-
 
 
 /**
@@ -87,18 +87,18 @@ public final class QuadPipelineGL15 extends AbstractQuadPipeline {
         // Points
         gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
         gl2.glVertexPointer(
-                FLOATS_PER_POINT,   // size
-                GL2.GL_FLOAT,       // type
-                STRIDE,             // stride
-                POINT_OFFSET);      // offset
+            FLOATS_PER_POINT,   // size
+            GL2.GL_FLOAT,       // type
+            STRIDE,             // stride
+            POINT_OFFSET);      // offset
 
         // Coordinates
         gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
         gl2.glTexCoordPointer(
-                FLOATS_PER_COORD,   // size
-                GL2.GL_FLOAT,       // type
-                STRIDE,             // stride
-                COORD_OFFSET);      // offset
+            FLOATS_PER_COORD,   // size
+            GL2.GL_FLOAT,       // type
+            STRIDE,             // stride
+            COORD_OFFSET);      // offset
     }
 
     @Override
@@ -109,7 +109,7 @@ public final class QuadPipelineGL15 extends AbstractQuadPipeline {
         final GL2 gl2 = gl.getGL2();
 
         // Delete the vertex buffer object
-        final int[] handles = new int[] { vbo };
+        final int[] handles = new int[] {vbo};
         gl2.glDeleteBuffers(1, handles, 0);
     }
 
@@ -123,16 +123,16 @@ public final class QuadPipelineGL15 extends AbstractQuadPipeline {
         // Upload data
         rewind();
         gl2.glBufferSubData(
-                GL2.GL_ARRAY_BUFFER, // target
-                0,                   // offset
-                getSizeInBytes(),    // size
-                getData());          // data
+            GL2.GL_ARRAY_BUFFER, // target
+            0,                   // offset
+            getSizeInBytes(),    // size
+            getData());          // data
 
         // Draw
         gl2.glDrawArrays(
-                GL2.GL_QUADS,         // mode
-                0,                    // first
-                getSizeInVertices()); // count
+            GL2.GL_QUADS,         // mode
+            0,                    // first
+            getSizeInVertices()); // count
 
         clear();
     }

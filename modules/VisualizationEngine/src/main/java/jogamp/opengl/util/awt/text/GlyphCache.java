@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -150,18 +151,18 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
     /**
      * Constructs a {@link GlyphCache}.
      *
-     * @param font Font that was used to create glyphs that will be stored, assumed not null
-     * @param rd Controller of rendering bitmapped text, assumed not null
+     * @param font      Font that was used to create glyphs that will be stored, assumed not null
+     * @param rd        Controller of rendering bitmapped text, assumed not null
      * @param antialias True to render glyphs with smooth edges
-     * @param subpixel True to consider subpixel positioning
-     * @param mipmap True to create multiple sizes of texture
+     * @param subpixel  True to consider subpixel positioning
+     * @param mipmap    True to create multiple sizes of texture
      * @see #newInstance
      */
     private GlyphCache(/*@Nonnull*/ final Font font,
-                       /*@Nonnull*/ final RenderDelegate rd,
-                       final boolean antialias,
-                       final boolean subpixel,
-                       final boolean mipmap) {
+        /*@Nonnull*/ final RenderDelegate rd,
+                                    final boolean antialias,
+                                    final boolean subpixel,
+                                    final boolean mipmap) {
         this.renderDelegate = rd;
         this.manager = new TextureBackingStoreManager(font, antialias, subpixel, mipmap);
         this.packer = createPacker(font, manager);
@@ -310,13 +311,13 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
     /**
      * Makes a packer for positioning glyphs.
      *
-     * @param font Font used to make glyphs being stored, assumed not null
+     * @param font    Font used to make glyphs being stored, assumed not null
      * @param manager Handler of packer events, assumed not null
      * @return Resulting packer, not null
      */
     /*@Nonnull*/
     private static RectanglePacker createPacker(/*@Nonnull*/ final Font font,
-                                                /*@Nonnull*/ final BackingStoreManager manager) {
+        /*@Nonnull*/ final BackingStoreManager manager) {
         final int size = findBackingStoreSizeForFont(font);
         return new RectanglePacker(manager, size, size, 1f);
     }
@@ -358,10 +359,10 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
 
         // Draw the text
         renderDelegate.drawGlyphVector(
-                bs.getGraphics(),
-                glyph.glyphVector,
-                getLeftBaselineLocation(glyph),
-                getBottomBaselineLocation(glyph));
+            bs.getGraphics(),
+            glyph.glyphVector,
+            getLeftBaselineLocation(glyph),
+            getBottomBaselineLocation(glyph));
 
         // Mark it dirty
         bs.mark(x, y, w, h);
@@ -594,7 +595,7 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
     }
 
     private static void log(/*@Nonnull*/ final String message,
-                            /*@CheckForNull*/ final Object arg) {
+        /*@CheckForNull*/ final Object arg) {
         if (DEBUG) {
             System.err.println(String.format(message, arg));
         }
@@ -616,21 +617,21 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
     /**
      * Creates a new {@link GlyphCache}.
      *
-     * @param font Font that was used to create glyphs that will be stored
-     * @param rd Controller of rendering bitmapped text
+     * @param font      Font that was used to create glyphs that will be stored
+     * @param rd        Controller of rendering bitmapped text
      * @param antialias Whether to render glyphs with smooth edges
-     * @param subpixel Whether to consider subpixel positioning
-     * @param mipmap Whether to create multiple sizes for texture
+     * @param subpixel  Whether to consider subpixel positioning
+     * @param mipmap    Whether to create multiple sizes for texture
      * @return New glyph cache instance, not null
-     * @throws NullPointerException if font or render delegate is null
+     * @throws NullPointerException     if font or render delegate is null
      * @throws IllegalArgumentException if render delegate wants full color
      */
     /*@Nonnull*/
     public static GlyphCache newInstance(/*@Nonnull*/ final Font font,
-                                         /*@Nonnull*/ final RenderDelegate rd,
-                                         final boolean antialias,
-                                         final boolean subpixel,
-                                         final boolean mipmap) {
+        /*@Nonnull*/ final RenderDelegate rd,
+                                                      final boolean antialias,
+                                                      final boolean subpixel,
+                                                      final boolean mipmap) {
 
         Check.notNull(font, "Font cannot be null");
         Check.notNull(rd, "Render delegate cannot be null");
@@ -652,12 +653,12 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
         Check.notNull(type, "Event type cannot be null");
 
         switch (type) {
-        case REALLOCATE:
-            onBackingStoreReallocate();
-            break;
-        case FAILURE:
-            onBackingStoreFailure();
-            break;
+            case REALLOCATE:
+                onBackingStoreReallocate();
+                break;
+            case FAILURE:
+                onBackingStoreFailure();
+                break;
         }
     }
 

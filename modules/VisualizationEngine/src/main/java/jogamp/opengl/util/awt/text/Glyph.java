@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.util.packrect.Rect;
@@ -229,7 +230,7 @@ public final class Glyph {
      * @param id Unicode ID of character
      * @param gv Vector shape of character
      * @throws IllegalArgumentException if ID is negative
-     * @throws NullPointerException if glyph is null
+     * @throws NullPointerException     if glyph is null
      */
     public Glyph(/*@Nonnegative*/ final int id, /*@Nonnull*/ final GlyphVector gv) {
 
@@ -248,7 +249,7 @@ public final class Glyph {
      * Constructs a {@link Glyph} representing a sequence of characters.
      *
      * @param str Sequence of characters
-     * @param gv Vector shape of sequence
+     * @param gv  Vector shape of sequence
      * @throws NullPointerException if string or glyph vector is null
      */
     public Glyph(/*@Nonnull*/ final String str, /*@Nonnull*/ final GlyphVector gv) {

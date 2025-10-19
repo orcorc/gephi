@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -47,10 +48,10 @@ public interface QuadPipeline {
     /**
      * Adds a quad to this {@link QuadPipeline}.
      *
-     * @param gl Current OpenGL context
+     * @param gl   Current OpenGL context
      * @param quad Quad to add to pipeline
      * @throws NullPointerException if context or quad is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void addQuad(/*@Nonnull*/ GL gl, /*@Nonnull*/ Quad quad);
 
@@ -59,7 +60,7 @@ public interface QuadPipeline {
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void beginRendering(/*@Nonnull*/ GL gl);
 
@@ -68,7 +69,7 @@ public interface QuadPipeline {
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void dispose(/*@Nonnull*/ GL gl);
 
@@ -77,7 +78,7 @@ public interface QuadPipeline {
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void endRendering(/*@Nonnull*/ GL gl);
 
@@ -86,11 +87,12 @@ public interface QuadPipeline {
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void flush(/*@Nonnull*/ GL gl);
 
     // TODO: Rename to `size`?
+
     /**
      * Returns number of quads in this {@link QuadPipeline}.
      *

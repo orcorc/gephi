@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 
@@ -44,15 +45,15 @@ final class Projection {
     /**
      * Computes an orthographic projection matrix.
      *
-     * @param v Computed matrix values, in row-major order
-     * @param width Width of current OpenGL viewport
+     * @param v      Computed matrix values, in row-major order
+     * @param width  Width of current OpenGL viewport
      * @param height Height of current OpenGL viewport
-     * @throws NullPointerException if array is null
+     * @throws NullPointerException     if array is null
      * @throws IllegalArgumentException if width or height is negative
      */
     static void orthographic(/*@Nonnull*/ final float[] v,
-                             /*@Nonnegative*/ final int width,
-                             /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height) {
 
         Check.notNull(v, "Matrix cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");

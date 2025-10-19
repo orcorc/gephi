@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -138,10 +139,10 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
 
     @Override
     public final void beginRendering(/*@Nonnull*/ final GL gl,
-                                     final boolean ortho,
-                                     /*@Nonnegative*/ final int width,
-                                     /*@Nonnegative*/ final int height,
-                                     final boolean disableDepthTest) {
+                                                  final boolean ortho,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                                                  final boolean disableDepthTest) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");
@@ -195,20 +196,20 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
     /**
      * Actually starts a render cycle.
      *
-     * @param gl Current OpenGL context
-     * @param ortho True if using orthographic projection
-     * @param width Width of current OpenGL viewport
-     * @param height Height of current OpenGL viewport
+     * @param gl               Current OpenGL context
+     * @param ortho            True if using orthographic projection
+     * @param width            Width of current OpenGL viewport
+     * @param height           Height of current OpenGL viewport
      * @param disableDepthTest True if should ignore depth values
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if width or height is negative
-     * @throws GLException if context is unexpected version
+     * @throws GLException              if context is unexpected version
      */
     protected abstract void doBeginRendering(/*@Nonnull*/ final GL gl,
-                                             final boolean ortho,
-                                             /*@Nonnegative*/ final int width,
-                                             /*@Nonnegative*/ final int height,
-                                             final boolean disableDepthTest);
+                                                          final boolean ortho,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                                                          final boolean disableDepthTest);
 
     /**
      * Actually creates the quad pipeline for rendering quads.
@@ -216,7 +217,7 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
      * @param gl Current OpenGL context
      * @return Quad pipeline to render quads with
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     protected abstract QuadPipeline doCreateQuadPipeline(/*@Nonnull*/ final GL gl);
 
@@ -225,7 +226,7 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     protected abstract void doDispose(/*@Nonnull*/ final GL gl);
 
@@ -234,7 +235,7 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     protected abstract void doEndRendering(/*@Nonnull*/ final GL gl);
 
@@ -242,55 +243,55 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
      * Actually changes the color when user calls {@link #setColor}.
      *
      * @param gl Current OpenGL context
-     * @param r Red component of color
-     * @param g Green component of color
-     * @param b Blue component of color
-     * @param a Alpha component of color
+     * @param r  Red component of color
+     * @param g  Green component of color
+     * @param b  Blue component of color
+     * @param a  Alpha component of color
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     protected abstract void doSetColor(/*@Nonnull*/ final GL gl,
-                                       float r,
-                                       float g,
-                                       float b,
-                                       float a);
+                                                    float r,
+                                                    float g,
+                                                    float b,
+                                                    float a);
 
     /**
      * Actually changes the MVP matrix when using an arbitrary projection.
      *
-     * @param gl Current OpenGL context
-     * @param value Matrix as float array
+     * @param gl        Current OpenGL context
+     * @param value     Matrix as float array
      * @param transpose True if in row-major order
-     * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws NullPointerException      if context is null
+     * @throws GLException               if context is unexpected version
      * @throws IndexOutOfBoundsException if length of value is less than sixteen
      */
     protected abstract void doSetTransform3d(/*@Nonnull*/ GL gl,
-                                             /*@Nonnull*/ float[] value,
-                                             boolean transpose);
+        /*@Nonnull*/ float[] value,
+                                                          boolean transpose);
 
     /**
      * Actually changes the MVP matrix when using orthographic projection.
      *
-     * @param gl Current OpenGL context
-     * @param width Width of viewport
+     * @param gl     Current OpenGL context
+     * @param width  Width of viewport
      * @param height Height of viewport
-     * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws NullPointerException     if context is null
+     * @throws GLException              if context is unexpected version
      * @throws IllegalArgumentException if width or height is negative
      */
     protected abstract void doSetTransformOrtho(/*@Nonnull*/ GL gl,
-                                                /*@Nonnegative*/ int width,
-                                                /*@Nonnegative*/ int height);
+        /*@Nonnegative*/ int width,
+        /*@Nonnegative*/ int height);
 
     @Override
     public final float drawGlyph(/*@Nonnull*/ final GL gl,
-                                 /*@Nonnull*/ final Glyph glyph,
-                                 /*@CheckForSigned*/ final float x,
-                                 /*@CheckForSigned*/ final float y,
-                                 /*@CheckForSigned*/ final float z,
-                                 /*@CheckForSigned*/ final float scale,
-                                 /*@Nonnull*/ final TextureCoords coords) {
+        /*@Nonnull*/ final Glyph glyph,
+        /*@CheckForSigned*/ final float x,
+        /*@CheckForSigned*/ final float y,
+        /*@CheckForSigned*/ final float z,
+        /*@CheckForSigned*/ final float scale,
+        /*@Nonnull*/ final TextureCoords coords) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(glyph, "Glyph cannot be null");
@@ -371,6 +372,7 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
     }
 
     // TODO: Rename to `isOrthographic`?
+
     /**
      * Checks if this {@link GlyphRenderer} using an orthographic projection.
      *
@@ -399,7 +401,7 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
         }
 
         // Render any outstanding quads first
-        if (pipeline!=null && !pipeline.isEmpty()) {
+        if (pipeline != null && !pipeline.isEmpty()) {
             fireEvent(EventType.AUTOMATIC_FLUSH);
             final GL gl = GLContext.getCurrentGL();
             flush(gl);
@@ -423,11 +425,11 @@ abstract class AbstractGlyphRenderer implements GlyphRenderer, QuadPipeline.Even
     /**
      * Changes the quad pipeline.
      *
-     * @param gl Current OpenGL context
+     * @param gl       Current OpenGL context
      * @param pipeline Quad pipeline to change to
      */
     private final void setPipeline(/*@Nonnull*/ final GL gl,
-                                   /*@Nonnull*/ final QuadPipeline pipeline) {
+        /*@Nonnull*/ final QuadPipeline pipeline) {
 
         assert gl != null : "GL should not be null";
         assert pipeline != null : "Pipeline should not be null";

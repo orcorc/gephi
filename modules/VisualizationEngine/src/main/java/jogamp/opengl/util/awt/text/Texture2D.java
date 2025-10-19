@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -50,19 +51,19 @@ abstract class Texture2D extends Texture {
     /**
      * Creates a 2D texture.
      *
-     * @param gl Current OpenGL context
-     * @param width Size of texture on X axis
+     * @param gl     Current OpenGL context
+     * @param width  Size of texture on X axis
      * @param height Size of texture on Y axis
      * @param smooth True to interpolate samples
      * @param mipmap True for high quality
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if width or height is negative
      */
     Texture2D(/*@Nonnull*/ final GL gl,
-              /*@Nonnegative*/ final int width,
-              /*@Nonnegative*/ final int height,
-              final boolean smooth,
-              final boolean mipmap) {
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                           final boolean smooth,
+                           final boolean mipmap) {
 
         super(gl, GL.GL_TEXTURE_2D, mipmap);
 
@@ -82,21 +83,21 @@ abstract class Texture2D extends Texture {
     /**
      * Allocates a 2D texture for use with a backing store.
      *
-     * @param gl Current OpenGL context, assumed not null
-     * @param width Width of texture, assumed not negative
+     * @param gl     Current OpenGL context, assumed not null
+     * @param width  Width of texture, assumed not negative
      * @param height Height of texture, assumed not negative
      */
     private void allocate(/*@Nonnull*/ final GL gl) {
         gl.glTexImage2D(
-                GL.GL_TEXTURE_2D,          // target
-                0,                         // level
-                getInternalFormat(gl),     // internal format
-                width,                     // width
-                height,                    // height
-                0,                         // border
-                GL.GL_RGB,                 // format (unused)
-                GL.GL_UNSIGNED_BYTE,       // type (unused)
-                null);                     // pixels
+            GL.GL_TEXTURE_2D,          // target
+            0,                         // level
+            getInternalFormat(gl),     // internal format
+            width,                     // width
+            height,                    // height
+            0,                         // border
+            GL.GL_RGB,                 // format (unused)
+            GL.GL_UNSIGNED_BYTE,       // type (unused)
+            null);                     // pixels
     }
 
     /**
@@ -124,14 +125,14 @@ abstract class Texture2D extends Texture {
      * Copies any areas marked with {@link #mark(int, int, int, int)} from the local image to the
      * OpenGL texture.  Only those areas will be modified.
      *
-     * @param gl Current OpenGL context
+     * @param gl     Current OpenGL context
      * @param pixels Data of entire image
-     * @param area Region to update
+     * @param area   Region to update
      * @throws NullPointerException if context, pixels, or area is null
      */
     void update(/*@Nonnull*/ final GL gl,
-                /*@Nonnull*/ final ByteBuffer pixels,
-                /*@Nonnull*/ final Rectangle area) {
+        /*@Nonnull*/ final ByteBuffer pixels,
+        /*@Nonnull*/ final Rectangle area) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(pixels, "Pixels cannot be null");
@@ -153,15 +154,15 @@ abstract class Texture2D extends Texture {
 
         // Update the texture
         gl.glTexSubImage2D(
-                GL.GL_TEXTURE_2D,     // target
-                0,                    // mipmap level
-                area.x,               // x offset
-                area.y,               // y offset
-                area.width,           // width
-                area.height,          // height
-                getFormat(gl),        // format
-                GL.GL_UNSIGNED_BYTE,  // type
-                pixels);              // pixels
+            GL.GL_TEXTURE_2D,     // target
+            0,                    // mipmap level
+            area.x,               // x offset
+            area.y,               // y offset
+            area.width,           // width
+            area.height,          // height
+            getFormat(gl),        // format
+            GL.GL_UNSIGNED_BYTE,  // type
+            pixels);              // pixels
 
         // Reset unpack parameters
         gl.glPixelStorei(GL.GL_UNPACK_ALIGNMENT, parameters[0]);

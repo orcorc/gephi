@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL2ES2;
@@ -61,7 +62,7 @@ public final class ShaderLoader {
     /**
      * Checks that a shader was compiled correctly.
      *
-     * @param gl OpenGL context, assumed not null
+     * @param gl     OpenGL context, assumed not null
      * @param shader OpenGL handle to a shader
      * @return True if shader was compiled without errors
      */
@@ -72,7 +73,7 @@ public final class ShaderLoader {
     /**
      * Checks that a shader program was linked successfully.
      *
-     * @param gl OpenGL context, assumed not null
+     * @param gl      OpenGL context, assumed not null
      * @param program OpenGL handle to a shader program
      * @return True if program was linked successfully
      */
@@ -83,7 +84,7 @@ public final class ShaderLoader {
     /**
      * Checks that a shader program was validated successfully.
      *
-     * @param gl OpenGL context, assumed not null
+     * @param gl      OpenGL context, assumed not null
      * @param program OpenGL handle to a shader program
      * @return True if program was validated successfully
      */
@@ -94,18 +95,18 @@ public final class ShaderLoader {
     /**
      * Loads a shader program from a pair of strings.
      *
-     * @param gl Current OpenGL context
+     * @param gl  Current OpenGL context
      * @param vss Vertex shader source
      * @param fss Fragment shader source
      * @return OpenGL handle to the shader program, not negative
-     * @throws NullPointerException if context or either source is null
+     * @throws NullPointerException     if context or either source is null
      * @throws IllegalArgumentException if either source is empty
-     * @throws GLException if program did not compile, link, or validate successfully
+     * @throws GLException              if program did not compile, link, or validate successfully
      */
     /*@Nonnegative*/
     public static int loadProgram(/*@Nonnull*/ final GL2ES2 gl,
-                                  /*@Nonnull*/ final String vss,
-                                  /*@Nonnull*/ final String fss) {
+        /*@Nonnull*/ final String vss,
+        /*@Nonnull*/ final String fss) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(vss, "Vertex shader source cannot be null");
@@ -140,24 +141,24 @@ public final class ShaderLoader {
     /**
      * Loads a shader from a string.
      *
-     * @param gl Current OpenGL context, assumed not null
+     * @param gl     Current OpenGL context, assumed not null
      * @param source Source code of the shader as one long string, assumed not null or empty
-     * @param type Type of shader, assumed valid
+     * @param type   Type of shader, assumed valid
      * @return OpenGL handle to the shader, not negative
      * @throws GLException if a GLSL-capable context is not active or could not compile shader
      */
     /*@Nonnegative*/
     private static int loadShader(/*@Nonnull*/ final GL2ES2 gl,
-                                  /*@Nonnull*/ final String source,
-                                  final int type) {
+        /*@Nonnull*/ final String source,
+                                               final int type) {
 
         // Create and read source
         final int shader = gl.glCreateShader(type);
         gl.glShaderSource(
-                shader,                    // shader handle
-                1,                         // number of strings
-                new String[] { source },   // array of strings
-                null);                     // lengths of strings
+            shader,                    // shader handle
+            1,                         // number of strings
+            new String[] {source},   // array of strings
+            null);                     // lengths of strings
 
         // Compile
         gl.glCompileShader(shader);

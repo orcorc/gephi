@@ -26,6 +26,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL2GL3;
@@ -50,14 +51,14 @@ final class Mat4Uniform extends Uniform {
     /**
      * Constructs a {@link UniformMatrix}.
      *
-     * @param gl Current OpenGL context
+     * @param gl      Current OpenGL context
      * @param program OpenGL handle to shader program
-     * @param name Name of the uniform in shader source code
+     * @param name    Name of the uniform in shader source code
      * @throws NullPointerException if context is null
      */
     Mat4Uniform(/*@Nonnull*/ final GL2GL3 gl,
-                /*@Nonnegative*/ final int program,
-                /*@Nonnull*/ final String name) {
+        /*@Nonnegative*/ final int program,
+        /*@Nonnull*/ final String name) {
         super(gl, program, name);
     }
 

@@ -476,7 +476,8 @@ public abstract class AbstractEdgeData {
         final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs, index, null);
+        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs,
+            index, null);
     }
 
     protected int updateUndirectedData(

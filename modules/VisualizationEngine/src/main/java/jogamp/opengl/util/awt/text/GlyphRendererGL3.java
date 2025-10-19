@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -44,14 +45,14 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
     /*@Nonnull*/
     private static final String VERT_SOURCE =
         "#version 140\n" +
-        "uniform mat4 MVPMatrix;\n" +
-        "in vec4 MCVertex;\n" +
-        "in vec2 TexCoord0;\n" +
-        "out vec2 Coord0;\n" +
-        "void main() {\n" +
-        "   gl_Position = MVPMatrix * MCVertex;\n" +
-        "   Coord0 = TexCoord0;\n" +
-        "}\n";
+            "uniform mat4 MVPMatrix;\n" +
+            "in vec4 MCVertex;\n" +
+            "in vec2 TexCoord0;\n" +
+            "out vec2 Coord0;\n" +
+            "void main() {\n" +
+            "   gl_Position = MVPMatrix * MCVertex;\n" +
+            "   Coord0 = TexCoord0;\n" +
+            "}\n";
 
     /**
      * Source code of fragment shader.
@@ -59,15 +60,15 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
     /*@Nonnull*/
     private static final String FRAG_SOURCE =
         "#version 140\n" +
-        "uniform sampler2D Texture;\n" +
-        "uniform vec4 Color=vec4(1,1,1,1);\n" +
-        "in vec2 Coord0;\n" +
-        "out vec4 FragColor;\n" +
-        "void main() {\n" +
-        "   float sample;\n" +
-        "   sample = texture(Texture,Coord0).r;\n" +
-        "   FragColor = Color * sample;\n" +
-        "}\n";
+            "uniform sampler2D Texture;\n" +
+            "uniform vec4 Color=vec4(1,1,1,1);\n" +
+            "in vec2 Coord0;\n" +
+            "out vec4 FragColor;\n" +
+            "void main() {\n" +
+            "   float sample;\n" +
+            "   sample = texture(Texture,Coord0).r;\n" +
+            "   FragColor = Color * sample;\n" +
+            "}\n";
 
     /**
      * True if blending needs to be reset.
@@ -127,10 +128,10 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
 
     @Override
     protected void doBeginRendering(/*@Nonnull*/ final GL gl,
-                                    final boolean ortho,
-                                    /*@Nonnegative*/ final int width,
-                                    /*@Nonnegative*/ final int height,
-                                    final boolean disableDepthTest) {
+                                                 final boolean ortho,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                                                 final boolean disableDepthTest) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");
@@ -200,10 +201,10 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetColor(/*@Nonnull*/ final GL gl,
-                              final float r,
-                              final float g,
-                              final float b,
-                              final float a) {
+                                           final float r,
+                                           final float g,
+                                           final float b,
+                                           final float a) {
 
         Check.notNull(gl, "GL cannot be null");
 
@@ -218,8 +219,8 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetTransform3d(/*@Nonnull*/ final GL gl,
-                                    /*@Nonnull*/ final float[] value,
-                                    final boolean transpose) {
+        /*@Nonnull*/ final float[] value,
+                                                 final boolean transpose) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(value, "Value cannot be null");
@@ -232,8 +233,8 @@ public final class GlyphRendererGL3 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetTransformOrtho(/*@Nonnull*/ final GL gl,
-                                       /*@Nonnegative*/ final int width,
-                                       /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");

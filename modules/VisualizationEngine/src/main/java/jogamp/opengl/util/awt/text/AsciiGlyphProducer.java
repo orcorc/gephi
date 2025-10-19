@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer.RenderDelegate;
@@ -51,13 +52,13 @@ final class AsciiGlyphProducer extends AbstractGlyphProducer {
      * Constructs an {@link AsciiGlyphProducer}.
      *
      * @param font Font glyphs will be made from
-     * @param rd Delegate for controlling rendering
-     * @param frc Details on how to render fonts
+     * @param rd   Delegate for controlling rendering
+     * @param frc  Details on how to render fonts
      * @throws NullPointerException if font, render delegate, or font render context is null
      */
     AsciiGlyphProducer(/*@Nonnull*/ final Font font,
-                       /*@Nonnull*/ final RenderDelegate rd,
-                       /*@Nonnull*/ final FontRenderContext frc) {
+        /*@Nonnull*/ final RenderDelegate rd,
+        /*@Nonnull*/ final FontRenderContext frc) {
         super(font, rd, frc);
     }
 

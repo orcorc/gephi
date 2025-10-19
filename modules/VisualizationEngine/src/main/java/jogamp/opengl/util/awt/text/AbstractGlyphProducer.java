@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer.RenderDelegate;
@@ -92,13 +93,13 @@ abstract class AbstractGlyphProducer implements GlyphProducer {
      * Constructs an abstract glyph producer.
      *
      * @param font Font glyphs will be made from
-     * @param rd Object for controlling rendering
-     * @param frc Details on how to render fonts
+     * @param rd   Object for controlling rendering
+     * @param frc  Details on how to render fonts
      * @throws NullPointerException if font, render delegate, or font render context is null
      */
     AbstractGlyphProducer(/*@Nonnull*/ final Font font,
-                          /*@Nonnull*/ final RenderDelegate rd,
-                          /*@Nonnull*/ final FontRenderContext frc) {
+        /*@Nonnull*/ final RenderDelegate rd,
+        /*@Nonnull*/ final FontRenderContext frc) {
 
         Check.notNull(font, "Font cannot be null");
         Check.notNull(rd, "Render delegate cannot be null");
@@ -123,20 +124,21 @@ abstract class AbstractGlyphProducer implements GlyphProducer {
      * Note that this boundary is quite heuristic and is related to how far away in 3D we may view
      * the text -- heuristically, 1.5% of the font's height.
      *
-     * @param src Original rectangle
+     * @param src  Original rectangle
      * @param font Font being used to create glyphs
      * @return Rectangle with margin added, not null
      * @throws NullPointerException if rectangle or font is null
      */
     /*@Nonnull*/
     private static Rectangle2D addMarginTo(/*@Nonnull*/ final Rectangle2D src,
-                                           /*@Nonnull*/ final Font font) {
+        /*@Nonnull*/ final Font font) {
 
         final int boundary = (int) Math.max(1, 0.015 * font.getSize());
         final int x = (int) Math.floor(src.getMinX() - boundary);
         final int y = (int) Math.floor(src.getMinY() - boundary);
         final int w = (int) Math.ceil(src.getWidth() + 2 * boundary);
-        final int h = (int) Math.ceil(src.getHeight() + 2 * boundary);;
+        final int h = (int) Math.ceil(src.getHeight() + 2 * boundary);
+        ;
 
         return new Rectangle2D.Float(x, y, w, h);
     }
@@ -203,8 +205,8 @@ abstract class AbstractGlyphProducer implements GlyphProducer {
      * Makes a glyph vector for a string.
      *
      * @param font Style of text
-     * @param frc Details on how to render font
-     * @param str Text as a string
+     * @param frc  Details on how to render font
+     * @param str  Text as a string
      * @return Glyph vector for the string, not null
      * @throws NullPointerException if string is null
      */

@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -54,10 +55,10 @@ public final class GlyphRendererGL2 extends AbstractGlyphRenderer {
 
     @Override
     protected void doBeginRendering(/*@Nonnull*/ final GL gl,
-                                    final boolean ortho,
-                                    /*@Nonnegative*/ final int width,
-                                    /*@Nonnegative*/ final int height,
-                                    final boolean disableDepthTest) {
+                                                 final boolean ortho,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height,
+                                                 final boolean disableDepthTest) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");
@@ -139,10 +140,10 @@ public final class GlyphRendererGL2 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetColor(/*@Nonnull*/ final GL gl,
-                              final float r,
-                              final float g,
-                              final float b,
-                              final float a) {
+                                           final float r,
+                                           final float g,
+                                           final float b,
+                                           final float a) {
 
         Check.notNull(gl, "GL cannot be null");
 
@@ -153,8 +154,8 @@ public final class GlyphRendererGL2 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetTransform3d(/*@Nonnull*/ final GL gl,
-                                    /*@Nonnull*/ final float[] value,
-                                    final boolean transpose) {
+        /*@Nonnull*/ final float[] value,
+                                                 final boolean transpose) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(value, "Value cannot be null");
@@ -165,8 +166,8 @@ public final class GlyphRendererGL2 extends AbstractGlyphRenderer {
 
     @Override
     protected void doSetTransformOrtho(/*@Nonnull*/ final GL gl,
-                                       /*@Nonnegative*/ final int width,
-                                       /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(width >= 0, "Width cannot be negative");
@@ -191,9 +192,9 @@ public final class GlyphRendererGL2 extends AbstractGlyphRenderer {
      */
     private static int getAttribMask(final boolean ortho) {
         return GL2.GL_ENABLE_BIT |
-               GL2.GL_TEXTURE_BIT |
-               GL2.GL_COLOR_BUFFER_BIT |
-               (ortho ? (GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_TRANSFORM_BIT) : 0);
+            GL2.GL_TEXTURE_BIT |
+            GL2.GL_COLOR_BUFFER_BIT |
+            (ortho ? (GL2.GL_DEPTH_BUFFER_BIT | GL2.GL_TRANSFORM_BIT) : 0);
     }
 
     @Override

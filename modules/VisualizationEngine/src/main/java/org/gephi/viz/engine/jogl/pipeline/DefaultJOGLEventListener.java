@@ -71,7 +71,7 @@ public class DefaultJOGLEventListener implements InputListener<JOGLRenderingTarg
     public List<NEWTEvent> processEvents(List<NEWTEvent> events) {
         // Compress consecutive MOUSE_MOVED events - keep only the last one
         List<NEWTEvent> compressed = compressMouseMoveEvents(events);
-        
+
         // Process compressed events and return unconsumed ones
         List<NEWTEvent> remaining = new ArrayList<>();
         for (NEWTEvent event : compressed) {

@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -55,10 +56,10 @@ abstract class Texture {
     /**
      * Constructs a {@link Texture}.
      *
-     * @param gl Current OpenGL context
-     * @param type Type of texture
+     * @param gl     Current OpenGL context
+     * @param type   Type of texture
      * @param mipmap True for quality texturing
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if type is invalid
      */
     Texture(/*@Nonnull*/ final GL gl, final int type, final boolean mipmap) {
@@ -74,9 +75,9 @@ abstract class Texture {
     /**
      * Binds underlying OpenGL texture on a texture unit.
      *
-     * @param gl Current OpenGL context
+     * @param gl   Current OpenGL context
      * @param unit OpenGL enumeration for a texture unit, i.e., {@code GL_TEXTURE0}
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if unit is invalid
      */
     void bind(/*@Nonnull*/ final GL gl, final int unit) {
@@ -98,7 +99,7 @@ abstract class Texture {
 
         Check.notNull(gl, "GL cannot be null");
 
-        final int[] handles = new int[] { handle };
+        final int[] handles = new int[] {handle};
         gl.glDeleteTextures(1, handles, 0);
     }
 
@@ -122,12 +123,12 @@ abstract class Texture {
      */
     private static boolean isValidTextureType(final int type) {
         switch (type) {
-        case GL3.GL_TEXTURE_1D:
-        case GL3.GL_TEXTURE_2D:
-        case GL3.GL_TEXTURE_3D:
-            return true;
-        default:
-            return false;
+            case GL3.GL_TEXTURE_1D:
+            case GL3.GL_TEXTURE_2D:
+            case GL3.GL_TEXTURE_3D:
+                return true;
+            default:
+                return false;
         }
     }
 
@@ -144,7 +145,7 @@ abstract class Texture {
     /**
      * Updates filter parameters for the texture.
      *
-     * @param gl Current OpenGL context
+     * @param gl     Current OpenGL context
      * @param smooth True to interpolate samples
      * @throws NullPointerException if context is null
      */
@@ -169,8 +170,8 @@ abstract class Texture {
     /**
      * Changes a texture parameter for a 2D texture.
      *
-     * @param gl Current OpenGL context, assumed not null
-     * @param name Name of the parameter, assumed valid
+     * @param gl    Current OpenGL context, assumed not null
+     * @param name  Name of the parameter, assumed valid
      * @param value Value of the parameter, assumed valid
      */
     private void setParameter(/*@Nonnull*/ final GL gl, final int name, final int value) {

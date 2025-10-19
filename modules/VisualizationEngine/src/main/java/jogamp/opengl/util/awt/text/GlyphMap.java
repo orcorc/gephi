@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import java.util.Arrays;
@@ -104,7 +105,7 @@ final class GlyphMap {
     /**
      * Stores a simple glyph in the map.
      *
-     * @param c Character glyph represents
+     * @param c     Character glyph represents
      * @param glyph Glyph to store
      * @throws NullPointerException if glyph is null
      */
@@ -123,7 +124,7 @@ final class GlyphMap {
     /**
      * Stores a complex glyph in the map.
      *
-     * @param str String glyph represents
+     * @param str   String glyph represents
      * @param glyph Glyph to store
      * @throws NullPointerException if string or glyph is null
      */

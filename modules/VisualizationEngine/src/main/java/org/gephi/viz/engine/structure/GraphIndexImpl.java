@@ -84,7 +84,8 @@ public class GraphIndexImpl implements GraphIndex {
 
     @Override
     public NodeIterable getNodesInsideCircle(float centerX, float centerY, float radius) {
-        return getVisibleGraph().getSpatialIndex().getNodesInArea(getCircleRect2D(centerX, centerY, radius), node -> Intersectionf.testCircleCircle(centerX, centerY, radius, node.x(), node.y(), node.size()));
+        return getVisibleGraph().getSpatialIndex().getNodesInArea(getCircleRect2D(centerX, centerY, radius),
+            node -> Intersectionf.testCircleCircle(centerX, centerY, radius, node.x(), node.y(), node.size()));
     }
 
     @Override
@@ -112,18 +113,18 @@ public class GraphIndexImpl implements GraphIndex {
     @Override
     public EdgeIterable getEdgesInsideCircle(float centerX, float centerY, float radius) {
         return getVisibleGraph().getSpatialIndex().getEdgesInArea(getCircleRect2D(centerX, centerY, radius), edge -> {
-                final Node source = edge.getSource();
-                final Node target = edge.getTarget();
+            final Node source = edge.getSource();
+            final Node target = edge.getTarget();
 
-                float x0 = source.x();
-                float y0 = source.y();
-                float x1 = target.x();
-                float y1 = target.y();
+            float x0 = source.x();
+            float y0 = source.y();
+            float x1 = target.x();
+            float y1 = target.y();
 
-                //TODO: take width into account!
-                return Intersectionf.testLineCircle(y0 - y1, x1 - x0, (x0 - x1) * y0 + (y1 - y0) * x0, centerX, centerY,
-                    radius);
-            });
+            //TODO: take width into account!
+            return Intersectionf.testLineCircle(y0 - y1, x1 - x0, (x0 - x1) * y0 + (y1 - y0) * x0, centerX, centerY,
+                radius);
+        });
     }
 
     @Override

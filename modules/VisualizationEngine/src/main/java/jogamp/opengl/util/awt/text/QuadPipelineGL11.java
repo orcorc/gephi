@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -89,32 +90,32 @@ public final class QuadPipelineGL11 extends AbstractQuadPipeline {
         // Points
         gl2.glEnableClientState(GL2.GL_VERTEX_ARRAY);
         gl2.glVertexPointer(
-                FLOATS_PER_POINT,   // size
-                GL2.GL_FLOAT,       // type
-                STRIDE,             // stride
-                pointsArray);       // pointer
+            FLOATS_PER_POINT,   // size
+            GL2.GL_FLOAT,       // type
+            STRIDE,             // stride
+            pointsArray);       // pointer
 
         // Coordinates
         gl2.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
         gl2.glTexCoordPointer(
-                FLOATS_PER_COORD,   // size
-                GL2.GL_FLOAT,       // type
-                STRIDE,             // stride
-                coordsArray);       // pointer
+            FLOATS_PER_COORD,   // size
+            GL2.GL_FLOAT,       // type
+            STRIDE,             // stride
+            coordsArray);       // pointer
     }
 
     /**
      * Makes a view of a float buffer at a certain position.
      *
-     * @param fb Original float buffer
+     * @param fb       Original float buffer
      * @param position Index to start view at
      * @return Resulting float buffer
-     * @throws NullPointerException if float buffer is null
+     * @throws NullPointerException     if float buffer is null
      * @throws IllegalArgumentException if position is negative
      */
     /*@Nonnull*/
     private static FloatBuffer createFloatBufferView(/*@Nonnull*/ final FloatBuffer fb,
-                                                     /*@Nonnegative*/ final int position) {
+        /*@Nonnegative*/ final int position) {
 
         Check.notNull(fb, "Buffer cannot be null");
         Check.argument(position >= 0, "Possition cannot be negative");
@@ -140,9 +141,9 @@ public final class QuadPipelineGL11 extends AbstractQuadPipeline {
         final GL2 gl2 = gl.getGL2();
 
         gl2.glDrawArrays(
-                GL2.GL_QUADS,         // mode
-                0,                    // first
-                getSizeInVertices()); // count
+            GL2.GL_QUADS,         // mode
+            0,                    // first
+            getSizeInVertices()); // count
         clear();
     }
 

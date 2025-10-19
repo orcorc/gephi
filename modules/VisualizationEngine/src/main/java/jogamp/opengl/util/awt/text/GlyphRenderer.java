@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -47,59 +48,59 @@ public interface GlyphRenderer {
     /**
      * Starts a render cycle with this {@link GlyphRenderer}.
      *
-     * @param gl Current OpenGL context
-     * @param ortho True if using orthographic projection
-     * @param width Width of current OpenGL viewport
-     * @param height Height of current OpenGL viewport
+     * @param gl               Current OpenGL context
+     * @param ortho            True if using orthographic projection
+     * @param width            Width of current OpenGL viewport
+     * @param height           Height of current OpenGL viewport
      * @param disableDepthTest True if should ignore depth values
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if width or height is negative
-     * @throws GLException if context is unexpected version
+     * @throws GLException              if context is unexpected version
      */
     void beginRendering(/*@Nonnull*/ GL gl,
-                        boolean ortho,
-                        /*@Nonnegative*/ int width,
-                        /*@Nonnegative*/ int height,
-                        boolean disableDepthTest);
+                                     boolean ortho,
+        /*@Nonnegative*/ int width,
+        /*@Nonnegative*/ int height,
+                                     boolean disableDepthTest);
 
     /**
      * Frees resources used by this {@link GlyphRenderer}.
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void dispose(/*@Nonnull*/ GL gl);
 
     /**
      * Draws a glyph with this {@link GlyphRenderer}.
      *
-     * @param gl Current OpenGL context
-     * @param glyph Visual representation of a character
-     * @param x Position to draw on X axis, which may be negative
-     * @param y Position to draw on Y axis, which may be negative
-     * @param z Position to draw on Z axis, which may be negative
-     * @param scale Relative size of glyph, which may be negative
+     * @param gl     Current OpenGL context
+     * @param glyph  Visual representation of a character
+     * @param x      Position to draw on X axis, which may be negative
+     * @param y      Position to draw on Y axis, which may be negative
+     * @param z      Position to draw on Z axis, which may be negative
+     * @param scale  Relative size of glyph, which may be negative
      * @param coords Texture coordinates of glyph
      * @return Distance to next character, which may be negative
      * @throws NullPointerException if context, glyph, or texture coordinate is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     /*@CheckForSigned*/
     float drawGlyph(/*@Nonnull*/ GL gl,
-                    /*@Nonnull*/ Glyph glyph,
-                    /*@CheckForSigned*/ float x,
-                    /*@CheckForSigned*/ float y,
-                    /*@CheckForSigned*/ float z,
-                    /*@CheckForSigned*/ float scale,
-                    /*@Nonnull*/ TextureCoords coords);
+        /*@Nonnull*/ Glyph glyph,
+        /*@CheckForSigned*/ float x,
+        /*@CheckForSigned*/ float y,
+        /*@CheckForSigned*/ float z,
+        /*@CheckForSigned*/ float scale,
+        /*@Nonnull*/ TextureCoords coords);
 
     /**
      * Finishes a render cycle with this {@link GlyphRenderer}.
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     void endRendering(/*@Nonnull*/ GL gl);
 
@@ -107,8 +108,8 @@ public interface GlyphRenderer {
      * Forces all stored text to be rendered.
      *
      * @param gl Current OpenGL context
-     * @throws NullPointerException if context is <tt>null</tt>
-     * @throws GLException if context is unexpected version
+     * @throws NullPointerException  if context is <tt>null</tt>
+     * @throws GLException           if context is unexpected version
      * @throws IllegalStateException if not in a render cycle
      */
     void flush(/*@Nonnull*/ GL gl);
@@ -133,11 +134,11 @@ public interface GlyphRenderer {
     /**
      * Changes the transformation matrix for drawing in 3D.
      *
-     * @param gl Current OpenGL context
-     * @param value Matrix as float array
+     * @param gl        Current OpenGL context
+     * @param value     Matrix as float array
      * @param transpose True if array is in in row-major order
      * @throws IndexOutOfBoundsException if value's length is less than sixteen
-     * @throws IllegalStateException if in orthographic mode
+     * @throws IllegalStateException     if in orthographic mode
      */
     void setTransform(/*@Nonnull*/ float[] value, boolean transpose);
 

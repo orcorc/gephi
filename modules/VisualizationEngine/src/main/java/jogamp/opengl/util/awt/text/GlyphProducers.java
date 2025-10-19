@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer.RenderDelegate;
@@ -51,17 +52,17 @@ public final class GlyphProducers {
      * Creates a {@link GlyphProducer} based on a range of characters.
      *
      * @param font Style of text
-     * @param rd Controller of rendering details
-     * @param frc Details on how fonts are rendered
-     * @param ub Range of characters to support
+     * @param rd   Controller of rendering details
+     * @param frc  Details on how fonts are rendered
+     * @param ub   Range of characters to support
      * @return Correct glyph producer for unicode block, not null
      * @throws NullPointerException if font, render delegate, or render context is null
      */
     /*@Nonnull*/
     public static GlyphProducer get(/*@Nonnull*/ final Font font,
-                                    /*@Nonnull*/ final RenderDelegate rd,
-                                    /*@Nonnull*/ final FontRenderContext frc,
-                                    /*@CheckForNull*/ final UnicodeBlock ub) {
+        /*@Nonnull*/ final RenderDelegate rd,
+        /*@Nonnull*/ final FontRenderContext frc,
+        /*@CheckForNull*/ final UnicodeBlock ub) {
 
         Check.notNull(font, "Font cannot be null");
         Check.notNull(rd, "Render delegate cannot be null");

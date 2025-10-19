@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL2GL3;
@@ -49,15 +50,15 @@ abstract class Uniform {
     /**
      * Constructs a {@link Uniform}.
      *
-     * @param gl Current OpenGL context
+     * @param gl      Current OpenGL context
      * @param program OpenGL handle to shader program
-     * @param name Name of the uniform in shader source code
-     * @throws NullPointerException if context or name is null
+     * @param name    Name of the uniform in shader source code
+     * @throws NullPointerException     if context or name is null
      * @throws IllegalArgumentException if program is negative
      */
     Uniform(/*@Nonnull*/ final GL2GL3 gl,
-            /*@Nonnegative*/ final int program,
-            /*@Nonnull*/ final String name) {
+        /*@Nonnegative*/ final int program,
+        /*@Nonnull*/ final String name) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.notNull(name, "Name cannot be null");

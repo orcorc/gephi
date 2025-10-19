@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -125,23 +126,23 @@ final class TextureBackingStore {
     /**
      * Constructs a {@link TextureBackingStore}.
      *
-     * @param width Width of backing store
-     * @param height Height of backing store
-     * @param font Style of text
+     * @param width     Width of backing store
+     * @param height    Height of backing store
+     * @param font      Style of text
      * @param antialias True to render smooth edges
-     * @param subpixel True to use subpixel accuracy
-     * @param smooth True to interpolate samples
-     * @param mipmap True for quality texturing
+     * @param subpixel  True to use subpixel accuracy
+     * @param smooth    True to interpolate samples
+     * @param mipmap    True for quality texturing
      * @throws IllegalArgumentException if width or height is negative
-     * @throws NullPointerException if font is null
+     * @throws NullPointerException     if font is null
      */
     TextureBackingStore(/*@Nonnegative*/ final int width,
-                        /*@Nonnegative*/ final int height,
-                        /*@Nonnull*/ final Font font,
-                        final boolean antialias,
-                        final boolean subpixel,
-                        final boolean smooth,
-                        final boolean mipmap) {
+        /*@Nonnegative*/ final int height,
+        /*@Nonnull*/ final Font font,
+                                         final boolean antialias,
+                                         final boolean subpixel,
+                                         final boolean smooth,
+                                         final boolean mipmap) {
 
         Check.argument(width >= 0, "Width cannot be negative");
         Check.argument(height >= 0, "Height cannot be negative");
@@ -159,9 +160,9 @@ final class TextureBackingStore {
     /**
      * Binds the underlying OpenGL texture on a texture unit.
      *
-     * @param gl Current OpenGL context
+     * @param gl   Current OpenGL context
      * @param unit OpenGL enumeration for a texture unit (e.g., {@code GL_TEXTURE0})
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if unit is invalid
      */
     void bind(/*@Nonnull*/ final GL gl, final int unit) {
@@ -176,16 +177,16 @@ final class TextureBackingStore {
     /**
      * Clears out an area in the backing store.
      *
-     * @param x Position of area's left edge
-     * @param y Position of area's top edge
-     * @param width Width of area
+     * @param x      Position of area's left edge
+     * @param y      Position of area's top edge
+     * @param width  Width of area
      * @param height Height of area
      * @throws IllegalArgumentException if x, y, width, or height is negative
      */
     void clear(/*@Nonnegative*/ final int x,
-               /*@Nonnegative*/ final int y,
-               /*@Nonnegative*/ final int width,
-               /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int y,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height) {
 
         Check.argument(x >= 0, "X cannot be negative");
         Check.argument(y >= 0, "Y cannot be negative");
@@ -200,17 +201,17 @@ final class TextureBackingStore {
     /**
      * Creates a graphics for a backing store.
      *
-     * @param image Backing store's local copy of data, assumed not null
-     * @param font Style of text, assumed not null
+     * @param image     Backing store's local copy of data, assumed not null
+     * @param font      Style of text, assumed not null
      * @param antialias True to smooth edges
-     * @param subpixel True to use subpixel accuracy
+     * @param subpixel  True to use subpixel accuracy
      * @return Graphics2D for rendering into image, not null
      */
     /*@Nonnull*/
     private static Graphics2D createGraphics(/*@Nonnull*/ final BufferedImage image,
-                                             /*@Nonnull*/ final Font font,
-                                             final boolean antialias,
-                                             final boolean subpixel) {
+        /*@Nonnull*/ final Font font,
+                                                          final boolean antialias,
+                                                          final boolean subpixel) {
 
         final Graphics2D g2d = image.createGraphics();
 
@@ -218,15 +219,15 @@ final class TextureBackingStore {
         g2d.setColor(Color.WHITE);
         g2d.setFont(font);
         g2d.setRenderingHint(
-                RenderingHints.KEY_TEXT_ANTIALIASING,
-                antialias ?
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON :
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+            RenderingHints.KEY_TEXT_ANTIALIASING,
+            antialias ?
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON :
+                RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
         g2d.setRenderingHint(
-                RenderingHints.KEY_FRACTIONALMETRICS,
-                subpixel ?
-                        RenderingHints.VALUE_FRACTIONALMETRICS_ON :
-                        RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+            RenderingHints.KEY_FRACTIONALMETRICS,
+            subpixel ?
+                RenderingHints.VALUE_FRACTIONALMETRICS_ON :
+                RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
         return g2d;
     }
 
@@ -338,16 +339,16 @@ final class TextureBackingStore {
      * <p>
      * The next time the backing store is updated, the area will be pushed to the texture.
      *
-     * @param x Position of area's left edge
-     * @param y Position of area's top edge
-     * @param width Width of area
+     * @param x      Position of area's left edge
+     * @param y      Position of area's top edge
+     * @param width  Width of area
      * @param height Height of area
      * @throws IllegalArgumentException if x, y, width, or height is negative
      */
     void mark(/*@Nonnegative*/ final int x,
-              /*@Nonnegative*/ final int y,
-              /*@Nonnegative*/ final int width,
-              /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int y,
+        /*@Nonnegative*/ final int width,
+        /*@Nonnegative*/ final int height) {
 
         Check.argument(x >= 0, "X cannot be negative");
         Check.argument(y >= 0, "Y cannot be negative");

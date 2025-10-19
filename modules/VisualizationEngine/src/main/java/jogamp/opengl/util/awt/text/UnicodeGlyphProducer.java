@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer.RenderDelegate;
@@ -51,13 +52,13 @@ final class UnicodeGlyphProducer extends AbstractGlyphProducer {
      * Constructs a {@link UnicodeGlyphProducer}.
      *
      * @param font Font glyphs will be made of
-     * @param rd Object for controlling rendering
-     * @param frc Details on how to render fonts
+     * @param rd   Object for controlling rendering
+     * @param frc  Details on how to render fonts
      * @throws NullPointerException if font, render delegate, or font render context is null
      */
     UnicodeGlyphProducer(/*@Nonnull*/ final Font font,
-                         /*@Nonnull*/ final RenderDelegate rd,
-                         /*@Nonnull*/ final FontRenderContext frc) {
+        /*@Nonnull*/ final RenderDelegate rd,
+        /*@Nonnull*/ final FontRenderContext frc) {
         super(font, rd, frc);
     }
 
@@ -70,14 +71,14 @@ final class UnicodeGlyphProducer extends AbstractGlyphProducer {
      * Creates a single glyph from text with a complex layout.
      *
      * @param str Text with a complex layout
-     * @param gv Glyph vector of entire text
+     * @param gv  Glyph vector of entire text
      * @return Read-only pointer to list of glyphs valid until next call
      * @throws NullPointerException if string is null
      * @throws NullPointerException if glyph vector is null
      */
     /*@Nonnull*/
     private List<Glyph> createComplexGlyph(/*@Nonnull*/ final String str,
-                                           /*@Nonnull*/ final GlyphVector gv) {
+        /*@Nonnull*/ final GlyphVector gv) {
 
         Check.notNull(str, "String cannot be null");
         Check.notNull(gv, "Glyph vector be null");
@@ -130,7 +131,7 @@ final class UnicodeGlyphProducer extends AbstractGlyphProducer {
             return createSimpleGlyphs(str);
         } else {
             final GlyphVector gv = createGlyphVector(str);
-            return isComplex(gv) ?  createComplexGlyph(str, gv) : createSimpleGlyphs(str);
+            return isComplex(gv) ? createComplexGlyph(str, gv) : createSimpleGlyphs(str);
         }
     }
 

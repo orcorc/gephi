@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.common.nio.Buffers;
@@ -187,7 +188,7 @@ abstract class AbstractQuadPipeline implements QuadPipeline {
      * @throws IllegalArgumentException if vertices or primitives is less than one
      */
     AbstractQuadPipeline(/*@Nonnegative*/ final int vertsPerPrim,
-                         /*@Nonnegative*/ final int primsPerQuad) {
+        /*@Nonnegative*/ final int primsPerQuad) {
 
         Check.argument(vertsPerPrim > 0, "Number of vertices is less than one");
         Check.argument(primsPerQuad > 0, "Number of primitives is less than one");
@@ -262,15 +263,15 @@ abstract class AbstractQuadPipeline implements QuadPipeline {
     /**
      * Creates a vertex buffer object for use with a pipeline.
      *
-     * @param gl Current OpenGL context
+     * @param gl   Current OpenGL context
      * @param size Size in bytes of buffer
      * @return OpenGL handle to vertex buffer object
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if size is negative
      */
     /*@Nonnegative*/
     protected static int createVertexBufferObject(/*@Nonnull*/ final GL2GL3 gl,
-                                                  /*@Nonnegative*/ final int size) {
+        /*@Nonnegative*/ final int size) {
 
         Check.notNull(gl, "GL cannot be null");
         Check.argument(size >= 0, "Size cannot be negative");
@@ -283,10 +284,10 @@ abstract class AbstractQuadPipeline implements QuadPipeline {
         // Allocate
         gl.glBindBuffer(GL2GL3.GL_ARRAY_BUFFER, vbo);
         gl.glBufferData(
-                GL2GL3.GL_ARRAY_BUFFER, // target
-                size,                   // size
-                null,                   // data
-                GL2GL3.GL_STREAM_DRAW); // usage
+            GL2GL3.GL_ARRAY_BUFFER, // target
+            size,                   // size
+            null,                   // data
+            GL2GL3.GL_STREAM_DRAW); // usage
         gl.glBindBuffer(GL2GL3.GL_ARRAY_BUFFER, 0);
 
         return vbo;
@@ -325,7 +326,7 @@ abstract class AbstractQuadPipeline implements QuadPipeline {
      *
      * @param gl Current OpenGL context
      * @throws NullPointerException if context is null
-     * @throws GLException if context is unexpected version
+     * @throws GLException          if context is unexpected version
      */
     protected abstract void doFlush(/*@Nonnull*/ final GL gl);
 

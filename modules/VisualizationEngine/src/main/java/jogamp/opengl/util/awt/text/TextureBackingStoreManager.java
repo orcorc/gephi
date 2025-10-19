@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -94,16 +95,16 @@ final class TextureBackingStoreManager implements BackingStoreManager {
     /**
      * Constructs a {@link TextureBackingStoreManager}.
      *
-     * @param font Style of text
+     * @param font      Style of text
      * @param antialias True to render smooth edges
-     * @param subpixel True to use subpixel accuracy
-     * @param mipmap True for high quality texturing
+     * @param subpixel  True to use subpixel accuracy
+     * @param mipmap    True for high quality texturing
      * @throws NullPointerException if font is null
      */
     TextureBackingStoreManager(/*@Nonnull*/ final Font font,
-                               final boolean antialias,
-                               final boolean subpixel,
-                               final boolean mipmap) {
+                                            final boolean antialias,
+                                            final boolean subpixel,
+                                            final boolean mipmap) {
 
         Check.notNull(font, "Font cannot be null");
 
@@ -122,7 +123,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
      * {@link EventType.FAILURE} so that an observer of the backing store can decide what to
      * actually do.
      *
-     * @param cause Rectangle that could not be added
+     * @param cause   Rectangle that could not be added
      * @param attempt Number of times it has been tried so far
      * @return False if can do nothing more to free space
      * @throws NullPointerException if cause is null
@@ -168,7 +169,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
     /**
      * Creates a new backing store for the packer.
      *
-     * @param width Width of new backing store
+     * @param width  Width of new backing store
      * @param height Height of new backing store
      * @return New backing store, not null
      * @throws IllegalArgumentException if width or height is negative
@@ -176,7 +177,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
     /*@Nonnull*/
     @Override
     public Object allocateBackingStore(/*@Nonnegative*/ final int width,
-                                       /*@Nonnegative*/ final int height) {
+        /*@Nonnegative*/ final int height) {
 
         Check.argument(width >= 0, "Width is negative");
         Check.argument(height >= 0, "Height is negative");
@@ -188,10 +189,10 @@ final class TextureBackingStoreManager implements BackingStoreManager {
 
         // Make a new backing store
         return new TextureBackingStore(
-                width, height,
-                font,
-                antialias, subpixel,
-                smooth, mipmap);
+            width, height,
+            font,
+            antialias, subpixel,
+            smooth, mipmap);
     }
 
     /**
@@ -224,7 +225,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
      *
      * @param bs Backing store being deleted
      * @throws NullPointerException if backing store is null
-     * @throws ClassCastException if backing store is not a {@code TextureBackingStore}
+     * @throws ClassCastException   if backing store is not a {@code TextureBackingStore}
      */
     @Override
     public void deleteBackingStore(/*@Nonnull*/ final Object bs) {
@@ -247,7 +248,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
      * @param obs Backing store being copied from
      * @param nbs Backing store being copied to
      * @throws NullPointerException if new backing store is null
-     * @throws ClassCastException if new backing store is not a {@code TextureBackingStore}
+     * @throws ClassCastException   if new backing store is not a {@code TextureBackingStore}
      */
     @Override
     public void endMovement(final Object obs, /*@Nonnull*/ final Object nbs) {
@@ -289,17 +290,17 @@ final class TextureBackingStoreManager implements BackingStoreManager {
      * obs} will be equal to {@code nbs}.  This situation may need to be handled differently.
      *
      * @param obs Old backing store being copied from
-     * @param ol Area of old backing store to copy
+     * @param ol  Area of old backing store to copy
      * @param nbs New backing store being copied to
-     * @param nl Area of new backing store to copy to
+     * @param nl  Area of new backing store to copy to
      * @throws NullPointerException if either backing store or area is null
-     * @throws ClassCastException if either backing store is not the right type
+     * @throws ClassCastException   if either backing store is not the right type
      */
     @Override
     public void move(/*@Nonnull*/ final Object obs,
-                     /*@Nonnull*/ final Rect ol,
-                     /*@Nonnull*/ final Object nbs,
-                     /*@Nonnull*/ final Rect nl) {
+        /*@Nonnull*/ final Rect ol,
+        /*@Nonnull*/ final Object nbs,
+        /*@Nonnull*/ final Rect nl) {
 
         Check.notNull(obs, "Old backing store cannot be null");
         Check.notNull(ol, "Old location cannot be null");
@@ -311,20 +312,20 @@ final class TextureBackingStoreManager implements BackingStoreManager {
 
         if (otbs == ntbs) {
             otbs.getGraphics().copyArea(
-                    ol.x(), ol.y(),
-                    ol.w(), ol.h(),
-                    nl.x() - ol.x(),
-                    nl.y() - ol.y());
+                ol.x(), ol.y(),
+                ol.w(), ol.h(),
+                nl.x() - ol.x(),
+                nl.y() - ol.y());
         } else {
             ntbs.getGraphics().drawImage(
-                    otbs.getImage(),
-                    nl.x(), nl.y(),
-                    nl.x() + nl.w(),
-                    nl.y() + nl.h(),
-                    ol.x(), ol.y(),
-                    ol.x() + ol.w(),
-                    ol.y() + ol.h(),
-                    null);
+                otbs.getImage(),
+                nl.x(), nl.y(),
+                nl.x() + nl.w(),
+                nl.y() + nl.h(),
+                ol.x(), ol.y(),
+                ol.x() + ol.w(),
+                ol.y() + ol.h(),
+                null);
         }
     }
 
@@ -335,7 +336,7 @@ final class TextureBackingStoreManager implements BackingStoreManager {
      * Fires an event of type {@link EventType.REALLOCATE} so that an observer of the backing store
      * can decide what to actually do.  This will only happen on the first attempt.
      *
-     * @param cause Rectangle that is being added
+     * @param cause   Rectangle that is being added
      * @param attempt Number of times it has been tried so far
      * @return True if packer should retry addition
      * @throws NullPointerException if cause is null

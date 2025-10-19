@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -49,7 +50,7 @@ public final class GlyphRenderers {
      *
      * @param gl Current OpenGL context
      * @return New glyph renderer for the given context, not null
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException          if context is null
      * @throws UnsupportedOperationException if GL is unsupported
      */
     /*@Nonnull*/

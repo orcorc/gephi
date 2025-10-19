@@ -25,6 +25,7 @@
  * authors and should not be interpreted as representing official policies, either expressed
  * or implied, of JogAmp Community.
  */
+
 package jogamp.opengl.util.awt.text;
 
 import com.jogamp.opengl.GL;
@@ -88,9 +89,9 @@ public final class QuadPipelineGL30 extends AbstractQuadPipeline {
     /**
      * Constructs a {@link QuadPipelineGL30}.
      *
-     * @param gl Current OpenGL context
+     * @param gl            Current OpenGL context
      * @param shaderProgram Shader program to render quads with
-     * @throws NullPointerException if context is null
+     * @throws NullPointerException     if context is null
      * @throws IllegalArgumentException if shader program is less than one
      */
     /*@VisibleForTesting*/
@@ -120,15 +121,15 @@ public final class QuadPipelineGL30 extends AbstractQuadPipeline {
     /**
      * Creates a vertex array object for use with the pipeline.
      *
-     * @param gl Current OpenGL context, assumed not null
+     * @param gl      Current OpenGL context, assumed not null
      * @param program OpenGL handle to the shader program, assumed not negative
-     * @param vbo OpenGL handle to VBO holding vertices, assumed not negative
+     * @param vbo     OpenGL handle to VBO holding vertices, assumed not negative
      * @return OpenGL handle to resulting VAO
      */
     /*@Nonnegative*/
     private static int createVertexArrayObject(/*@Nonnull*/ final GL3 gl,
-                                               /*@Nonnegative*/ final int program,
-                                               /*@Nonnegative*/ final int vbo) {
+        /*@Nonnegative*/ final int program,
+        /*@Nonnegative*/ final int vbo) {
 
         // Generate
         final int[] handles = new int[1];
@@ -146,12 +147,12 @@ public final class QuadPipelineGL30 extends AbstractQuadPipeline {
         } else {
             gl.glEnableVertexAttribArray(pointLoc);
             gl.glVertexAttribPointer(
-                    pointLoc,            // location
-                    FLOATS_PER_POINT,    // number of components
-                    GL3.GL_FLOAT,        // type
-                    false,               // normalized
-                    STRIDE,              // stride
-                    POINT_OFFSET);       // offset
+                pointLoc,            // location
+                FLOATS_PER_POINT,    // number of components
+                GL3.GL_FLOAT,        // type
+                false,               // normalized
+                STRIDE,              // stride
+                POINT_OFFSET);       // offset
         }
 
         // Coords
@@ -159,12 +160,12 @@ public final class QuadPipelineGL30 extends AbstractQuadPipeline {
         if (coordLoc != -1) {
             gl.glEnableVertexAttribArray(coordLoc);
             gl.glVertexAttribPointer(
-                    coordLoc,            // location
-                    FLOATS_PER_COORD,    // number of components
-                    GL3.GL_FLOAT,        // type
-                    false,               // normalized
-                    STRIDE,              // stride
-                    COORD_OFFSET);       // offset
+                coordLoc,            // location
+                FLOATS_PER_COORD,    // number of components
+                GL3.GL_FLOAT,        // type
+                false,               // normalized
+                STRIDE,              // stride
+                COORD_OFFSET);       // offset
         }
 
         // Unbind
@@ -221,16 +222,16 @@ public final class QuadPipelineGL30 extends AbstractQuadPipeline {
         // Upload data
         rewind();
         gl3.glBufferSubData(
-                GL3.GL_ARRAY_BUFFER, // target
-                0,                   // offset
-                getSizeInBytes(),    // size
-                getData());          // data
+            GL3.GL_ARRAY_BUFFER, // target
+            0,                   // offset
+            getSizeInBytes(),    // size
+            getData());          // data
 
         // Draw
         gl3.glDrawArrays(
-                GL3.GL_TRIANGLES,     // mode
-                0,                    // first
-                getSizeInVertices()); // count
+            GL3.GL_TRIANGLES,     // mode
+            0,                    // first
+            getSizeInVertices()); // count
         clear();
     }
 
