@@ -11,6 +11,7 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.spi.Renderer;
+import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.Constants;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
@@ -67,6 +68,9 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
     public void render(VoidWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         engine.getModelViewProjectionMatrixFloats(mvp);
 
+        final GraphSelection selection = engine.getGraphSelection();
+        final boolean someSelection = selection.someNodesOrEdgesSelection();
+
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
 
@@ -75,6 +79,15 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
 
         for (int i = 0; i < count; i++) {
             final Node node = nodes[i];
+
+            if (node == null) {
+                continue;
+            }
+
+            if (someSelection && !selection.isNodeOrNeighbourSelected(node)) {
+                continue;
+            }
+
             final String text = node.getLabel();
             if (text == null || text.isEmpty()) {
                 continue;
@@ -82,7 +95,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
 
             // TODO: Configurable label scale
             // TODO: Configurable label scale linked to node size or not
-            final float sizeFactor = node.size() * 0.01f;
+            final float sizeFactor = node.size() * 0.02f;
 
             final Rectangle2D bounds = textRenderer.getBounds(text);
             final float widthPx = (float) bounds.getWidth();
