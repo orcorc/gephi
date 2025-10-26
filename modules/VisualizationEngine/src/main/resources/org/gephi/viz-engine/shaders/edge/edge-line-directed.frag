@@ -1,7 +1,8 @@
 //#include "../common.frag.glsl"
 
+in vec4 vertColor;
 out vec4 fragColor;
 
-void main() {
-    gl_FragColor = fragColor;
+void main(void) {
+    fragColor = vertColor;
 }

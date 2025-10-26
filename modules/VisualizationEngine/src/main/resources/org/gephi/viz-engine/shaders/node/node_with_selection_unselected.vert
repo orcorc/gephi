@@ -10,7 +10,7 @@ uniform float colorLightenFactor;
 
 
 
-out vec4 fragColor;
+out vec4 vertColor;
 
 void main() {
     vec2 instancePosition = size * sizeMultiplier * vert + position;
@@ -22,5 +22,5 @@ void main() {
     color.rgb = color.rgb * colorMultiplier;
     color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor);
 
-    fragColor = color;
+    vertColor = color;
 }

@@ -6,7 +6,7 @@
 
 //#include "common.edge.directed.vert.glsl"
 
-out vec4 fragColor;
+out vec4 vertColor;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
@@ -28,5 +28,5 @@ void main() {
     vec4 color = elementColor.bgra / 255.0;
 
 
-    fragColor = color;
+    vertColor = color;
 }

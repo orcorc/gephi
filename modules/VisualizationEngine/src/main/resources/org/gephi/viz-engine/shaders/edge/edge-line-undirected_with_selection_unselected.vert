@@ -7,7 +7,7 @@
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
-out vec4 fragColor;
+out vec4 vertColor;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
@@ -29,5 +29,5 @@ void main() {
 
     color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor);
 
-    fragColor = color;
+    vertColor = color;
 }

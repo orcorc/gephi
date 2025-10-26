@@ -5,7 +5,7 @@
 //#include "common.node.vert.uniform.glsl"
 
 
-out vec4 fragColor;
+out vec4 vertColor;
 
 void main() {	
     vec2 instancePosition = size * sizeMultiplier * vert + position;
@@ -16,5 +16,5 @@ void main() {
 
     color.rgb = color.rgb * colorMultiplier;
 
-    fragColor = color;
+    vertColor = color;
 }

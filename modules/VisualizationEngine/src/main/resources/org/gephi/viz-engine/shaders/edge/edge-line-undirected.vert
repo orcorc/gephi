@@ -4,7 +4,7 @@
 //#include "common.edge.vert.uniform.glsl"
 //#include "common.edge.vert.attribute.glsl"
 
-out vec4 fragColor;
+out vec4 vertColor;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
@@ -24,5 +24,5 @@ void main() {
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    fragColor = color;
+    vertColor = color;
 }
