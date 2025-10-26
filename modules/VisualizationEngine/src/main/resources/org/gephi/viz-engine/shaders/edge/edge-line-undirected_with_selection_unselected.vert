@@ -7,7 +7,7 @@
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
-varying vec4 fragColor;
+out vec4 fragColor;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);

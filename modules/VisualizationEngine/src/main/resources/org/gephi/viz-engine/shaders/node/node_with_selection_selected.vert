@@ -10,7 +10,7 @@ uniform float colorLightenFactor;
 
 
 
-varying vec4 fragColor;
+out vec4 fragColor;
 
 void main() {
     vec2 instancePosition = size * sizeMultiplier * vert + position;
