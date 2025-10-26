@@ -45,6 +45,7 @@ package org.gephi.desktop.visualization.collapse;
 import java.awt.Color;
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;
+import java.util.Arrays;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
@@ -163,7 +164,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         hideNonSelectedCheckbox.addItemListener(
             e -> vizController.setHideNonSelectedEdges(hideNonSelectedCheckbox.isSelected()));
 
-        final DefaultComboBoxModel<Estimator> estimatorModel = new DefaultComboBoxModel<>(Estimator.values());
+        final DefaultComboBoxModel<Estimator> estimatorModel = new DefaultComboBoxModel<>(Arrays.stream(Estimator.values()).filter((e) -> !e.is(Estimator.MEDIAN)).toArray(Estimator[]::new));
         edgeWeightEstimatorCombo.setModel(estimatorModel);
         edgeWeightEstimatorCombo.addActionListener(
             e -> {
