@@ -1,8 +1,10 @@
 //#include "../common.frag.glsl"
 
-in vec4 vertColor;
+//#include "common.edge.struct.glsl"
+in VertexData vertexData;
+
 out vec4 fragColor;
 
 void main(void) {
-    fragColor = vertColor;
+    fragColor = vertexData.color;
 }

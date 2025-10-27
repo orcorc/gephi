@@ -1,12 +1,15 @@
 //#include "../common.vert.glsl"
 
 //#include "common.edge.vert.glsl"
+
 //#include "common.edge.vert.uniform.glsl"
-//#include "common.edge.vert.attribute.glsl"
+
+//#include "common.edge.vert.in.glsl"
 
 //#include "common.edge.directed.vert.glsl"
 
-out vec4 vertColor;
+//#include "common.edge.struct.glsl"
+out VertexData vertexData;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
@@ -27,5 +30,5 @@ void main() {
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    vertColor = color;
+    vertexData.color = color;
 }

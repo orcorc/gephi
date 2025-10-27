@@ -1,16 +1,16 @@
 //#include "../common.vert.glsl"
 
 //#include "common.node.vert.glsl"
-//#include "common.node.vert.attribute.glsl"
-//#include "common.node.vert.uniform.glsl"
 
+//#include "common.node.vert.uniform.glsl"
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
+//#include "common.node.vert.in.glsl"
 
+//include "common.node.struct.glsl"
 
-
-out vec4 vertColor;
+out VertexData vertexData;
 
 void main() {
     vec2 instancePosition = size * sizeMultiplier * vert + position;
@@ -22,5 +22,5 @@ void main() {
     color.rgb = color.rgb * colorMultiplier;
     color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor);
 
-    vertColor = color;
+    vertexData.color = color;
 }
