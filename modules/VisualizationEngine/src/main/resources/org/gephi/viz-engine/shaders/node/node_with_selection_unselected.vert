@@ -8,7 +8,7 @@ uniform float colorLightenFactor;
 
 //#include "common.node.vert.in.glsl"
 
-//include "common.node.struct.glsl"
+//#include "common.node.struct.glsl"
 
 out VertexData vertexData;
 
