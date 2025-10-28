@@ -7,6 +7,7 @@ import org.gephi.graph.api.Column;
 import org.gephi.graph.api.ColumnIndex;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
+import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
 
 /**
@@ -26,7 +27,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private boolean undirected = false;
 
     @Override
-    public void start(Graph graph) {
+    public void start(Graph graph, GraphSelection graphSelection) {
         directed = graph.isDirected();
         undirected = graph.isUndirected();
         Arrays.fill(edgesArray, null);

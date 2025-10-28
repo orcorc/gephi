@@ -7,6 +7,7 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.status.GraphSelection;
 
 /**
  *
@@ -43,7 +44,7 @@ public interface GraphIndex {
          *
          * @param graph Graph
          */
-        void start(Graph graph);
+        void start(Graph graph, GraphSelection selection);
 
         /**
          * Called for each element in the list

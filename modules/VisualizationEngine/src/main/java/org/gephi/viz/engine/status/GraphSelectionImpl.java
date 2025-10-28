@@ -31,6 +31,10 @@ public class GraphSelectionImpl implements GraphSelection {
         nodes.clear();
     }
 
+    public BitSet getNodesWithNeighbours() {
+        return nodesWithNeighbours;
+    }
+
     @Override
     public void setMouseSelectionDiameter(float diameter) {
         this.simpleMouseSelectionDiameter = diameter >= 1 ? diameter : 1;

@@ -23,8 +23,8 @@ public class VizEngineModel {
 
     protected VizEngineModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
         this.graphModel = graphModel;
-        this.graphIndex = new GraphIndexImpl(graphModel);
         this.graphSelection = new GraphSelectionImpl();
+        this.graphIndex = new GraphIndexImpl(graphModel, graphSelection);
         this.renderingOptions = new GraphRenderingOptionsImpl(renderingOptions);
     }
 

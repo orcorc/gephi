@@ -7,6 +7,7 @@ import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeWorldData;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -14,8 +15,8 @@ import org.gephi.viz.engine.pipeline.RenderingLayer;
  */
 public class InstancedNodeData extends AbstractNodeData {
 
-    public InstancedNodeData() {
-        super(true, false);
+    public InstancedNodeData(NodesCallback nodesCallback) {
+        super(nodesCallback, true, false);
     }
 
     private final int[] bufferName = new int[3];

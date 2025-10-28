@@ -3,8 +3,11 @@ package org.gephi.viz.engine.util.structure;
 import static org.gephi.viz.engine.util.ArrayUtils.getNextPowerOf2;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
+import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
 
 /**
@@ -14,17 +17,26 @@ import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
 public class NodesCallback implements ElementsCallback<Node> {
 
     private Node[] nodesArray = new Node[0];
+    private BitSet selectedBitSet = new BitSet();
+    private boolean hasSelection = false;
     private int maxIndex = 0;
     private float maxNodeSize = 0f;
     private int nodeCount = 0;
 
     @Override
-    public void start(Graph graph) {
+    public void start(Graph graph, GraphSelection graphSelection) {
         Arrays.fill(nodesArray, null);
         nodesArray = ensureNodesArraySize(nodesArray, graph.getModel().getMaxNodeStoreId() + 1);
         maxIndex = 0;
         maxNodeSize = 0f;
         nodeCount = 0;
+
+        hasSelection = graphSelection.someNodesOrEdgesSelection();
+        if (hasSelection) {
+            BitSet sourceBitSet = ((GraphSelectionImpl) graphSelection).getNodesWithNeighbours();
+            selectedBitSet.clear();
+            selectedBitSet.or(sourceBitSet);
+        }
     }
 
     @Override
@@ -57,6 +69,8 @@ public class NodesCallback implements ElementsCallback<Node> {
         maxIndex = 0;
         maxNodeSize = 0f;
         nodeCount = 0;
+        selectedBitSet = new BitSet();
+        hasSelection = false;
     }
 
     public Node[] getNodesArray() {
@@ -73,6 +87,14 @@ public class NodesCallback implements ElementsCallback<Node> {
 
     public int getCount() {
         return nodeCount;
+    }
+
+    public boolean isSelected(int nodeStoreId) {
+        return hasSelection && selectedBitSet.get(nodeStoreId);
+    }
+
+    public boolean hasSelection() {
+        return hasSelection;
     }
 
     protected Node[] ensureNodesArraySize(Node[] array, int size) {

@@ -34,7 +34,7 @@ public class NodesUpdaterArrayDrawRendering implements WorldUpdater<JOGLRenderin
 
     @Override
     public void updateWorld(VizEngineModel model) {
-        nodeData.update(model.getGraphIndex(), model.getGraphSelection(), model.getRenderingOptions(),
+        nodeData.update(model.getGraphIndex(),  model.getRenderingOptions(),
             engine.getViewBoundaries());
     }
 

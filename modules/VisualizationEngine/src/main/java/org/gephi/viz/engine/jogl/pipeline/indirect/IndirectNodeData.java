@@ -11,6 +11,7 @@ import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeWorldData;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -25,8 +26,8 @@ public class IndirectNodeData extends AbstractNodeData {
     private static final int ATTRIBS_BUFFER_SECONDARY = 2;
     private static final int INDIRECT_DRAW_BUFFER = 3;
 
-    public IndirectNodeData() {
-        super(true, true);
+    public IndirectNodeData(NodesCallback nodesCallback) {
+        super(nodesCallback, true, true);
     }
 
     public void drawIndirect(GL4 gl, RenderingLayer layer, NodeWorldData data, float[] mvpFloats) {

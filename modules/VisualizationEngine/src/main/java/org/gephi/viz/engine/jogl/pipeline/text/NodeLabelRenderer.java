@@ -2,7 +2,6 @@ package org.gephi.viz.engine.jogl.pipeline.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
@@ -11,12 +10,9 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.spi.Renderer;
-import org.gephi.viz.engine.status.GraphSelection;
-import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.Constants;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
-import org.joml.Vector2f;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -27,7 +23,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
     public static final EnumSet<RenderingLayer> LAYERS = EnumSet.of(RenderingLayer.FRONT1);
 
     private final VizEngine engine;
-    private final NodesCallback nodesCallback = new NodesCallback();
+    private final NodesCallback nodesCallback;
 
     // Java2D text
     private TextRenderer textRenderer;
@@ -36,8 +32,9 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
     // Scratch
     private final float[] mvp = new float[16];
 
-    public NodeLabelRenderer(VizEngine engine) {
+    public NodeLabelRenderer(VizEngine engine, NodesCallback nodesCallback) {
         this.engine = engine;
+        this.nodesCallback = nodesCallback;
     }
 
     @Override
@@ -57,9 +54,6 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
 
     @Override
     public VoidWorldData worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
-        final GraphIndex graphIndex = engine.getGraphIndex();
-        final Rect2D viewBoundaries = engine.getViewBoundaries();
-        graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
 
         return VoidWorldData.INSTANCE;
     }
@@ -68,8 +62,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
     public void render(VoidWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         engine.getModelViewProjectionMatrixFloats(mvp);
 
-        final GraphSelection selection = engine.getGraphSelection();
-        final boolean someSelection = selection.someNodesOrEdgesSelection();
+        final boolean someSelection = nodesCallback.hasSelection();
 
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
@@ -84,7 +77,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, VoidWorl
                 continue;
             }
 
-            if (someSelection && !selection.isNodeOrNeighbourSelected(node)) {
+            if (someSelection && !nodesCallback.isSelected(i)) {
                 continue;
             }
 
