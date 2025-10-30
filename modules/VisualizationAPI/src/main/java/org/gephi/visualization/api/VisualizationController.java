@@ -131,19 +131,13 @@ public interface VisualizationController {
 
     void selectEdges(Edge[] edges);
 
-    // Text
-
-    void setShowEdgeLabels(boolean showEdgeLabels);
+    // Node Labels
 
     void setShowNodeLabels(boolean showNodeLabels);
 
     void setNodeLabelFont(Font font);
 
     void setNodeLabelScale(float scale);
-
-    void setEdgeLabelFont(Font font);
-
-    void setEdgeLabelScale(float scale);
 
     void setHideNonSelectedLabels(boolean hideNonSelected);
 
@@ -152,6 +146,16 @@ public interface VisualizationController {
     void setNodeLabelSizeMode(LabelSizeMode mode);
 
     void setNodeLabelColumns(Column[] columns);
+
+    void setNodeLabelFitToNodeSize(boolean fitToNodeSize);
+
+    // Edge Labels
+
+    void setShowEdgeLabels(boolean showEdgeLabels);
+
+    void setEdgeLabelFont(Font font);
+
+    void setEdgeLabelScale(float scale);
 
     void setEdgeLabelColumns(Column[] columns);
 }

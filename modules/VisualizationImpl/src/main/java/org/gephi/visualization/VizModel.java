@@ -117,6 +117,7 @@ public class VizModel implements VisualisationModel {
     private LabelColorMode nodeLabelColorMode;
     private LabelSizeMode nodeLabelSizeMode;
     private boolean hideNonSelectedLabels;
+    private boolean fitNodeLabelsToNodeSize;
     private Column[] nodeLabelColumns = new Column[0];
 
     //Edge Labels
@@ -175,6 +176,7 @@ public class VizModel implements VisualisationModel {
         this.nodeLabelFont = config.getDefaultNodeLabelFont();
         this.nodeLabelScale = config.getDefaultNodeLabelScale();
         this.hideNonSelectedLabels = config.isDefaultHideNonSelectedNodeLabels();
+        this.fitNodeLabelsToNodeSize = config.isDefaultFitNodeLabelsToNodeSize();
         this.nodeLabelColumns = new Column[] {this.graphModel.getNodeTable().getColumn("label")};
 
         //Edge Labels
@@ -637,6 +639,19 @@ public class VizModel implements VisualisationModel {
         if (oldValue != hideNonSelectedLabels) {
             this.hideNonSelectedLabels = hideNonSelectedLabels;
             firePropertyChange("hideNonSelectedLabels", oldValue, hideNonSelectedLabels);
+        }
+    }
+
+    @Override
+    public boolean isNodeLabelFitToNodeSize() {
+        return fitNodeLabelsToNodeSize;
+    }
+
+    public void setNodeLabelFitToNodeSize(boolean fitNodeLabelsToNodeSize) {
+        boolean oldValue = this.fitNodeLabelsToNodeSize;
+        if (oldValue != fitNodeLabelsToNodeSize) {
+            this.fitNodeLabelsToNodeSize = fitNodeLabelsToNodeSize;
+            firePropertyChange("nodeLabelFitToNodeSize", oldValue, fitNodeLabelsToNodeSize);
         }
     }
 

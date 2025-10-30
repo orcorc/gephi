@@ -289,6 +289,12 @@ public class VizController implements VisualizationController, Controller<VizMod
     }
 
     @Override
+    public void setNodeLabelFitToNodeSize(boolean fitToNodeSize) {
+        final VizModel model = getModel();
+        model.setNodeLabelFitToNodeSize(fitToNodeSize);
+    }
+
+    @Override
     public void setNodeLabelColumns(Column[] columns) {
         final VizModel model = getModel();
         model.setNodeLabelColumns(columns);
