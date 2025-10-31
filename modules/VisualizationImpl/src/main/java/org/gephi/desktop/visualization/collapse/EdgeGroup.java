@@ -57,7 +57,7 @@ public class EdgeGroup implements CollapseGroup, VisualizationPropertyChangeList
             .setToolTipText(NbBundle.getMessage(EdgeGroup.class, "VizToolbar.Edges.colorMode"));
 
         //EdgeScale slider
-        edgeScaleSlider = new JSlider(0, 100, 0);
+        edgeScaleSlider = new JSlider(1, 100, 1);
         edgeScaleSlider.setToolTipText(NbBundle.getMessage(EdgeGroup.class, "VizToolbar.Edges.edgeScale"));
         edgeScaleSlider.addChangeListener(new ChangeListener() {
             @Override

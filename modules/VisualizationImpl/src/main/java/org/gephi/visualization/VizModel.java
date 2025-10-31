@@ -348,22 +348,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != edgeColorMode) {
             this.edgeColorMode = edgeColorMode;
             getRenderingOptions().ifPresent(options -> {
-                switch (edgeColorMode) {
-                    case SELF:
-                        options.setEdgeColorMode(GraphRenderingOptions.EdgeColorMode.SELF);
-                        break;
-                    case SOURCE:
-                        options.setEdgeColorMode(GraphRenderingOptions.EdgeColorMode.SOURCE);
-                        break;
-                    case TARGET:
-                        options.setEdgeColorMode(GraphRenderingOptions.EdgeColorMode.TARGET);
-                        break;
-                    case MIXED:
-                        options.setEdgeColorMode(GraphRenderingOptions.EdgeColorMode.MIXED);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Unknown EdgeColorMode: " + edgeColorMode);
-                }
+                options.setEdgeColorMode(GraphRenderingOptions.EdgeColorMode.valueOf(edgeColorMode.name()));
             });
             firePropertyChange("edgeColorMode", oldValue, edgeColorMode);
         }

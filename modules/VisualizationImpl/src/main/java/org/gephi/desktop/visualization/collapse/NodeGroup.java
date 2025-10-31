@@ -20,7 +20,7 @@ public class NodeGroup implements CollapseGroup, VisualizationPropertyChangeList
         vizController = Lookup.getDefault().lookup(VisualizationController.class);
 
         //NodeScale slider
-        nodeScaleSlider = new JSlider(0, 100, 0);
+        nodeScaleSlider = new JSlider(1, 100, 1);
         nodeScaleSlider.setToolTipText(NbBundle.getMessage(NodeGroup.class, "VizToolbar.Nodes.nodeScale"));
         nodeScaleSlider.addChangeListener(e -> {
             float value = nodeScaleSlider.getValue() / 10f + 0.1f;
