@@ -239,7 +239,7 @@ public abstract class AbstractNodeData {
         currentNodeScale = renderingOptions.getNodeScale();
 
         // Get visible nodes
-        graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
+        graphIndex.getVisibleNodes(nodesCallback, renderingOptions, viewBoundaries);
         final Node[] visibleNodesArray = nodesCallback.getNodesArray();
         final int maxIndex = nodesCallback.getMaxIndex();
         final int totalNodes = nodesCallback.getCount();

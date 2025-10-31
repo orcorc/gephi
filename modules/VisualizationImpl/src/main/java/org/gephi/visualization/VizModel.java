@@ -177,13 +177,13 @@ public class VizModel implements VisualisationModel {
         this.nodeLabelScale = config.getDefaultNodeLabelScale();
         this.hideNonSelectedLabels = config.isDefaultHideNonSelectedNodeLabels();
         this.fitNodeLabelsToNodeSize = config.isDefaultFitNodeLabelsToNodeSize();
-        this.nodeLabelColumns = new Column[] {this.graphModel.getNodeTable().getColumn("label")};
+        this.nodeLabelColumns = new Column[] {this.graphModel.defaultColumns().nodeLabel()};
 
         //Edge Labels
         this.showEdgeLabels = config.isDefaultShowEdgeLabels();
         this.edgeLabelFont = config.getDefaultEdgeLabelFont();
         this.edgeLabelScale = config.getDefaultEdgeLabelScale();
-        this.edgeLabelColumns = new Column[] {this.graphModel.getEdgeTable().getColumn("label")};
+        this.edgeLabelColumns = new Column[] {this.graphModel.defaultColumns().edgeLabel()};
     }
 
     public GraphRenderingOptions toGraphRenderingOptions() {
@@ -212,6 +212,8 @@ public class VizModel implements VisualisationModel {
         options.setNodeLabelScale(getNodeLabelScale());
         options.setNodeLabelFitToNodeSize(isNodeLabelFitToNodeSize());
         options.setHideNonSelectedNodeLabels(isHideNonSelectedLabels());
+        options.setNodeLabelColumns(getNodeLabelColumns());
+        options.setEdgeLabelColumns(getEdgeLabelColumns());
         return options;
     }
 
@@ -664,6 +666,7 @@ public class VizModel implements VisualisationModel {
         Column[] oldValue = this.nodeLabelColumns;
         if (oldValue != nodeLabelColumns) {
             this.nodeLabelColumns = nodeLabelColumns;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelColumns(nodeLabelColumns));
             firePropertyChange("nodeLabelColumns", oldValue, nodeLabelColumns);
         }
     }
@@ -677,6 +680,7 @@ public class VizModel implements VisualisationModel {
         Column[] oldValue = this.edgeLabelColumns;
         if (oldValue != edgeLabelColumns) {
             this.edgeLabelColumns = edgeLabelColumns;
+            getRenderingOptions().ifPresent(options -> options.setEdgeLabelColumns(edgeLabelColumns));
             firePropertyChange("edgeLabelColumns", oldValue, edgeLabelColumns);
         }
     }

@@ -10,6 +10,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.graph.api.SpatialIndex;
+import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.joml.Intersectionf;
 
@@ -45,10 +46,10 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleNodes(ElementsCallback<Node> callback, Rect2D viewBoundaries) {
+    public void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
-        callback.start(visibleGraph, graphSelection);
+        callback.start(visibleGraph, graphRenderingOptions, graphSelection);
 
         SpatialIndex spatialIndex = visibleGraph.getSpatialIndex();
         spatialIndex.spatialIndexReadLock();
@@ -61,10 +62,10 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleEdges(ElementsCallback<Edge> callback, Rect2D viewBoundaries) {
+    public void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
-        callback.start(visibleGraph, graphSelection);
+        callback.start(visibleGraph, graphRenderingOptions, graphSelection);
         SpatialIndex spatialIndex = visibleGraph.getSpatialIndex();
         spatialIndex.spatialIndexReadLock();
         spatialIndex.getApproximateEdgesInArea(viewBoundaries).parallelStream().forEach(

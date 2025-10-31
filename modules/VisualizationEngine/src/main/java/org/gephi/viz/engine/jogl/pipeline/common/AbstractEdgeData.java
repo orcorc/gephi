@@ -317,7 +317,7 @@ public abstract class AbstractEdgeData {
         this.edgeOutSelectionColor = Float.intBitsToFloat(renderingOptions.getEdgeOutSelectionColor().getRGB());
 
         // Refresh visible edges
-        graphIndex.getVisibleEdges(edgesCallback, viewBoundaries);
+        graphIndex.getVisibleEdges(edgesCallback, renderingOptions, viewBoundaries);
 
         updateData(selection);
     }

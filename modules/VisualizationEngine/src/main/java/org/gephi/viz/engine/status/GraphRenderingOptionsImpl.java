@@ -3,6 +3,7 @@ package org.gephi.viz.engine.status;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.Objects;
+import org.gephi.graph.api.Column;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 
@@ -39,6 +40,10 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private Font nodeLabelFont = DEFAULT_NODE_LABEL_FONT;
     private boolean hideNonSelectedNodeLabels = DEFAULT_HIDE_NON_SELECTED_NODE_LABELS;
     private float nodeLabelFitToNodeSizeFactor = DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR;
+    private Column[] nodeLabelColumns = new Column[0];
+
+    //Edge Labels
+    private Column[] edgeLabelColumns = new Column[0];
 
     //Selection:
     private boolean autoSelectNeighbours = DEFAULT_AUTO_SELECT_NEIGHBOURS;
@@ -84,6 +89,10 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
         this.nodeLabelFont = other.getNodeLabelFont();
         this.hideNonSelectedNodeLabels = other.isHideNonSelectedNodeLabels();
         this.nodeLabelFitToNodeSizeFactor = other.getNodeLabelFitToNodeSizeFactor();
+        this.nodeLabelColumns = other.getNodeLabelColumns();
+
+        // Edge Labels
+        this.edgeLabelColumns = other.getEdgeLabelColumns();
 
         // Selection
         this.autoSelectNeighbours = other.isAutoSelectNeighbours();
@@ -131,82 +140,6 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     }
 
     @Override
-    public float getEdgeScale() {
-        return edgeScale;
-    }
-
-    @Override
-    public void setEdgeScale(float edgeScale) {
-        if (Float.isNaN(edgeScale) || Float.isInfinite(edgeScale)) {
-            nodeScale = DEFAULT_NODE_SCALE;
-        }
-
-        if (edgeScale <= 0) {
-            throw new IllegalArgumentException("edgeScale should be > 0");
-        }
-
-        this.edgeScale = edgeScale;
-    }
-
-    @Override
-    public float getNodeScale() {
-        return nodeScale;
-    }
-
-    @Override
-    public void setNodeScale(float nodeScale) {
-        if (Float.isNaN(nodeScale) || Float.isInfinite(nodeScale)) {
-            nodeScale = DEFAULT_NODE_SCALE;
-        }
-
-        if (nodeScale <= 0f) {
-            throw new IllegalArgumentException("nodeScale should be > 0");
-        }
-
-        this.nodeScale = nodeScale;
-    }
-
-    @Override
-    public boolean isShowNodes() {
-        return showNodes;
-    }
-
-    @Override
-    public void setShowNodes(boolean showNodes) {
-        this.showNodes = showNodes;
-    }
-
-    @Override
-    public boolean isShowEdges() {
-        return showEdges;
-    }
-
-    @Override
-    public void setShowEdges(boolean showEdges) {
-        this.showEdges = showEdges;
-    }
-
-    @Override
-    public boolean isShowEdgeLabels() {
-        return showEdgeLabels;
-    }
-
-    @Override
-    public void setShowEdgeLabels(boolean showEdgeLabels) {
-        this.showEdgeLabels = showEdgeLabels;
-    }
-
-    @Override
-    public boolean isHideNonSelectedEdges() {
-        return hideNonSelectedEdges;
-    }
-
-    @Override
-    public void setHideNonSelectedEdges(boolean hideNonSelected) {
-        this.hideNonSelectedEdges = hideNonSelected;
-    }
-
-    @Override
     public boolean isLightenNonSelected() {
         return lightenNonSelected;
     }
@@ -243,6 +176,77 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     public void setAutoSelectNeighbours(boolean autoSelectNeighbours) {
         this.autoSelectNeighbours = autoSelectNeighbours;
     }
+
+    // Nodes
+
+    @Override
+    public float getNodeScale() {
+        return nodeScale;
+    }
+
+    @Override
+    public void setNodeScale(float nodeScale) {
+        if (Float.isNaN(nodeScale) || Float.isInfinite(nodeScale)) {
+            nodeScale = DEFAULT_NODE_SCALE;
+        }
+
+        if (nodeScale <= 0f) {
+            throw new IllegalArgumentException("nodeScale should be > 0");
+        }
+
+        this.nodeScale = nodeScale;
+    }
+
+    @Override
+    public boolean isShowNodes() {
+        return showNodes;
+    }
+
+    @Override
+    public void setShowNodes(boolean showNodes) {
+        this.showNodes = showNodes;
+    }
+
+    // Edges
+
+    @Override
+    public boolean isShowEdges() {
+        return showEdges;
+    }
+
+    @Override
+    public void setShowEdges(boolean showEdges) {
+        this.showEdges = showEdges;
+    }
+
+    @Override
+    public float getEdgeScale() {
+        return edgeScale;
+    }
+
+    @Override
+    public void setEdgeScale(float edgeScale) {
+        if (Float.isNaN(edgeScale) || Float.isInfinite(edgeScale)) {
+            nodeScale = DEFAULT_NODE_SCALE;
+        }
+
+        if (edgeScale <= 0) {
+            throw new IllegalArgumentException("edgeScale should be > 0");
+        }
+
+        this.edgeScale = edgeScale;
+    }
+
+    @Override
+    public boolean isHideNonSelectedEdges() {
+        return hideNonSelectedEdges;
+    }
+
+    @Override
+    public void setHideNonSelectedEdges(boolean hideNonSelected) {
+        this.hideNonSelectedEdges = hideNonSelected;
+    }
+
 
     @Override
     public boolean isEdgeSelectionColor() {
@@ -320,6 +324,16 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     }
 
     @Override
+    public Column[] getNodeLabelColumns() {
+        return nodeLabelColumns;
+    }
+
+    @Override
+    public void setNodeLabelColumns(Column[] nodeLabelColumns) {
+        this.nodeLabelColumns = Objects.requireNonNull(nodeLabelColumns, "nodeLabelColumns can't be null");
+    }
+
+    @Override
     public boolean isNodeLabelFitToNodeSize() {
         return nodeLabelFitToNodeSize;
     }
@@ -393,4 +407,25 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
         this.hideNonSelectedNodeLabels = hideNonSelected;
     }
 
+    // Edge Labels
+
+    @Override
+    public boolean isShowEdgeLabels() {
+        return showEdgeLabels;
+    }
+
+    @Override
+    public void setShowEdgeLabels(boolean showEdgeLabels) {
+        this.showEdgeLabels = showEdgeLabels;
+    }
+
+    @Override
+    public Column[] getEdgeLabelColumns() {
+        return edgeLabelColumns;
+    }
+
+    @Override
+    public void setEdgeLabelColumns(Column[] edgeLabelColumns) {
+        this.edgeLabelColumns = Objects.requireNonNull(edgeLabelColumns, "edgeLabelColumns can't be null");
+    }
 }

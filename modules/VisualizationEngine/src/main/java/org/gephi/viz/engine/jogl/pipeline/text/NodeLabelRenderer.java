@@ -1,6 +1,9 @@
 package org.gephi.viz.engine.jogl.pipeline.text;
 
 import com.jogamp.opengl.util.awt.TextRenderer;
+import org.gephi.graph.api.AttributeUtils;
+import org.gephi.graph.api.Column;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
@@ -61,19 +64,6 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         );
     }
 
-    private void refreshTextRendererIfNeeded(Font font, JOGLRenderingTarget target) {
-        if (textRenderer == null || !textRenderer.getFont().equals(font)) {
-            if (textRenderer != null) {
-                textRenderer.dispose();
-            }
-            textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
-            final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
-            final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-            textRenderer.setUseVertexArrays(capabilities.isVAOSupported(openGLOptions));
-            textRenderer.setSmoothing(true);
-        }
-    }
-
     @Override
     public void render(NodeLabelWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         if (!data.isShowNodeLabels()) {
@@ -82,6 +72,10 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         engine.getModelViewProjectionMatrixFloats(mvp);
 
         final boolean someSelection = nodesCallback.hasSelection();
+        final String[] texts = nodesCallback.getNodesLabelsArray();
+        if (texts == null || texts.length == 0) {
+            return;
+        }
         final GraphRenderingOptions.LabelColorMode labelColorMode = data.getNodeLabelColorMode();
         final GraphRenderingOptions.LabelSizeMode labelSizeMode = data.getNodeLabelSizeMode();
         final float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
@@ -100,9 +94,9 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         textRenderer.setTransform(mvp);
 
         final Node[] nodes = nodesCallback.getNodesArray();
-        final int count = nodesCallback.getCount();
+        final int maxIndex = nodesCallback.getMaxIndex();
 
-        for (int i = 0; i < count; i++) {
+        for (int i = 0; i <= maxIndex; i++) {
             final Node node = nodes[i];
 
             if (node == null) {
@@ -114,7 +108,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
                 continue;
             }
 
-            final String text = node.getLabel();
+            final String text = texts[i];
             if (text == null || text.isEmpty()) {
                 continue;
             }
@@ -159,6 +153,19 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         }
 
         textRenderer.end3DRendering();
+    }
+
+    private void refreshTextRendererIfNeeded(Font font, JOGLRenderingTarget target) {
+        if (textRenderer == null || !textRenderer.getFont().equals(font)) {
+            if (textRenderer != null) {
+                textRenderer.dispose();
+            }
+            textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
+            final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
+            final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
+            textRenderer.setUseVertexArrays(capabilities.isVAOSupported(openGLOptions));
+            textRenderer.setSmoothing(true);
+        }
     }
 
     @Override

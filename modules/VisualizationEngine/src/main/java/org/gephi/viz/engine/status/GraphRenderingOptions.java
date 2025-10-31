@@ -2,6 +2,7 @@ package org.gephi.viz.engine.status;
 
 import java.awt.Color;
 import java.awt.Font;
+import org.gephi.graph.api.Column;
 import org.joml.Vector2fc;
 
 /**
@@ -144,6 +145,10 @@ public interface GraphRenderingOptions {
 
     void setShowNodeLabels(boolean showNodeLabels);
 
+    Column[] getNodeLabelColumns();
+
+    void setNodeLabelColumns(Column[] columns);
+
     LabelColorMode getNodeLabelColorMode();
 
     void setNodeLabelColorMode(LabelColorMode labelColorMode);
@@ -177,5 +182,9 @@ public interface GraphRenderingOptions {
     boolean isShowEdgeLabels();
 
     void setShowEdgeLabels(boolean showEdgeLabels);
+
+    Column[] getEdgeLabelColumns();
+
+    void setEdgeLabelColumns(Column[] columns);
 
 }
