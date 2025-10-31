@@ -206,6 +206,12 @@ public class VizModel implements VisualisationModel {
         options.setShowEdges(isShowEdges());
         options.setShowEdgeLabels(isShowEdgeLabels());
         options.setShowNodeLabels(isShowNodeLabels());
+        options.setNodeLabelSizeMode(GraphRenderingOptions.LabelSizeMode.valueOf(getNodeLabelSizeMode().name()));
+        options.setNodeLabelColorMode(GraphRenderingOptions.LabelColorMode.valueOf(getNodeLabelColorMode().name()));
+        options.setNodeLabelFont(getNodeLabelFont());
+        options.setNodeLabelScale(getNodeLabelScale());
+        options.setNodeLabelFitToNodeSize(isNodeLabelFitToNodeSize());
+        options.setHideNonSelectedNodeLabels(isHideNonSelectedLabels());
         return options;
     }
 
@@ -560,6 +566,8 @@ public class VizModel implements VisualisationModel {
         LabelColorMode oldValue = this.nodeLabelColorMode;
         if (oldValue != nodeLabelColorMode) {
             this.nodeLabelColorMode = nodeLabelColorMode;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelColorMode(
+                    GraphRenderingOptions.LabelColorMode.valueOf(nodeLabelColorMode.name())));
             firePropertyChange("nodeLabelColorMode", oldValue, nodeLabelColorMode);
         }
     }
@@ -573,6 +581,9 @@ public class VizModel implements VisualisationModel {
         LabelSizeMode oldValue = this.nodeLabelSizeMode;
         if (oldValue != nodeLabelSizeMode) {
             this.nodeLabelSizeMode = nodeLabelSizeMode;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelSizeMode(
+                    GraphRenderingOptions.LabelSizeMode.valueOf(nodeLabelSizeMode.name()))
+                );
             firePropertyChange("nodeLabelSizeMode", oldValue, nodeLabelSizeMode);
         }
     }
@@ -586,6 +597,7 @@ public class VizModel implements VisualisationModel {
         Font oldValue = this.nodeLabelFont;
         if (oldValue != nodeLabelFont) {
             this.nodeLabelFont = nodeLabelFont;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelFont(nodeLabelFont));
             firePropertyChange("nodeLabelFont", oldValue, nodeLabelFont);
         }
     }
@@ -612,6 +624,7 @@ public class VizModel implements VisualisationModel {
         float oldValue = this.nodeLabelScale;
         if (oldValue != nodeLabelScale) {
             this.nodeLabelScale = nodeLabelScale;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelScale(nodeLabelScale));
             firePropertyChange("nodeLabelScale", oldValue, nodeLabelScale);
         }
     }
@@ -638,6 +651,7 @@ public class VizModel implements VisualisationModel {
         boolean oldValue = this.hideNonSelectedLabels;
         if (oldValue != hideNonSelectedLabels) {
             this.hideNonSelectedLabels = hideNonSelectedLabels;
+            getRenderingOptions().ifPresent(options -> options.setHideNonSelectedNodeLabels(hideNonSelectedLabels));
             firePropertyChange("hideNonSelectedLabels", oldValue, hideNonSelectedLabels);
         }
     }
@@ -651,6 +665,7 @@ public class VizModel implements VisualisationModel {
         boolean oldValue = this.fitNodeLabelsToNodeSize;
         if (oldValue != fitNodeLabelsToNodeSize) {
             this.fitNodeLabelsToNodeSize = fitNodeLabelsToNodeSize;
+            getRenderingOptions().ifPresent(options -> options.setNodeLabelFitToNodeSize(fitNodeLabelsToNodeSize));
             firePropertyChange("nodeLabelFitToNodeSize", oldValue, fitNodeLabelsToNodeSize);
         }
     }

@@ -291,6 +291,8 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
 
         labelNodeScale.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.labelNodeScale.text")); // NOI18N
 
+        nodeSizeSlider.setMinimum(1);
+
         labelNodeSize.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.labelNodeSize.text")); // NOI18N
 
         fitToNodeSizeToggleButton.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.fitToNodeSizeToggleButton.text")); // NOI18N

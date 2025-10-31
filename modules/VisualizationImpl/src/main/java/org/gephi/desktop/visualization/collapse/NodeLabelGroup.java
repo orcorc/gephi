@@ -94,7 +94,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
         fitToNodeSizeButton.addActionListener(e -> vizController.setNodeLabelFitToNodeSize(fitToNodeSizeButton.isSelected()));
 
         //Font size
-        fontSizeSlider = new JSlider(0, 100, 0);
+        fontSizeSlider = new JSlider(1, 100, 1);
         fontSizeSlider.setToolTipText(NbBundle.getMessage(NodeLabelGroup.class, "VizToolbar.Labels.fontScale"));
         fontSizeSlider.addChangeListener(new ChangeListener() {
             @Override

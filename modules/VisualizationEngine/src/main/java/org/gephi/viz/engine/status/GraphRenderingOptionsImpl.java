@@ -1,6 +1,7 @@
 package org.gephi.viz.engine.status;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.util.Objects;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
@@ -29,6 +30,15 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
 
     //Nodes
     private float nodeScale = DEFAULT_NODE_SCALE;
+
+    //Node Labels
+    private boolean nodeLabelFitToNodeSize = DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE;
+    private float nodeLabelScale = DEFAULT_NODE_LABEL_SCALE;
+    private LabelColorMode nodeLabelColorMode = DEFAULT_NODE_LABEL_COLOR_MODE;
+    private LabelSizeMode nodeLabelSizeMode = DEFAULT_NODE_LABEL_SIZE_MODE;
+    private Font nodeLabelFont = DEFAULT_NODE_LABEL_FONT;
+    private boolean hideNonSelectedNodeLabels = DEFAULT_HIDE_NON_SELECTED_NODE_LABELS;
+    private float nodeLabelFitToNodeSizeFactor = DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR;
 
     //Selection:
     private boolean autoSelectNeighbours = DEFAULT_AUTO_SELECT_NEIGHBOURS;
@@ -65,6 +75,15 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
 
         // Nodes
         this.nodeScale = other.getNodeScale();
+
+        // Node Labels
+        this.nodeLabelFitToNodeSize = other.isNodeLabelFitToNodeSize();
+        this.nodeLabelScale = other.getNodeLabelScale();
+        this.nodeLabelColorMode = other.getNodeLabelColorMode();
+        this.nodeLabelSizeMode = other.getNodeLabelSizeMode();
+        this.nodeLabelFont = other.getNodeLabelFont();
+        this.hideNonSelectedNodeLabels = other.isHideNonSelectedNodeLabels();
+        this.nodeLabelFitToNodeSizeFactor = other.getNodeLabelFitToNodeSizeFactor();
 
         // Selection
         this.autoSelectNeighbours = other.isAutoSelectNeighbours();
@@ -165,16 +184,6 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     @Override
     public void setShowEdges(boolean showEdges) {
         this.showEdges = showEdges;
-    }
-
-    @Override
-    public boolean isShowNodeLabels() {
-        return showNodeLabels;
-    }
-
-    @Override
-    public void setShowNodeLabels(boolean showNodeLabels) {
-        this.showNodeLabels = showNodeLabels;
     }
 
     @Override
@@ -296,6 +305,92 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     @Override
     public void setEdgeWeightEnabled(boolean enabled) {
         this.edgeWeightEnabled = enabled;
+    }
+
+    // Node Labels
+
+    @Override
+    public boolean isShowNodeLabels() {
+        return showNodeLabels;
+    }
+
+    @Override
+    public void setShowNodeLabels(boolean showNodeLabels) {
+        this.showNodeLabels = showNodeLabels;
+    }
+
+    @Override
+    public boolean isNodeLabelFitToNodeSize() {
+        return nodeLabelFitToNodeSize;
+    }
+
+    @Override
+    public void setNodeLabelFitToNodeSize(boolean fitToNodeSize) {
+        this.nodeLabelFitToNodeSize = fitToNodeSize;
+    }
+
+    @Override
+    public float getNodeLabelScale() {
+        return nodeLabelScale;
+    }
+
+    @Override
+    public float getNodeLabelFitToNodeSizeFactor() {
+        return nodeLabelFitToNodeSizeFactor;
+    }
+
+    @Override
+    public void setNodeLabelFitToNodeSizeFactor(float factor) {
+        this.nodeLabelFitToNodeSizeFactor = factor;
+    }
+
+    @Override
+    public void setNodeLabelScale(float nodeLabelScale) {
+        if (nodeLabelScale <= 0f || Float.isNaN(nodeLabelScale) || Float.isInfinite(nodeLabelScale)) {
+            throw new IllegalArgumentException("nodeLabelScale should be > 0");
+        }
+
+        this.nodeLabelScale = nodeLabelScale;
+    }
+
+    @Override
+    public LabelColorMode getNodeLabelColorMode() {
+        return nodeLabelColorMode;
+    }
+
+    @Override
+    public void setNodeLabelColorMode(LabelColorMode labelColorMode) {
+        this.nodeLabelColorMode = Objects.requireNonNull(labelColorMode, "labelColorMode can't be null");
+    }
+
+    @Override
+    public LabelSizeMode getNodeLabelSizeMode() {
+        return nodeLabelSizeMode;
+    }
+
+    @Override
+    public void setNodeLabelSizeMode(LabelSizeMode labelSizeMode) {
+        this.nodeLabelSizeMode = Objects.requireNonNull(labelSizeMode, "labelSizeMode can't be null");
+    }
+
+    @Override
+    public Font getNodeLabelFont() {
+        return nodeLabelFont;
+    }
+
+    @Override
+    public void setNodeLabelFont(Font font) {
+        this.nodeLabelFont = Objects.requireNonNull(font, "font can't be null");
+    }
+
+    @Override
+    public boolean isHideNonSelectedNodeLabels() {
+        return hideNonSelectedNodeLabels;
+    }
+
+    @Override
+    public void setHideNonSelectedNodeLabels(boolean hideNonSelected) {
+        this.hideNonSelectedNodeLabels = hideNonSelected;
     }
 
 }

@@ -140,6 +140,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JSlider" name="nodeSizeSlider">
+      <Properties>
+        <Property name="minimum" type="int" value="1"/>
+      </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="labelNodeSize">
       <Properties>

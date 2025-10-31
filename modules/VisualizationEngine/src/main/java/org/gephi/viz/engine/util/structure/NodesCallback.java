@@ -37,6 +37,7 @@ public class NodesCallback implements ElementsCallback<Node> {
             selectedBitSet.clear();
             selectedBitSet.or(sourceBitSet);
         }
+
     }
 
     @Override
