@@ -168,14 +168,4 @@
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>jogl</id>
-            <name>JOGL</name>
-            <url>https://jogamp.org/deployment/maven/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 </project>
