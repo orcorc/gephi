@@ -40,6 +40,7 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private Font nodeLabelFont = DEFAULT_NODE_LABEL_FONT;
     private boolean hideNonSelectedNodeLabels = DEFAULT_HIDE_NON_SELECTED_NODE_LABELS;
     private float nodeLabelFitToNodeSizeFactor = DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR;
+    private float nodeLabelSizeFactor = DEFAULT_NODE_LABEL_SIZE_FACTOR;
     private Column[] nodeLabelColumns = new Column[0];
 
     //Edge Labels
@@ -90,6 +91,7 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
         this.hideNonSelectedNodeLabels = other.isHideNonSelectedNodeLabels();
         this.nodeLabelFitToNodeSizeFactor = other.getNodeLabelFitToNodeSizeFactor();
         this.nodeLabelColumns = other.getNodeLabelColumns();
+        this.nodeLabelSizeFactor = other.getNodeLabelSizeFactor();
 
         // Edge Labels
         this.edgeLabelColumns = other.getEdgeLabelColumns();
@@ -405,6 +407,16 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     @Override
     public void setHideNonSelectedNodeLabels(boolean hideNonSelected) {
         this.hideNonSelectedNodeLabels = hideNonSelected;
+    }
+
+    @Override
+    public float getNodeLabelSizeFactor() {
+        return nodeLabelSizeFactor;
+    }
+
+    @Override
+    public void setNodeLabelSizeFactor(float nodeLabelSizeFactor) {
+        this.nodeLabelSizeFactor = nodeLabelSizeFactor;
     }
 
     // Edge Labels

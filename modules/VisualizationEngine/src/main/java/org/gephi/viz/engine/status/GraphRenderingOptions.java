@@ -56,10 +56,11 @@ public interface GraphRenderingOptions {
     boolean DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE = false;
     float DEFAULT_NODE_LABEL_SCALE = 1f;
     LabelColorMode DEFAULT_NODE_LABEL_COLOR_MODE = LabelColorMode.SELF;
-    LabelSizeMode DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.SCREEN;
+    LabelSizeMode DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.ZOOM;
     Font DEFAULT_NODE_LABEL_FONT = new Font("Arial", Font.BOLD, 32);
     boolean DEFAULT_HIDE_NON_SELECTED_NODE_LABELS = false;
-    float DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR = 0.02f;
+    float DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR = 0.05f;
+    float DEFAULT_NODE_LABEL_SIZE_FACTOR = 1.9f;
 
     //Selection:
     boolean DEFAULT_HIDE_NON_SELECTED_EDGES = false;
@@ -176,6 +177,10 @@ public interface GraphRenderingOptions {
     boolean isHideNonSelectedNodeLabels();
 
     void setHideNonSelectedNodeLabels(boolean hideNonSelected);
+
+    float getNodeLabelSizeFactor();
+
+    void setNodeLabelSizeFactor(float factor);
 
     // Edge Labels
 

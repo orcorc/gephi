@@ -139,7 +139,7 @@ public class VizConfig {
     public static final float DEFAULT_NODE_SCALE = 1f;
     public static final float DEFAULT_NODE_LABEL_SCALE = 0.5f;
     public static final float DEFAULT_EDGE_LABEL_SCALE = 0.5f;
-    public static final String DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.SCREEN.name();
+    public static final String DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.ZOOM.name();
     public static final String DEFAULT_NODE_LABEL_COLOR_MODE = LabelColorMode.SELF.name();
     public static final boolean DEFAULT_EDGE_WEIGHTED = true;
 

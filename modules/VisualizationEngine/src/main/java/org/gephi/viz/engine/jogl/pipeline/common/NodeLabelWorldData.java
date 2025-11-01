@@ -8,6 +8,7 @@ import org.gephi.viz.engine.status.GraphRenderingOptions;
 public class NodeLabelWorldData implements WorldData {
 
     private final boolean showNodeLabels;
+    private final float nodeScale;
     private final Font nodeLabelFont;
     private final float nodeLabelScale;
     private final GraphRenderingOptions.LabelColorMode nodeLabelColorMode;
@@ -16,24 +17,29 @@ public class NodeLabelWorldData implements WorldData {
     private final boolean fitNodeLabelsToNodeSize;
     private final float fitNodeLabelsToNodeSizeFactor;
     private final float lightenNonSelectedFactor;
+    private final float nodeLabelSizeFactor;
     private final float zoom;
 
     public NodeLabelWorldData(boolean showNodeLabels,
                               float zoom,
+                              float nodeScale,
                               Font nodeLabelFont,
                               float nodeLabelScale,
                               GraphRenderingOptions.LabelColorMode nodeLabelColorMode,
                               GraphRenderingOptions.LabelSizeMode nodeLabelSizeMode,
+                              float nodeLabelSizeFactor,
                               boolean hideNonSelectedLabels,
                               boolean fitNodeLabelsToNodeSize,
                               float fitNodeLabelsToNodeSizeFactor,
                               float lightenNonSelectedFactor) {
         this.showNodeLabels = showNodeLabels;
         this.zoom = zoom;
+        this.nodeScale = nodeScale;
         this.nodeLabelFont = nodeLabelFont;
         this.nodeLabelScale = nodeLabelScale;
         this.nodeLabelColorMode = nodeLabelColorMode;
         this.nodeLabelSizeMode = nodeLabelSizeMode;
+        this.nodeLabelSizeFactor = nodeLabelSizeFactor;
         this.hideNonSelectedLabels = hideNonSelectedLabels;
         this.fitNodeLabelsToNodeSize = fitNodeLabelsToNodeSize;
         this.fitNodeLabelsToNodeSizeFactor = fitNodeLabelsToNodeSizeFactor;
@@ -44,12 +50,20 @@ public class NodeLabelWorldData implements WorldData {
         return showNodeLabels;
     }
 
+    public float getNodeScale() {
+        return nodeScale;
+    }
+
     public float getZoom() {
         return zoom;
     }
 
     public float getLightenNonSelectedFactor() {
         return lightenNonSelectedFactor;
+    }
+
+    public float getNodeLabelSizeFactor() {
+        return nodeLabelSizeFactor;
     }
 
     public Font getNodeLabelFont() {

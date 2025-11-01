@@ -49,10 +49,12 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         return new NodeLabelWorldData(
             options.isShowNodeLabels(),
             options.getZoom(),
+            options.getNodeScale(),
             options.getNodeLabelFont(),
             options.getNodeLabelScale(),
             options.getNodeLabelColorMode(),
             options.getNodeLabelSizeMode(),
+            options.getNodeLabelSizeFactor(),
             options.isHideNonSelectedNodeLabels(),
             options.isNodeLabelFitToNodeSize(),
             options.getNodeLabelFitToNodeSizeFactor(),
@@ -76,10 +78,12 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         final GraphRenderingOptions.LabelSizeMode labelSizeMode = data.getNodeLabelSizeMode();
         final float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
         final float nodeLabelScale = data.getNodeLabelScale();
+        final float nodeLabelSizeFactor = data.getNodeLabelSizeFactor();
         final float fitNodeLabelsToNodeSizeFactor = data.getFitNodeLabelsToNodeSizeFactor();
         final boolean fitToNodeSize = data.isFitNodeLabelsToNodeSize();
         final boolean hideNonSelectedLabels = data.isHideNonSelectedLabels();
         final float zoom = data.getZoom();
+        final float nodeScale = data.getNodeScale();
 
         if (hideNonSelectedLabels && !someSelection) {
             return;
@@ -110,7 +114,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             }
 
             // Size
-            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor : 1f;
+            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale : node.getTextProperties().getSize() * nodeLabelSizeFactor;
             float sizeFactor = nodeLabelScale * nodeSizeFactor;
             if (labelSizeMode.equals(GraphRenderingOptions.LabelSizeMode.SCREEN)) {
                 sizeFactor /= zoom;
@@ -124,6 +128,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             final float descentPx = heightPx - ascentPx;
             final float drawX = node.x() - (widthPx * sizeFactor) * 0.5f;
             final float drawY = node.y() - ((ascentPx - descentPx) * sizeFactor) * 0.5f;
+            node.getTextProperties().setDimensions(widthPx * sizeFactor, heightPx * sizeFactor);
 
             // Color
             final int rgba = labelColorMode.equals(GraphRenderingOptions.LabelColorMode.OBJECT) ? node.getRGBA() : node.getTextProperties().getRGBA();
