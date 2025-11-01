@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.spi.InputListener;
 import org.gephi.viz.engine.spi.PipelinedExecutor;
 import org.gephi.viz.engine.spi.Renderer;
@@ -83,8 +84,9 @@ public class VizEngine<R extends RenderingTarget, I> {
     private final List<Renderer<R, ? extends WorldData>> renderersPipeline = new ArrayList<>();
 
     //World updaters:
-    private final Set<WorldUpdater<R>> allUpdaters = new LinkedHashSet<>();
-    private final List<WorldUpdater<R>> updatersPipeline = new ArrayList<>();
+    private final Set<WorldUpdater<R, ?>> allUpdaters = new LinkedHashSet<>();
+    private final List<WorldUpdater<R, ?>> updatersPipeline = new ArrayList<>();
+    private final List<ElementsCallback<?>> updatersElementsCallbacks = new ArrayList<>();
     private final ExecutorService worldUpdaterManagerThread;
     private ExecutorService updatersThreadPool;
     private final WorldUpdaterExecutionMode worldUpdatersExecutionMode =
@@ -180,6 +182,15 @@ public class VizEngine<R extends RenderingTarget, I> {
         setupPipelineOfElements(allInputListeners, inputListenersPipeline, "InputListener");
     }
 
+    private void setupElementsCallbackPipeline() {
+        for (WorldUpdater<R, ?> updater : updatersPipeline) {
+            ElementsCallback<?> callback = updater.getElementsCallback();
+            if (callback != null && !updatersElementsCallbacks.contains(callback)) {
+                updatersElementsCallbacks.add(callback);
+            }
+        }
+    }
+
     public void addInputListener(InputListener<R, I> listener) {
         allInputListeners.add(listener);
     }
@@ -190,7 +201,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
     }
 
-    public void addWorldUpdater(WorldUpdater<R> updater) {
+    public void addWorldUpdater(WorldUpdater<R, ?> updater) {
         if (updater != null) {
             allUpdaters.add(updater);
         }
@@ -200,7 +211,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         return worldUpdatersExecutionMode;
     }
 
-    public boolean isWorldUpdaterInPipeline(WorldUpdater<R> renderer) {
+    public boolean isWorldUpdaterInPipeline(WorldUpdater<R, ?> renderer) {
         return updatersPipeline.contains(renderer);
     }
 
@@ -339,6 +350,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         setupRenderersPipeline();
         setupWorldUpdatersPipeline();
         setupInputListenersPipeline();
+        setupElementsCallbackPipeline();
 
         updatersPipeline.forEach((worldUpdater) -> {
             worldUpdater.init(renderingTarget);
@@ -401,6 +413,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         updatersPipeline.forEach((worldUpdater) -> {
             worldUpdater.dispose(renderingTarget);
         });
+        updatersElementsCallbacks.forEach(ElementsCallback::reset);
 
         Logger.getLogger(VizEngine.class.getName())
             .log(Level.INFO, "Disposing {0} renderers", renderersPipeline.size());
@@ -411,11 +424,24 @@ public class VizEngine<R extends RenderingTarget, I> {
         this.isDestroyed = true;
     }
 
-    private CompletableFuture<Void> buildUpdaterFuture(final WorldUpdater<R> updater,
+    private CompletableFuture<Void> buildUpdaterFuture(final WorldUpdater<R, ?> updater,
                                                        final VizEngineModel engineModel) {
         return CompletableFuture.runAsync(() -> {
             try {
                 updater.updateWorld(engineModel);
+            } catch (Throwable t) {
+                Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+            }
+        }, updatersThreadPool);
+    }
+
+    private CompletableFuture<Void> buildCallbackFuture(final ElementsCallback<?> callback,
+                                                        final GraphIndex graphIndex,
+                                                        final GraphRenderingOptions renderingOptions,
+                                                        final Rect2D boundaries) {
+        return CompletableFuture.runAsync(() -> {
+            try {
+                callback.run(graphIndex, renderingOptions, boundaries);
             } catch (Throwable t) {
                 Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
             }
@@ -478,7 +504,11 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
         processInputEvents(model);
 
-        for (WorldUpdater<R> worldUpdater : updatersPipeline) {
+        Rect2D viewBoundaries = getViewBoundaries();
+        for (ElementsCallback<?> callback : updatersElementsCallbacks) {
+            callback.run(model.getGraphIndex(), model.getRenderingOptions(), viewBoundaries);
+        }
+        for (WorldUpdater<R, ?> worldUpdater : updatersPipeline) {
             worldUpdater.updateWorld(model);
         }
         lastWorldUpdateMillis = TimeUtils.getTimeMillis();
@@ -533,12 +563,16 @@ public class VizEngine<R extends RenderingTarget, I> {
                 // Process input events
                 processInputEvents(model);
 
-                // Create and start a world update for each updater
-                List<CompletableFuture<Void>> futures =
-                    updatersPipeline.stream().map(u -> buildUpdaterFuture(u, model)).toList();
+                // Run all elements callbacks first
+                CompletableFuture.allOf(updatersElementsCallbacks.stream()
+                    .map(c -> buildCallbackFuture(c, model.getGraphIndex(),
+                        model.getRenderingOptions(), getViewBoundaries()))
+                    .toArray(CompletableFuture[]::new)).join();
 
-                // Finish executing all updaters and wait for them to finish
-                CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
+                // Run all world updaters
+                CompletableFuture.allOf(updatersPipeline.stream()
+                    .map(u -> buildUpdaterFuture(u, model))
+                    .toArray(CompletableFuture[]::new)).join();
 
                 return model;
             }, worldUpdaterManagerThread);

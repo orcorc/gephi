@@ -7,9 +7,11 @@ import org.gephi.graph.api.Column;
 import org.gephi.graph.api.ColumnIndex;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
-import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
+import org.gephi.viz.engine.structure.GraphIndex;
 
 /**
  *
@@ -26,6 +28,14 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private int edgeCount = 0;
     private boolean directed = false;
     private boolean undirected = false;
+
+    @Override
+    public void run(GraphIndex graphIndex, GraphRenderingOptions renderingOptions, Rect2D viewBoundaries) {
+        if (!renderingOptions.isShowEdges()) {
+            return;
+        }
+        graphIndex.getVisibleEdges(this, renderingOptions, viewBoundaries);
+    }
 
     @Override
     public void start(Graph graph, GraphRenderingOptions graphRenderingOptions, GraphSelection graphSelection) {
@@ -72,6 +82,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         }
     }
 
+    @Override
     public void reset() {
         edgesArray = new Edge[0];
         edgeWeightsArray = new float[0];

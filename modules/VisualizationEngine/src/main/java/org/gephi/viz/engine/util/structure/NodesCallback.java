@@ -8,10 +8,12 @@ import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
+import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.status.GraphSelectionImpl;
-import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
+import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.text.TextLabelBuilder;
 
 /**
@@ -31,6 +33,14 @@ public class NodesCallback implements ElementsCallback<Node> {
     private int nodeCount = 0;
     private boolean hasLabels = false;
     private boolean hideNonSelectedLabels = false;
+
+    @Override
+    public void run(GraphIndex graphIndex, GraphRenderingOptions renderingOptions, Rect2D viewBoundaries) {
+        if (!renderingOptions.isShowNodes()) {
+            return;
+        }
+        graphIndex.getVisibleNodes(this, renderingOptions, viewBoundaries);
+    }
 
     @Override
     public void start(Graph graph, GraphRenderingOptions graphRenderingOptions, GraphSelection graphSelection) {
@@ -85,6 +95,7 @@ public class NodesCallback implements ElementsCallback<Node> {
         }
     }
 
+    @Override
     public void reset() {
         nodesArray = new Node[0];
         maxIndex = 0;

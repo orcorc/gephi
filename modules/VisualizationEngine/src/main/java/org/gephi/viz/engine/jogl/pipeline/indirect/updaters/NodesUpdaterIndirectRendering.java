@@ -1,18 +1,20 @@
 package org.gephi.viz.engine.jogl.pipeline.indirect.updaters;
 
+import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.availability.IndirectDraw;
 import org.gephi.viz.engine.jogl.pipeline.indirect.IndirectNodeData;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.spi.WorldUpdater;
 
 /**
  *
  * @author Eduardo Ramos
  */
-public class NodesUpdaterIndirectRendering implements WorldUpdater<JOGLRenderingTarget> {
+public class NodesUpdaterIndirectRendering implements WorldUpdater<JOGLRenderingTarget, Node> {
 
     private final VizEngine engine;
     private final IndirectNodeData nodeData;
@@ -34,8 +36,12 @@ public class NodesUpdaterIndirectRendering implements WorldUpdater<JOGLRendering
 
     @Override
     public void updateWorld(VizEngineModel model) {
-        nodeData.update(model.getGraphIndex(), model.getRenderingOptions(),
-            engine.getViewBoundaries());
+        nodeData.update(model.getRenderingOptions());
+    }
+
+    @Override
+    public ElementsCallback<Node> getElementsCallback() {
+        return nodeData.getNodesCallback();
     }
 
     @Override

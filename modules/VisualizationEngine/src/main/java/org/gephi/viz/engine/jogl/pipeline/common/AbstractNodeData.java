@@ -19,7 +19,6 @@ import com.jogamp.opengl.util.GLBuffers;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.gephi.graph.api.Node;
-import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
@@ -33,7 +32,6 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
@@ -227,8 +225,7 @@ public abstract class AbstractNodeData {
         );
     }
 
-    public void update(GraphIndex graphIndex, GraphRenderingOptions renderingOptions,
-                       Rect2D viewBoundaries) {
+    public void update(GraphRenderingOptions renderingOptions) {
         if (!renderingOptions.isShowNodes()) {
             instanceCounter.clearCount();
             return;
@@ -239,7 +236,6 @@ public abstract class AbstractNodeData {
         currentNodeScale = renderingOptions.getNodeScale();
 
         // Get visible nodes
-        graphIndex.getVisibleNodes(nodesCallback, renderingOptions, viewBoundaries);
         final Node[] visibleNodesArray = nodesCallback.getNodesArray();
         final int maxIndex = nodesCallback.getMaxIndex();
         final int totalNodes = nodesCallback.getCount();
@@ -555,6 +551,9 @@ public abstract class AbstractNodeData {
                 return null;
             }
         }
+    }
 
+    public NodesCallback getNodesCallback() {
+        return nodesCallback;
     }
 }
