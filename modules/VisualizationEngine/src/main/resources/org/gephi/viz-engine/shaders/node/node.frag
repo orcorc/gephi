@@ -1,7 +1,10 @@
 //#include "../common.frag.glsl"
 
-varying vec4 fragColor;
+//#include "common.node.struct.glsl"
 
-void main() {
-    gl_FragColor = fragColor;
+in VertexData vertexData;
+out vec4 fragColor;
+
+void main(void) {
+    fragColor = vertexData.color;
 }

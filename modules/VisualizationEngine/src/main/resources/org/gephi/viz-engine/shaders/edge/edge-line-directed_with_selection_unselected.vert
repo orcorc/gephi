@@ -1,15 +1,19 @@
 //#include "../common.vert.glsl"
 
 //#include "common.edge.vert.glsl"
+
 //#include "common.edge.vert.uniform.glsl"
-//#include "common.edge.vert.attribute.glsl"
-
-//#include "common.edge.directed.vert.glsl"
-
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
-varying vec4 fragColor;
+//#include "common.edge.vert.in.glsl"
+
+//#include "common.edge.directed.vert.glsl"
+
+
+
+//#include "common.edge.struct.glsl"
+out VertexData vertexData;
 
 void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
@@ -33,5 +37,5 @@ void main() {
     color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor);
 
 
-    fragColor = color;
+    vertexData.color = color;
 }

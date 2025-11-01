@@ -1,11 +1,14 @@
 //#include "../common.vert.glsl"
 
 //#include "common.node.vert.glsl"
-//#include "common.node.vert.attribute.glsl"
+
 //#include "common.node.vert.uniform.glsl"
 
+//#include "common.node.vert.in.glsl"
 
-varying vec4 fragColor;
+//#include "common.node.struct.glsl"
+
+out VertexData vertexData;
 
 void main() {	
     vec2 instancePosition = size * sizeMultiplier * vert + position;
@@ -16,5 +19,5 @@ void main() {
 
     color.rgb = color.rgb * colorMultiplier;
 
-    fragColor = color;
+    vertexData.color = color;
 }
