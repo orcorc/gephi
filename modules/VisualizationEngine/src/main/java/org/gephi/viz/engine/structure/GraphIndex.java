@@ -1,14 +1,13 @@
 package org.gephi.viz.engine.structure;
 
-import java.util.function.Consumer;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.status.GraphSelection;
 
 /**
  *
@@ -39,29 +38,4 @@ public interface GraphIndex {
     EdgeIterable getEdgesInsideRectangle(Rect2D rect);
 
     EdgeIterable getEdgesInsideCircle(float x, float y, float radius);
-
-    interface ElementsCallback<T> extends Consumer<T> {
-
-        /**
-         * Called when going to start receiving elements
-         *
-         * @param graph Graph
-         */
-        void start(Graph graph, GraphRenderingOptions graphRenderingOptions, GraphSelection selection);
-
-        /**
-         * Called for each element in the list
-         *
-         * @param element Element
-         */
-        @Override
-        void accept(T element);
-
-        /**
-         * Called when finished receiving elements
-         *
-         * @param graph Graph
-         */
-        void end(Graph graph);
-    }
 }

@@ -60,7 +60,7 @@ public abstract class AbstractEdgeData {
     protected GLBuffer attributesGLBufferUndirected;
     protected GLBuffer attributesGLBufferUndirectedSecondary;
 
-    protected final EdgesCallback edgesCallback = new EdgesCallback();
+    protected final EdgesCallback edgesCallback;
 
     protected static final int ATTRIBS_STRIDE = Math.max(
         EdgeLineModelUndirected.TOTAL_ATTRIBUTES_FLOATS,
@@ -89,8 +89,9 @@ public abstract class AbstractEdgeData {
     protected float edgeInSelectionColor;
     protected GraphRenderingOptions.EdgeColorMode edgeColorMode;
 
-    public AbstractEdgeData(boolean instanced, boolean usesSecondaryBuffer) {
+    public AbstractEdgeData(final EdgesCallback edgesCallback, boolean instanced, boolean usesSecondaryBuffer) {
         this.startedTime = System.currentTimeMillis();
+        this.edgesCallback = edgesCallback;
         this.instanced = instanced;
         this.usesSecondaryBuffer = usesSecondaryBuffer;
     }
@@ -341,9 +342,6 @@ public abstract class AbstractEdgeData {
             Float.intBitsToFloat(renderingOptions.getEdgeBothSelectionColor().getRGB());
         this.edgeInSelectionColor = Float.intBitsToFloat(renderingOptions.getEdgeInSelectionColor().getRGB());
         this.edgeOutSelectionColor = Float.intBitsToFloat(renderingOptions.getEdgeOutSelectionColor().getRGB());
-
-        // Refresh visible edges
-        graphIndex.getVisibleEdges(edgesCallback, renderingOptions, viewBoundaries);
 
         updateData(selection);
     }
@@ -1109,6 +1107,9 @@ public abstract class AbstractEdgeData {
                 return null;
             }
         }
+    }
 
+    public EdgesCallback getEdgesCallback() {
+        return edgesCallback;
     }
 }

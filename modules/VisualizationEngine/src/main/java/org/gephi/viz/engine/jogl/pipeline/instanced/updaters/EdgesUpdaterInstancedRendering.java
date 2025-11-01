@@ -1,18 +1,20 @@
 package org.gephi.viz.engine.jogl.pipeline.instanced.updaters;
 
+import org.gephi.graph.api.Edge;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.availability.InstancedDraw;
 import org.gephi.viz.engine.jogl.pipeline.instanced.InstancedEdgeData;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.spi.WorldUpdater;
 
 /**
  *
  * @author Eduardo Ramos
  */
-public class EdgesUpdaterInstancedRendering implements WorldUpdater<JOGLRenderingTarget> {
+public class EdgesUpdaterInstancedRendering implements WorldUpdater<JOGLRenderingTarget, Edge> {
 
     private final VizEngine engine;
     private final InstancedEdgeData edgeData;
@@ -36,6 +38,11 @@ public class EdgesUpdaterInstancedRendering implements WorldUpdater<JOGLRenderin
     public void updateWorld(VizEngineModel model) {
         edgeData.update(model.getGraphIndex(), model.getGraphSelection(), model.getRenderingOptions(),
             engine.getViewBoundaries());
+    }
+
+    @Override
+    public ElementsCallback<Edge> getElementsCallback() {
+        return edgeData.getEdgesCallback();
     }
 
     @Override

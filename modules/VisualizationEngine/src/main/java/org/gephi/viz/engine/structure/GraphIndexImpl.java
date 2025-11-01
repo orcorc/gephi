@@ -8,6 +8,7 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.graph.api.SpatialIndex;
+import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.joml.Intersectionf;

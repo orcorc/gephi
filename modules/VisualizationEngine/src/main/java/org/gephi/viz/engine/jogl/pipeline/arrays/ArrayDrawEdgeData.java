@@ -17,6 +17,7 @@ import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.util.ArrayUtils;
+import org.gephi.viz.engine.util.structure.EdgesCallback;
 
 /**
  *
@@ -31,8 +32,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     private static final int ATTRIBS_BUFFER_DIRECTED = 2;
     private static final int ATTRIBS_BUFFER_UNDIRECTED = 3;
 
-    public ArrayDrawEdgeData() {
-        super(false, false);
+    public ArrayDrawEdgeData(final EdgesCallback edgesCallback) {
+        super(edgesCallback, false, false);
     }
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, EdgeWorldData data, float[] mvpFloats) {

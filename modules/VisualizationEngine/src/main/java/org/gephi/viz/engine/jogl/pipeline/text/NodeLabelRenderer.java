@@ -23,7 +23,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     public static final EnumSet<RenderingLayer> LAYERS = EnumSet.of(RenderingLayer.FRONT1);
 
     private final VizEngine engine;
-    private final NodesCallback nodesCallback;
+    private final NodeLabelData nodeLabelData;
 
     // Java2D text
     private TextRenderer textRenderer;
@@ -31,9 +31,9 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     // Scratch
     private final float[] mvp = new float[16];
 
-    public NodeLabelRenderer(VizEngine engine, NodesCallback nodesCallback) {
+    public NodeLabelRenderer(VizEngine engine, NodeLabelData nodeLabelData) {
         this.engine = engine;
-        this.nodesCallback = nodesCallback;
+        this.nodeLabelData = nodeLabelData;
     }
 
     @Override
@@ -68,6 +68,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         }
         engine.getModelViewProjectionMatrixFloats(mvp);
 
+        final NodesCallback nodesCallback = nodeLabelData.getNodesCallback();
         final boolean someSelection = nodesCallback.hasSelection();
         final String[] texts = nodesCallback.getNodesLabelsArray();
         if (texts == null || texts.length == 0) {
