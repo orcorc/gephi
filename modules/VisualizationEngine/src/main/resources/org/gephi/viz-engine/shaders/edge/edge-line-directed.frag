@@ -1,7 +1,10 @@
 //#include "../common.frag.glsl"
 
-varying lowp vec4 fragColor;
+//#include "common.edge.struct.glsl"
+in VertexData vertexData;
 
-void main() {
-    gl_FragColor = fragColor;
+out vec4 fragColor;
+
+void main(void) {
+    fragColor = vertexData.color;
 }
