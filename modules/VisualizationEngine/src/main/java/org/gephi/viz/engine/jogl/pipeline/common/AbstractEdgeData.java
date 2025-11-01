@@ -15,7 +15,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
 import java.nio.FloatBuffer;
 import org.gephi.graph.api.Edge;
-import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
@@ -317,7 +316,7 @@ public abstract class AbstractEdgeData {
         this.edgeOutSelectionColor = Float.intBitsToFloat(renderingOptions.getEdgeOutSelectionColor().getRGB());
 
         // Refresh visible edges
-        graphIndex.getVisibleEdges(edgesCallback, viewBoundaries);
+        graphIndex.getVisibleEdges(edgesCallback, renderingOptions, viewBoundaries);
 
         updateData(selection);
     }
@@ -476,7 +475,8 @@ public abstract class AbstractEdgeData {
         final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs, index, null);
+        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs,
+            index, null);
     }
 
     protected int updateUndirectedData(

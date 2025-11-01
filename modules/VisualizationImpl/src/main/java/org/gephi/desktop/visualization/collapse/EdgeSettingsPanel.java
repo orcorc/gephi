@@ -448,6 +448,8 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(3, 5, 2, 0);
         scalePanel.add(labelScale, gridBagConstraints);
+
+        scaleSlider.setMinimum(1);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;

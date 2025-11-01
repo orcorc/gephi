@@ -33,7 +33,6 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
@@ -58,7 +57,7 @@ public abstract class AbstractNodeData {
     protected GLBuffer attributesGLBuffer;
     protected GLBuffer attributesGLBufferSecondary;
     protected GLBuffer commandsGLBuffer;
-    protected final NodesCallback nodesCallback = new NodesCallback();
+    protected final NodesCallback nodesCallback;
 
     protected static final int ATTRIBS_STRIDE = NodeDiskModel.TOTAL_ATTRIBUTES_FLOATS;
 
@@ -94,9 +93,11 @@ public abstract class AbstractNodeData {
     protected ManagedDirectBuffer commandsBuffer;
     private int[] commandsBufferBatch;
 
-    public AbstractNodeData(final boolean instancedRendering, final boolean indirectCommands) {
+    public AbstractNodeData(final NodesCallback nodesCallback, final boolean instancedRendering,
+                            final boolean indirectCommands) {
         this.instancedRendering = instancedRendering;
         this.indirectCommands = indirectCommands;
+        this.nodesCallback = nodesCallback;
 
         diskModel = new NodeDiskModel();
 
@@ -226,7 +227,7 @@ public abstract class AbstractNodeData {
         );
     }
 
-    public void update(GraphIndex graphIndex, GraphSelection selection, GraphRenderingOptions renderingOptions,
+    public void update(GraphIndex graphIndex, GraphRenderingOptions renderingOptions,
                        Rect2D viewBoundaries) {
         if (!renderingOptions.isShowNodes()) {
             instanceCounter.clearCount();
@@ -235,15 +236,14 @@ public abstract class AbstractNodeData {
 
         //Selection and other states updates
         currentZoom = renderingOptions.getZoom();
-        someSelection = selection.someNodesOrEdgesSelection();
         currentNodeScale = renderingOptions.getNodeScale();
-        ;
 
         // Get visible nodes
-        graphIndex.getVisibleNodes(nodesCallback, viewBoundaries);
+        graphIndex.getVisibleNodes(nodesCallback, renderingOptions, viewBoundaries);
         final Node[] visibleNodesArray = nodesCallback.getNodesArray();
         final int maxIndex = nodesCallback.getMaxIndex();
         final int totalNodes = nodesCallback.getCount();
+        someSelection = nodesCallback.hasSelection();
 
         attributesBuffer.ensureCapacity(totalNodes * ATTRIBS_STRIDE);
         if (indirectCommands) {
@@ -270,7 +270,7 @@ public abstract class AbstractNodeData {
                     continue;
                 }
 
-                final boolean selected = selection.isNodeOrNeighbourSelected(node);
+                final boolean selected = nodesCallback.isSelected(j);
                 if (selected) {
                     continue;
                 }
@@ -306,7 +306,7 @@ public abstract class AbstractNodeData {
                     continue;
                 }
 
-                final boolean selected = selection.isNodeOrNeighbourSelected(node);
+                final boolean selected = nodesCallback.isSelected(j);
                 if (!selected) {
                     continue;
                 }

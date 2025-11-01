@@ -83,6 +83,7 @@ public class VizConfig {
     public static final String EDGE_LABEL_SCALE = "VizConfig.defaultEdgeLabelScale";
     public static final String ZOOM = "VizConfig.defaultZoom";
     public static final String HIDE_NONSELECTED_NODE_LABELS = "VizConfig.hideNonSelectedNodeLabels";
+    public static final String FIT_NODE_LABELS_TO_NODE_SIZE = "VizConfig.fitNodeLabelsToNodeSize";
     //Const Prefs
     public static final String ANTIALIASING = "VizConfig.antialiasing";
     public static final String RECTANGLE_SELECTION_COLOR = "VizConfig.rectangleSelectionColor";
@@ -113,6 +114,7 @@ public class VizConfig {
     public static final Font DEFAULT_EDGE_LABEL_FONT = new Font("Arial", Font.BOLD, 32);
     public static final float DEFAULT_ZOOM = 0.3f;
     public static final boolean DEFAULT_HIDE_NONSELECTED_NODE_LABELS = false;
+    public static final boolean DEFAULT_FIT_NODE_LABELS_TO_NODE_SIZE = false;
     public static final boolean DEFAULT_SELECTEDEDGE_HAS_COLOR = false;
     public static final Color DEFAULT_SELECTEDEDGE_IN_COLOR = new Color(32, 95, 154, 255);
     public static final Color DEFAULT_SELECTEDEDGE_OUT_COLOR = new Color(196, 66, 79, 255);
@@ -137,8 +139,8 @@ public class VizConfig {
     public static final float DEFAULT_NODE_SCALE = 1f;
     public static final float DEFAULT_NODE_LABEL_SCALE = 0.5f;
     public static final float DEFAULT_EDGE_LABEL_SCALE = 0.5f;
-    public static final String DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.SCALED.name();
-    public static final String DEFAULT_NODE_LABEL_COLOR_MODE = LabelColorMode.TEXT.name();
+    public static final String DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.ZOOM.name();
+    public static final String DEFAULT_NODE_LABEL_COLOR_MODE = LabelColorMode.SELF.name();
     public static final boolean DEFAULT_EDGE_WEIGHTED = true;
 
     //Default config - loaded in the VizModel
@@ -174,6 +176,9 @@ public class VizConfig {
     protected boolean defaultHideNonSelectedNodeLabels =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(HIDE_NONSELECTED_NODE_LABELS, DEFAULT_HIDE_NONSELECTED_NODE_LABELS);
+    protected boolean defaultFitNodeLabelsToNodeSize =
+        NbPreferences.forModule(VizConfig.class).getBoolean(FIT_NODE_LABELS_TO_NODE_SIZE,
+            DEFAULT_FIT_NODE_LABELS_TO_NODE_SIZE);
     protected boolean defaultEdgeSelectionColor =
         NbPreferences.forModule(VizConfig.class).getBoolean(SELECTEDEDGE_HAS_COLOR, DEFAULT_SELECTEDEDGE_HAS_COLOR);
     protected Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
@@ -290,6 +295,10 @@ public class VizConfig {
 
     public boolean isDefaultHideNonSelectedNodeLabels() {
         return defaultHideNonSelectedNodeLabels;
+    }
+
+    public boolean isDefaultFitNodeLabelsToNodeSize() {
+        return defaultFitNodeLabelsToNodeSize;
     }
 
     public boolean isDefaultShowNodeLabels() {

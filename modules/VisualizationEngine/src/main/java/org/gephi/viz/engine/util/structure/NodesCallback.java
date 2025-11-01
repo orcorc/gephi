@@ -3,9 +3,16 @@ package org.gephi.viz.engine.util.structure;
 import static org.gephi.viz.engine.util.ArrayUtils.getNextPowerOf2;
 
 import java.util.Arrays;
+import java.util.BitSet;
+import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
+import org.gephi.viz.engine.status.GraphRenderingOptions;
+import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
+import org.gephi.viz.engine.util.text.TextLabelBuilder;
 
 /**
  *
@@ -14,17 +21,39 @@ import org.gephi.viz.engine.structure.GraphIndex.ElementsCallback;
 public class NodesCallback implements ElementsCallback<Node> {
 
     private Node[] nodesArray = new Node[0];
+    private GraphView graphView;
+    private Column[] nodeLabelColumns;
+    private String[] nodesLabelsArray = new String[0];
+    private BitSet selectedBitSet = new BitSet();
+    private boolean hasSelection = false;
     private int maxIndex = 0;
     private float maxNodeSize = 0f;
     private int nodeCount = 0;
+    private boolean hasLabels = false;
+    private boolean hideNonSelectedLabels = false;
 
     @Override
-    public void start(Graph graph) {
+    public void start(Graph graph, GraphRenderingOptions graphRenderingOptions, GraphSelection graphSelection) {
         Arrays.fill(nodesArray, null);
         nodesArray = ensureNodesArraySize(nodesArray, graph.getModel().getMaxNodeStoreId() + 1);
         maxIndex = 0;
         maxNodeSize = 0f;
         nodeCount = 0;
+
+        hasSelection = graphSelection.someNodesOrEdgesSelection();
+        if (hasSelection) {
+            BitSet sourceBitSet = ((GraphSelectionImpl) graphSelection).getNodesWithNeighbours();
+            selectedBitSet.clear();
+            selectedBitSet.or(sourceBitSet);
+        }
+
+        hideNonSelectedLabels = graphRenderingOptions.isHideNonSelectedNodeLabels();
+        hasLabels = graphRenderingOptions.isShowNodeLabels() && !(hideNonSelectedLabels && !hasSelection);
+        if (hasLabels) {
+            nodesLabelsArray = ensureNodesLabelsArraySize(nodesLabelsArray, graph.getModel().getMaxNodeStoreId() + 1);
+            graphView = graph.getView();
+            nodeLabelColumns = graphRenderingOptions.getNodeLabelColumns();
+        }
     }
 
     @Override
@@ -38,6 +67,10 @@ public class NodesCallback implements ElementsCallback<Node> {
             maxNodeSize = size;
         }
         nodesArray[storeId] = node;
+
+        if (hasLabels && (!hideNonSelectedLabels || isSelected(storeId))) {
+            nodesLabelsArray[storeId] = TextLabelBuilder.buildText(node, graphView, nodeLabelColumns);
+        }
     }
 
     @Override
@@ -57,6 +90,12 @@ public class NodesCallback implements ElementsCallback<Node> {
         maxIndex = 0;
         maxNodeSize = 0f;
         nodeCount = 0;
+        selectedBitSet = new BitSet();
+        hasSelection = false;
+        nodeLabelColumns = null;
+        nodesLabelsArray = new String[0];
+        hasLabels = false;
+        hideNonSelectedLabels = false;
     }
 
     public Node[] getNodesArray() {
@@ -75,12 +114,38 @@ public class NodesCallback implements ElementsCallback<Node> {
         return nodeCount;
     }
 
+    public boolean isSelected(int nodeStoreId) {
+        return hasSelection && selectedBitSet.get(nodeStoreId);
+    }
+
+    public boolean hasSelection() {
+        return hasSelection;
+    }
+
+    public String[] getNodesLabelsArray() {
+        return nodesLabelsArray;
+    }
+
     protected Node[] ensureNodesArraySize(Node[] array, int size) {
         if (size > array.length) {
             int newSize = getNextPowerOf2(size);
             System.out.println("Growing node vector from " + array.length + " to " + newSize + " elements");
 
             final Node[] newVector = new Node[newSize];
+            System.arraycopy(array, 0, newVector, 0, array.length);
+
+            return newVector;
+        } else {
+            return array;
+        }
+    }
+
+    protected String[] ensureNodesLabelsArraySize(String[] array, int size) {
+        if (size > array.length) {
+            int newSize = getNextPowerOf2(size);
+            System.out.println("Growing node label vector from " + array.length + " to " + newSize + " elements");
+
+            final String[] newVector = new String[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);
 
             return newVector;

@@ -30,7 +30,9 @@ import org.gephi.viz.engine.jogl.pipeline.instanced.renderers.EdgeRendererInstan
 import org.gephi.viz.engine.jogl.pipeline.instanced.renderers.NodeRendererInstanced;
 import org.gephi.viz.engine.jogl.pipeline.instanced.updaters.EdgesUpdaterInstancedRendering;
 import org.gephi.viz.engine.jogl.pipeline.instanced.updaters.NodesUpdaterInstancedRendering;
+import org.gephi.viz.engine.jogl.pipeline.text.NodeLabelRenderer;
 import org.gephi.viz.engine.spi.VizEngineConfigurator;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -74,24 +76,28 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
 
     @Override
     public void configure(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
-        setupIndirectRendering(engine);
-        setupInstancedRendering(engine);
-        setupVertexArrayRendering(engine);
+        NodesCallback nodesCallback = new NodesCallback();
+
+        setupIndirectRendering(nodesCallback, engine);
+        setupInstancedRendering(nodesCallback, engine);
+        setupVertexArrayRendering(nodesCallback, engine);
 
         setupInputListeners(engine);
     }
 
-    private void setupIndirectRendering(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupIndirectRendering(final NodesCallback nodesCallback,
+                                        VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Only nodes supported, edges don't have a LOD to benefit from
-        final IndirectNodeData nodeData = new IndirectNodeData();
+        final IndirectNodeData nodeData = new IndirectNodeData(nodesCallback);
 
         engine.addRenderer(new NodeRendererIndirect(engine, nodeData));
         engine.addWorldUpdater(new NodesUpdaterIndirectRendering(engine, nodeData));
     }
 
-    private void setupInstancedRendering(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupInstancedRendering(final NodesCallback nodesCallback,
+                                         VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Nodes:
-        final InstancedNodeData nodeData = new InstancedNodeData();
+        final InstancedNodeData nodeData = new InstancedNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererInstanced(engine, nodeData));
         engine.addWorldUpdater(new NodesUpdaterInstancedRendering(engine, nodeData));
 
@@ -102,9 +108,10 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addWorldUpdater(new EdgesUpdaterInstancedRendering(engine, indirectEdgeData));
     }
 
-    private void setupVertexArrayRendering(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupVertexArrayRendering(final NodesCallback nodesCallback,
+                                           VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Nodes:
-        final ArrayDrawNodeData nodeData = new ArrayDrawNodeData();
+        final ArrayDrawNodeData nodeData = new ArrayDrawNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererArrayDraw(engine, nodeData));
         engine.addWorldUpdater(new NodesUpdaterArrayDrawRendering(engine, nodeData));
 
@@ -113,9 +120,12 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addRenderer(new EdgeRendererArrayDraw(engine, edgeData));
         engine.addWorldUpdater(new EdgesUpdaterArrayDrawRendering(engine, edgeData));
 
-        //Rectangle selection:
+        //Selection:
         engine.addRenderer(new RectangleSelectionArrayDraw(engine));
         engine.addRenderer(new SimpleMouseSelectionArrayDraw(engine));
+
+        // Node Label
+        engine.addRenderer(new NodeLabelRenderer(engine, nodesCallback));
     }
 
     private void setupInputListeners(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {

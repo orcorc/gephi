@@ -17,7 +17,7 @@ public interface InputListener<R extends RenderingTarget, T> extends PipelinedEx
 
     /**
      * Process a batch of events.
-     * 
+     *
      * @param events List of events to process
      * @return List of events that were NOT consumed (remaining for next listener in pipeline)
      */

@@ -1,6 +1,8 @@
 package org.gephi.viz.engine.status;
 
 import java.awt.Color;
+import java.awt.Font;
+import org.gephi.graph.api.Column;
 import org.joml.Vector2fc;
 
 /**
@@ -14,6 +16,16 @@ public interface GraphRenderingOptions {
         TARGET,
         MIXED,
         SELF
+    }
+
+    enum LabelColorMode {
+        SELF,
+        OBJECT
+    }
+
+    enum LabelSizeMode {
+        SCREEN,
+        ZOOM
     }
 
     //Show:
@@ -40,6 +52,16 @@ public interface GraphRenderingOptions {
     EdgeColorMode DEFAULT_EDGE_COLOR_MODE = EdgeColorMode.SELF;
     boolean DEFAULT_EDGE_WEIGHT_ENABLED = true;
 
+    //Node Labels
+    boolean DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE = false;
+    float DEFAULT_NODE_LABEL_SCALE = 1f;
+    LabelColorMode DEFAULT_NODE_LABEL_COLOR_MODE = LabelColorMode.SELF;
+    LabelSizeMode DEFAULT_NODE_LABEL_SIZE_MODE = LabelSizeMode.ZOOM;
+    Font DEFAULT_NODE_LABEL_FONT = new Font("Arial", Font.BOLD, 32);
+    boolean DEFAULT_HIDE_NON_SELECTED_NODE_LABELS = false;
+    float DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR = 0.05f;
+    float DEFAULT_NODE_LABEL_SIZE_FACTOR = 1.9f;
+
     //Selection:
     boolean DEFAULT_HIDE_NON_SELECTED_EDGES = false;
     boolean DEFAULT_LIGHTEN_NON_SELECTED = true;
@@ -58,34 +80,6 @@ public interface GraphRenderingOptions {
 
     void setPan(Vector2fc pan);
 
-    float getEdgeScale();
-
-    void setEdgeScale(float edgeScale);
-
-    float getNodeScale();
-
-    void setNodeScale(float nodeScale);
-
-    boolean isShowNodes();
-
-    void setShowNodes(boolean showNodes);
-
-    boolean isShowEdges();
-
-    void setShowEdges(boolean showEdges);
-
-    boolean isShowNodeLabels();
-
-    void setShowNodeLabels(boolean showNodeLabels);
-
-    boolean isShowEdgeLabels();
-
-    void setShowEdgeLabels(boolean showEdgeLabels);
-
-    boolean isHideNonSelectedEdges();
-
-    void setHideNonSelectedEdges(boolean hideNonSelected);
-
     boolean isLightenNonSelected();
 
     void setLightenNonSelected(boolean lightenNonSelected);
@@ -97,6 +91,30 @@ public interface GraphRenderingOptions {
     boolean isAutoSelectNeighbours();
 
     void setAutoSelectNeighbours(boolean autoSelectNeighbours);
+
+    // Nodes
+
+    float getNodeScale();
+
+    void setNodeScale(float nodeScale);
+
+    boolean isShowNodes();
+
+    void setShowNodes(boolean showNodes);
+
+    // Edges
+
+    boolean isShowEdges();
+
+    void setShowEdges(boolean showEdges);
+
+    float getEdgeScale();
+
+    void setEdgeScale(float edgeScale);
+
+    boolean isHideNonSelectedEdges();
+
+    void setHideNonSelectedEdges(boolean hideNonSelected);
 
     boolean isEdgeSelectionColor();
 
@@ -121,4 +139,57 @@ public interface GraphRenderingOptions {
     boolean isEdgeWeightEnabled();
 
     void setEdgeWeightEnabled(boolean enabled);
+
+    // Node Labels
+
+    boolean isShowNodeLabels();
+
+    void setShowNodeLabels(boolean showNodeLabels);
+
+    Column[] getNodeLabelColumns();
+
+    void setNodeLabelColumns(Column[] columns);
+
+    LabelColorMode getNodeLabelColorMode();
+
+    void setNodeLabelColorMode(LabelColorMode labelColorMode);
+
+    LabelSizeMode getNodeLabelSizeMode();
+
+    void setNodeLabelSizeMode(LabelSizeMode labelSizeMode);
+
+    Font getNodeLabelFont();
+
+    void setNodeLabelFont(Font font);
+
+    float getNodeLabelScale();
+
+    void setNodeLabelScale(float nodeLabelScale);
+
+    boolean isNodeLabelFitToNodeSize();
+
+    void setNodeLabelFitToNodeSize(boolean fitToNodeSize);
+
+    float getNodeLabelFitToNodeSizeFactor();
+
+    void setNodeLabelFitToNodeSizeFactor(float factor);
+
+    boolean isHideNonSelectedNodeLabels();
+
+    void setHideNonSelectedNodeLabels(boolean hideNonSelected);
+
+    float getNodeLabelSizeFactor();
+
+    void setNodeLabelSizeFactor(float factor);
+
+    // Edge Labels
+
+    boolean isShowEdgeLabels();
+
+    void setShowEdgeLabels(boolean showEdgeLabels);
+
+    Column[] getEdgeLabelColumns();
+
+    void setEdgeLabelColumns(Column[] columns);
+
 }

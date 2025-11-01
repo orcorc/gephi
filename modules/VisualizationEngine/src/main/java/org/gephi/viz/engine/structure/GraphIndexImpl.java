@@ -1,7 +1,5 @@
 package org.gephi.viz.engine.structure;
 
-import java.util.function.Predicate;
-import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;
 import org.gephi.graph.api.Graph;
@@ -10,6 +8,8 @@ import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.graph.api.SpatialIndex;
+import org.gephi.viz.engine.status.GraphRenderingOptions;
+import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.joml.Intersectionf;
 
 /**
@@ -22,9 +22,11 @@ import org.joml.Intersectionf;
 public class GraphIndexImpl implements GraphIndex {
 
     private final GraphModel graphModel;
+    private final GraphSelectionImpl graphSelection;
 
-    public GraphIndexImpl(GraphModel graphModel) {
+    public GraphIndexImpl(GraphModel graphModel, GraphSelectionImpl graphSelection) {
         this.graphModel = graphModel;
+        this.graphSelection = graphSelection;
     }
 
     public Graph getVisibleGraph() {
@@ -42,10 +44,11 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleNodes(ElementsCallback<Node> callback, Rect2D viewBoundaries) {
+    public void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions,
+                                Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
-        callback.start(visibleGraph);
+        callback.start(visibleGraph, graphRenderingOptions, graphSelection);
 
         SpatialIndex spatialIndex = visibleGraph.getSpatialIndex();
         spatialIndex.spatialIndexReadLock();
@@ -58,10 +61,11 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleEdges(ElementsCallback<Edge> callback, Rect2D viewBoundaries) {
+    public void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions,
+                                Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
-        callback.start(visibleGraph);
+        callback.start(visibleGraph, graphRenderingOptions, graphSelection);
         SpatialIndex spatialIndex = visibleGraph.getSpatialIndex();
         spatialIndex.spatialIndexReadLock();
         spatialIndex.getApproximateEdgesInArea(viewBoundaries).parallelStream().forEach(
@@ -84,7 +88,8 @@ public class GraphIndexImpl implements GraphIndex {
 
     @Override
     public NodeIterable getNodesInsideCircle(float centerX, float centerY, float radius) {
-        return getVisibleGraph().getSpatialIndex().getNodesInArea(getCircleRect2D(centerX, centerY, radius), node -> Intersectionf.testCircleCircle(centerX, centerY, radius, node.x(), node.y(), node.size()));
+        return getVisibleGraph().getSpatialIndex().getNodesInArea(getCircleRect2D(centerX, centerY, radius),
+            node -> Intersectionf.testCircleCircle(centerX, centerY, radius, node.x(), node.y(), node.size()));
     }
 
     @Override
@@ -112,18 +117,18 @@ public class GraphIndexImpl implements GraphIndex {
     @Override
     public EdgeIterable getEdgesInsideCircle(float centerX, float centerY, float radius) {
         return getVisibleGraph().getSpatialIndex().getEdgesInArea(getCircleRect2D(centerX, centerY, radius), edge -> {
-                final Node source = edge.getSource();
-                final Node target = edge.getTarget();
+            final Node source = edge.getSource();
+            final Node target = edge.getTarget();
 
-                float x0 = source.x();
-                float y0 = source.y();
-                float x1 = target.x();
-                float y1 = target.y();
+            float x0 = source.x();
+            float y0 = source.y();
+            float x1 = target.x();
+            float y1 = target.y();
 
-                //TODO: take width into account!
-                return Intersectionf.testLineCircle(y0 - y1, x1 - x0, (x0 - x1) * y0 + (y1 - y0) * x0, centerX, centerY,
-                    radius);
-            });
+            //TODO: take width into account!
+            return Intersectionf.testLineCircle(y0 - y1, x1 - x0, (x0 - x1) * y0 + (y1 - y0) * x0, centerX, centerY,
+                radius);
+        });
     }
 
     @Override

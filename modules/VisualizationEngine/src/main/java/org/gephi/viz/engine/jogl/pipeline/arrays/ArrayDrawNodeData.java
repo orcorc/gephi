@@ -10,6 +10,7 @@ import java.nio.FloatBuffer;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeWorldData;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -21,8 +22,8 @@ public class ArrayDrawNodeData extends AbstractNodeData {
 
     private static final int VERT_BUFFER = 0;
 
-    public ArrayDrawNodeData() {
-        super(false, false);
+    public ArrayDrawNodeData(final NodesCallback nodesCallback) {
+        super(nodesCallback, false, false);
     }
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, NodeWorldData data,

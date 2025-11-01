@@ -7,6 +7,8 @@ import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.NodeIterable;
 import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.status.GraphRenderingOptions;
+import org.gephi.viz.engine.status.GraphSelection;
 
 /**
  *
@@ -22,9 +24,11 @@ public interface GraphIndex {
 
     Rect2D getGraphBoundaries();
 
-    void getVisibleNodes(ElementsCallback<Node> callback, Rect2D viewBoundaries);
+    void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions,
+                         Rect2D viewBoundaries);
 
-    void getVisibleEdges(ElementsCallback<Edge> callback, Rect2D viewBoundaries);
+    void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions,
+                         Rect2D viewBoundaries);
 
     NodeIterable getNodesUnderPosition(float x, float y);
 
@@ -43,7 +47,7 @@ public interface GraphIndex {
          *
          * @param graph Graph
          */
-        void start(Graph graph);
+        void start(Graph graph, GraphRenderingOptions graphRenderingOptions, GraphSelection selection);
 
         /**
          * Called for each element in the list

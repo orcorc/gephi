@@ -66,11 +66,9 @@ public interface VisualisationModel extends Model {
 
     boolean isSingleNodeSelection();
 
-    // Text
+    // Node Labels
 
     boolean isShowNodeLabels();
-
-    boolean isShowEdgeLabels();
 
     LabelColorMode getNodeLabelColorMode();
 
@@ -78,15 +76,23 @@ public interface VisualisationModel extends Model {
 
     Font getNodeLabelFont();
 
-    Font getEdgeLabelFont();
+    boolean isNodeLabelFitToNodeSize();
 
     float getNodeLabelScale();
 
-    float getEdgeLabelScale();
-
     boolean isHideNonSelectedLabels();
+
+    Column[] getNodeLabelColumns();
+
+    // Edge Labels
+
+    boolean isShowEdgeLabels();
+
+    Font getEdgeLabelFont();
+
+    float getEdgeLabelScale();
 
     Column[] getEdgeLabelColumns();
 
-    Column[] getNodeLabelColumns();
+
 }
