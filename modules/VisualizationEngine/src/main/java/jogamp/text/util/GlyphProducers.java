@@ -28,11 +28,10 @@
 
 package jogamp.text.util;
 
-import jogamp.text.TextRenderer.RenderDelegate;
-
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.lang.Character.UnicodeBlock;
+import jogamp.text.TextRenderer.RenderDelegate;
 
 
 /**

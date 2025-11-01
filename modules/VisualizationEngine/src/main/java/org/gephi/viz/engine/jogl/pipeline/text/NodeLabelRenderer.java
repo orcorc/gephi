@@ -1,5 +1,8 @@
 package org.gephi.viz.engine.jogl.pipeline.text;
 
+import java.awt.Font;
+import java.awt.geom.Rectangle2D;
+import java.util.EnumSet;
 import jogamp.text.TextRenderer;
 import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
@@ -14,10 +17,6 @@ import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.util.gl.Constants;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
-
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.util.EnumSet;
 
 @SuppressWarnings("rawtypes")
 public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabelWorldData> {
@@ -114,7 +113,8 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             }
 
             // Size
-            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale : node.getTextProperties().getSize() * nodeLabelSizeFactor;
+            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale :
+                node.getTextProperties().getSize() * nodeLabelSizeFactor;
             float sizeFactor = nodeLabelScale * nodeSizeFactor;
             if (labelSizeMode.equals(GraphRenderingOptions.LabelSizeMode.SCREEN)) {
                 sizeFactor /= zoom;
@@ -131,7 +131,8 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             node.getTextProperties().setDimensions(widthPx * sizeFactor, heightPx * sizeFactor);
 
             // Color
-            final int rgba = labelColorMode.equals(GraphRenderingOptions.LabelColorMode.OBJECT) ? node.getRGBA() : node.getTextProperties().getRGBA();
+            final int rgba = labelColorMode.equals(GraphRenderingOptions.LabelColorMode.OBJECT) ? node.getRGBA() :
+                node.getTextProperties().getRGBA();
             final float r = (rgba >> 16 & 255) / 255.0F;
             final float g = (rgba >> 8 & 255) / 255.0F;
             final float b = (rgba & 255) / 255.0F;

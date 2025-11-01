@@ -1,7 +1,6 @@
 package org.gephi.viz.engine.jogl.pipeline.common;
 
 import java.awt.Font;
-import org.gephi.graph.api.Column;
 import org.gephi.viz.engine.spi.WorldData;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 

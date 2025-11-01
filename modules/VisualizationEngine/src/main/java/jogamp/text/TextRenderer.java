@@ -32,7 +32,6 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.GLException;
 import com.jogamp.opengl.util.texture.TextureCoords;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
@@ -43,7 +42,6 @@ import java.lang.Character.UnicodeBlock;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import jogamp.text.util.Check;
 import jogamp.text.util.Glyph;
 import jogamp.text.util.GlyphCache;

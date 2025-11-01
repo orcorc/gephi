@@ -28,8 +28,6 @@
 
 package jogamp.text.util;
 
-import jogamp.text.TextRenderer.RenderDelegate;
-
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphMetrics;
@@ -37,9 +35,10 @@ import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import jogamp.text.TextRenderer.RenderDelegate;
 
 
 /**

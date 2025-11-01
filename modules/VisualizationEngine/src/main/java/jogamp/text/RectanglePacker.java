@@ -44,7 +44,11 @@ import com.jogamp.opengl.util.packrect.Level;
 import com.jogamp.opengl.util.packrect.LevelSet;
 import com.jogamp.opengl.util.packrect.Rect;
 import com.jogamp.opengl.util.packrect.RectVisitor;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Packs rectangles supplied by the user (typically representing

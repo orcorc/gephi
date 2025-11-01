@@ -29,7 +29,6 @@
 package jogamp.text.util;
 
 import com.jogamp.opengl.GL;
-
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;

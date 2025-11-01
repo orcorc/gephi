@@ -24,9 +24,11 @@ public interface GraphIndex {
 
     Rect2D getGraphBoundaries();
 
-    void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries);
+    void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions,
+                         Rect2D viewBoundaries);
 
-    void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries);
+    void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions,
+                         Rect2D viewBoundaries);
 
     NodeIterable getNodesUnderPosition(float x, float y);
 

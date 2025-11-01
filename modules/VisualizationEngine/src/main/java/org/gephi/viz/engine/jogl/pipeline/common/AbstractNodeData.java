@@ -33,7 +33,6 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
@@ -94,7 +93,8 @@ public abstract class AbstractNodeData {
     protected ManagedDirectBuffer commandsBuffer;
     private int[] commandsBufferBatch;
 
-    public AbstractNodeData(final NodesCallback nodesCallback, final boolean instancedRendering, final boolean indirectCommands) {
+    public AbstractNodeData(final NodesCallback nodesCallback, final boolean instancedRendering,
+                            final boolean indirectCommands) {
         this.instancedRendering = instancedRendering;
         this.indirectCommands = indirectCommands;
         this.nodesCallback = nodesCallback;

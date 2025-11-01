@@ -30,7 +30,6 @@ package jogamp.text.util;
 
 import com.jogamp.opengl.util.packrect.Rect;
 import com.jogamp.opengl.util.texture.TextureCoords;
-
 import java.awt.font.GlyphVector;
 import java.awt.geom.Rectangle2D;
 

@@ -31,7 +31,6 @@ package jogamp.text.util;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.util.texture.TextureCoords;
-
 import java.util.ArrayList;
 import java.util.List;
 

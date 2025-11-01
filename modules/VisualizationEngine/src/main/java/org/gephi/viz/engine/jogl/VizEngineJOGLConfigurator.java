@@ -7,11 +7,8 @@ import static com.jogamp.opengl.GLProfile.GLES2;
 import static com.jogamp.opengl.GLProfile.GLES3;
 
 import com.jogamp.newt.event.NEWTEvent;
-import com.jogamp.opengl.GL2ES3;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLProfile;
-
-import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gephi.viz.engine.VizEngine;
@@ -88,7 +85,8 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         setupInputListeners(engine);
     }
 
-    private void setupIndirectRendering(final NodesCallback nodesCallback, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupIndirectRendering(final NodesCallback nodesCallback,
+                                        VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Only nodes supported, edges don't have a LOD to benefit from
         final IndirectNodeData nodeData = new IndirectNodeData(nodesCallback);
 
@@ -96,7 +94,8 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addWorldUpdater(new NodesUpdaterIndirectRendering(engine, nodeData));
     }
 
-    private void setupInstancedRendering(final NodesCallback nodesCallback, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupInstancedRendering(final NodesCallback nodesCallback,
+                                         VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Nodes:
         final InstancedNodeData nodeData = new InstancedNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererInstanced(engine, nodeData));
@@ -109,7 +108,8 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addWorldUpdater(new EdgesUpdaterInstancedRendering(engine, indirectEdgeData));
     }
 
-    private void setupVertexArrayRendering(final NodesCallback nodesCallback, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
+    private void setupVertexArrayRendering(final NodesCallback nodesCallback,
+                                           VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         //Nodes:
         final ArrayDrawNodeData nodeData = new ArrayDrawNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererArrayDraw(engine, nodeData));

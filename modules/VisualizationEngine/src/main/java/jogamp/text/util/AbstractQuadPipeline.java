@@ -31,7 +31,6 @@ package jogamp.text.util;
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2GL3;
-
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;

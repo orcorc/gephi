@@ -1,11 +1,8 @@
 package org.gephi.viz.engine.status;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;

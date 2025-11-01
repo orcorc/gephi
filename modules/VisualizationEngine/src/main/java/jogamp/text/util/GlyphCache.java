@@ -29,17 +29,16 @@
 package jogamp.text.util;
 
 import com.jogamp.opengl.GL;
-import jogamp.text.TextRenderer.RenderDelegate;
 import com.jogamp.opengl.util.packrect.BackingStoreManager;
 import com.jogamp.opengl.util.packrect.Rect;
 import com.jogamp.opengl.util.packrect.RectVisitor;
-import jogamp.text.RectanglePacker;
 import com.jogamp.opengl.util.texture.TextureCoords;
-
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.util.ArrayList;
 import java.util.List;
+import jogamp.text.RectanglePacker;
+import jogamp.text.TextRenderer.RenderDelegate;
 
 
 /**

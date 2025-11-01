@@ -1,12 +1,12 @@
 package org.gephi.viz.engine.jogl.util.gl;
 
+import static com.jogamp.opengl.GL2ES3.GL_VERTEX_ARRAY_BINDING;
+
 import com.jogamp.opengl.GL2ES2;
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.IntBuffer;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
-
-import static com.jogamp.opengl.GL2ES3.GL_VERTEX_ARRAY_BINDING;
 
 /**
  * VAO abstraction that checks for actual support of VAOs and emulates it if not supported.

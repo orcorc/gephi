@@ -28,12 +28,11 @@
 
 package jogamp.text.util;
 
-import jogamp.text.TextRenderer.RenderDelegate;
-
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.util.List;
+import jogamp.text.TextRenderer.RenderDelegate;
 
 
 /**

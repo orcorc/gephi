@@ -1,7 +1,5 @@
 package org.gephi.viz.engine.structure;
 
-import java.util.function.Predicate;
-import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;
 import org.gephi.graph.api.Graph;
@@ -46,7 +44,8 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries) {
+    public void getVisibleNodes(ElementsCallback<Node> callback, GraphRenderingOptions graphRenderingOptions,
+                                Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
         callback.start(visibleGraph, graphRenderingOptions, graphSelection);
@@ -62,7 +61,8 @@ public class GraphIndexImpl implements GraphIndex {
     }
 
     @Override
-    public void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions, Rect2D viewBoundaries) {
+    public void getVisibleEdges(ElementsCallback<Edge> callback, GraphRenderingOptions graphRenderingOptions,
+                                Rect2D viewBoundaries) {
         graphModel.getGraph().readLock();
         final Graph visibleGraph = getVisibleGraph();
         callback.start(visibleGraph, graphRenderingOptions, graphSelection);
