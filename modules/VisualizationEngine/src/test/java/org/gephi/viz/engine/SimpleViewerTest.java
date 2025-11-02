@@ -18,12 +18,14 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.swing.JFrame;
+import org.gephi.graph.api.Column;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.io.importer.GraphImporter;
 import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2;
 import org.gephi.layout.plugin.forceAtlas2.ForceAtlas2Builder;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.VizEngineJOGLConfigurator;
+import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.junit.Ignore;
@@ -37,7 +39,7 @@ public class SimpleViewerTest {
         final SimpleViewer viewer = new SimpleViewer();
         //final String graphFile = "samples/mixed-sample.gexf";
         final String graphFile = "samples/Les Miserables.gexf";
-//        final String graphFile = "modules/VisualizationEngine/samples/comic-hero-network.gexf";
+//        final String graphFile = "samples/comic-hero-network.gexf";
         viewer.start(graphFile);
     }
 
@@ -47,6 +49,7 @@ public class SimpleViewerTest {
         private static final boolean DISABLE_INSTANCED_RENDERING = false;
         private static final boolean DISABLE_VAOS = false;
 
+        private static final boolean SHOW_LABELS = false;
         private static final boolean DEBUG = false;
 
         private VizEngine<JOGLRenderingTarget, NEWTEvent> engine;
@@ -82,6 +85,12 @@ public class SimpleViewerTest {
                     new VizEngineJOGLConfigurator()
                 )
             );
+
+            if (SHOW_LABELS) {
+                final GraphRenderingOptions renderingOptions = engine.getRenderingOptions();
+                renderingOptions.setShowNodeLabels(true);
+                renderingOptions.setNodeLabelColumns(new Column[] {graphModel.defaultColumns().nodeLabel()});
+            }
 
             final OpenGLOptions glOptions = engine.getOpenGLOptions();
             glOptions.setDisableIndirectDrawing(DISABLE_INDIRECT_RENDERING);
@@ -136,6 +145,15 @@ public class SimpleViewerTest {
                 case KeyEvent.VK_SPACE:
                     toggleLayout();
                     break;
+                case KeyEvent.VK_MINUS:
+                    engine.getRenderingOptions()
+                        .setNodeLabelScale(engine.getRenderingOptions().getNodeLabelScale() - 0.1f);
+                    break;
+                case KeyEvent.VK_PLUS:
+                    engine.getRenderingOptions()
+                        .setNodeLabelScale(engine.getRenderingOptions().getNodeLabelScale() + 0.1f);
+                    break;
+
             }
         }
 
