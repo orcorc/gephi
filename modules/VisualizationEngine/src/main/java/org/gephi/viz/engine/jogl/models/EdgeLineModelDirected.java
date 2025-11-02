@@ -168,7 +168,8 @@ public class EdgeLineModelDirected {
     }
 
     public void useProgramWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                float maxWeight, float nodeScale, float globalTime, float selectionTime) {
+                                                float maxWeight, float nodeScale, float globalTime,
+                                                float selectionTime) {
         programWithSelectionSelected.use(gl);
         prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, globalTime,
             selectionTime);
