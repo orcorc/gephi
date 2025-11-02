@@ -54,7 +54,6 @@ public class NodeDiskModel {
             .addUniformName(UNIFORM_NAME_MODEL_VIEW_PROJECTION)
             .addUniformName(UNIFORM_NAME_SIZE_MULTIPLIER)
             .addUniformName(UNIFORM_NAME_COLOR_MULTIPLIER)
-            .addUniformName(UNIFORM_NAME_BACKGROUND_COLOR)
             .addUniformName(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR)
             .addUniformName(UNIFORM_NAME_GLOBAL_TIME)
             .addUniformName(UNIFORM_NAME_SELECTION_TIME)
@@ -146,21 +145,13 @@ public class NodeDiskModel {
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_SELECTION_TIME), selectedTime);
     }
 
-    public void useProgram(GL2ES2 gl, float[] mvpFloats, float sizeMultiplier, float colorMultiplier,
-                           float globalTime, float selectedTime, float colorLightenFactor,
-                           float[] backgroundColorFloats) {
+    public void useProgram(GL2ES2 gl, float[] mvpFloats, float sizeMultiplier, float colorMultiplier) {
         //Circle:
         program.use(gl);
 
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_SIZE_MULTIPLIER), sizeMultiplier);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_COLOR_MULTIPLIER), colorMultiplier);
-        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_GLOBAL_TIME), globalTime);
-        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_SELECTION_TIME), selectedTime);
-        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR),
-            colorLightenFactor);
-        gl.glUniform4fv(program.getUniformLocation(UNIFORM_NAME_BACKGROUND_COLOR), 1,
-            backgroundColorFloats, 0);
     }
 
     public void stopUsingProgram(GL2ES2 gl) {

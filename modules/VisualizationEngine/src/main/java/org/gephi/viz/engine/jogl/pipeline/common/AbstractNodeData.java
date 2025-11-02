@@ -224,11 +224,7 @@ public abstract class AbstractNodeData {
                 );
             } else {
                 final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
-                final float colorLightenFactor = data.getLightenNonSelectedFactor();
-                diskModel.useProgram(gl, mvpFloats, sizeMultiplier, colorMultiplier,
-                    globalTime,
-                    this.selectedTime,
-                    colorLightenFactor, backgroundColorFloats);
+                diskModel.useProgram(gl, mvpFloats, sizeMultiplier, colorMultiplier);
             }
 
             setupVertexArrayAttributes(gl, data);
