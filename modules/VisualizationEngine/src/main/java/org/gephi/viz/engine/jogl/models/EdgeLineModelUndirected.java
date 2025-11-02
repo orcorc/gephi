@@ -38,6 +38,8 @@ import org.gephi.viz.engine.util.gl.Constants;
  *
  * @author Eduardo Ramos
  */
+
+// TODO: Factorize common code / interface between EdgeLineModelDirected & EdgeLineModelUndirected
 public class EdgeLineModelUndirected {
 
     public static final int VERTEX_FLOATS = 2;
