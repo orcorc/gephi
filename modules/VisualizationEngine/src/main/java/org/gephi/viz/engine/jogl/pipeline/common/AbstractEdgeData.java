@@ -223,7 +223,12 @@ public abstract class AbstractEdgeData {
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
+        final float globalTime = (System.currentTimeMillis() - this.startedTime)/1000.0f;
 
+        if(selectionToggle != someSelection) {
+            this.selectionToggle=someSelection;
+            this.selectionTime = globalTime;
+        }
         final float[] backgroundColorFloats = data.getBackgroundColor();
 
         final float edgeScale = data.getEdgeScale();
@@ -243,7 +248,9 @@ public abstract class AbstractEdgeData {
                 maxWeight,
                 backgroundColorFloats,
                 lightenNonSelectedFactor,
-                nodeScale
+                nodeScale,
+                globalTime,
+                selectionTime
             );
 
             if (usesSecondaryBuffer) {
@@ -259,7 +266,12 @@ public abstract class AbstractEdgeData {
                 edgeScale,
                 minWeight,
                 maxWeight,
-                nodeScale
+                nodeScale,
+                globalTime,
+                selectionTime,
+                backgroundColorFloats,
+                lightenNonSelectedFactor
+
             );
 
             if (someSelection) {
@@ -270,7 +282,12 @@ public abstract class AbstractEdgeData {
                         edgeScale,
                         minWeight,
                         maxWeight,
-                        nodeScale
+                        nodeScale,
+                        globalTime,
+                        selectionTime,
+                        backgroundColorFloats,
+                        lightenNonSelectedFactor
+
                     );
                 } else {
                     lineModelDirected.useProgramWithSelectionSelected(
@@ -279,7 +296,12 @@ public abstract class AbstractEdgeData {
                         edgeScale,
                         minWeight,
                         maxWeight,
-                        nodeScale
+                        nodeScale,
+                        globalTime,
+                        selectionTime,
+                        backgroundColorFloats,
+                        lightenNonSelectedFactor
+
                     );
                 }
             } else {
@@ -289,7 +311,11 @@ public abstract class AbstractEdgeData {
                     edgeScale,
                     minWeight,
                     maxWeight,
-                    nodeScale
+                    nodeScale,
+                    globalTime,
+                    selectionTime,
+                    backgroundColorFloats,
+                    lightenNonSelectedFactor
                 );
             }
 
