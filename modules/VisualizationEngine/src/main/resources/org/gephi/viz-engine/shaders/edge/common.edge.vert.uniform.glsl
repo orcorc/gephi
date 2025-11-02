@@ -5,3 +5,5 @@ uniform float weightDifferenceDivisor;
 uniform float edgeScaleMin;
 uniform float edgeScaleMax;
 uniform float nodeScale;
+uniform vec4 backgroundColor;
+uniform float colorLightenFactor;
