@@ -3,8 +3,6 @@
 //#include "common.node.vert.glsl"
 
 //#include "common.node.vert.uniform.glsl"
-uniform vec4 backgroundColor;
-uniform float colorLightenFactor;
 
 //#include "common.node.vert.in.glsl"
 
@@ -19,7 +17,8 @@ void main() {
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    color.rgb = color.rgb * colorMultiplier;
+    color.rgb = color.rgb * colorMultiplier ;
+    color = mix(color,color*1.1,animationCurve);
 
     vertexData.color = color;
 }

@@ -18,6 +18,7 @@ void main() {
     vec4 color = elementColor.bgra / 255.0;
 
     color.rgb = color.rgb * colorMultiplier;
+    color.rgb = mix(color.rgb, backgroundColor.rgb,colorLightenFactor*(1.-animationCurve));
 
     vertexData.color = color;
 }
