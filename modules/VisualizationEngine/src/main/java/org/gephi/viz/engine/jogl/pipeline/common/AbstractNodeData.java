@@ -43,6 +43,7 @@ public abstract class AbstractNodeData {
 
     private long startedTime = 0L;
     private boolean selectionToggle = false;
+    private float globalTime = 0f;
     private float selectedTime = 0f;
 
     protected static final float BORDER_SIZE = 0.16f;
@@ -166,6 +167,15 @@ public abstract class AbstractNodeData {
         vertexGLBuffer.unbind(gl);
     }
 
+    protected void refreshTime() {
+        globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
+
+        if (selectionToggle != someSelection) {
+            this.selectionToggle = someSelection;
+            this.selectedTime = globalTime;
+        }
+    }
+
     protected int setupShaderProgramForRenderingLayer(final GL2ES2 gl,
                                                       final RenderingLayer layer,
                                                       final NodeWorldData data,
@@ -173,12 +183,7 @@ public abstract class AbstractNodeData {
                                                       final boolean isRenderingOutsideCircle) {
         final boolean someSelection = data.hasSomeSelection();
         final boolean renderingUnselectedNodes = layer.isBack();
-        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
-        if (selectionToggle != someSelection) {
-            this.selectionToggle = someSelection;
-            this.selectedTime = globalTime;
-        }
         if (!someSelection && renderingUnselectedNodes) {
             return 0;
         }

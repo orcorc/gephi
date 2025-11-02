@@ -42,6 +42,7 @@ public abstract class AbstractEdgeData {
 
     private long startedTime = 0L;
     private boolean selectionToggle = false;
+    private float globalTime = 0f;
     private float selectionTime = 0f;
 
     protected final EdgeLineModelUndirected lineModelUndirected = new EdgeLineModelUndirected();
@@ -107,21 +108,25 @@ public abstract class AbstractEdgeData {
         attributesBuffer = new ManagedDirectBuffer(GL_FLOAT, ATTRIBS_STRIDE * BATCH_EDGES_SIZE);
     }
 
-    protected int setupShaderProgramForRenderingLayerUndirected(final GL2ES2 gl,
-                                                                final RenderingLayer layer,
-                                                                final EdgeWorldData data,
-                                                                final float[] mvpFloats) {
-        final boolean someSelection = data.hasSomeSelection();
-        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
+    protected void refreshTime() {
+        globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
         if (selectionToggle != someSelection) {
             this.selectionToggle = someSelection;
             this.selectionTime = globalTime;
         }
+    }
+
+    protected int setupShaderProgramForRenderingLayerUndirected(final GL2ES2 gl,
+                                                                final RenderingLayer layer,
+                                                                final EdgeWorldData data,
+                                                                final float[] mvpFloats) {
         final boolean renderingUnselectedEdges = layer.isBack();
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
+
+        final boolean someSelection = data.hasSomeSelection();
 
         final float[] backgroundColorFloats = data.getBackgroundColor();
         final float edgeScale = data.getEdgeScale();
@@ -220,15 +225,11 @@ public abstract class AbstractEdgeData {
                                                               final float[] mvpFloats) {
         final boolean someSelection = data.hasSomeSelection();
         final boolean renderingUnselectedEdges = layer.isBack();
+
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
-        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
-        if (selectionToggle != someSelection) {
-            this.selectionToggle = someSelection;
-            this.selectionTime = globalTime;
-        }
         final float[] backgroundColorFloats = data.getBackgroundColor();
 
         final float edgeScale = data.getEdgeScale();

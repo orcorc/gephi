@@ -35,6 +35,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
 
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, EdgeWorldData data,
                               float[] mvpFloats) {
+        refreshTime();
+
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
     }
