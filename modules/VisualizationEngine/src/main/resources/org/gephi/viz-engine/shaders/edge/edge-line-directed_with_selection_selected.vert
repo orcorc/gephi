@@ -4,6 +4,8 @@
 
 //#include "common.edge.vert.uniform.glsl"
 
+//#include "../common.animation.glsl"
+
 //#include "common.edge.vert.in.glsl"
 
 //#include "common.edge.directed.vert.glsl"

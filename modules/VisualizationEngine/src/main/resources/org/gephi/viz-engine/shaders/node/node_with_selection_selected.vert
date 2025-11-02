@@ -4,6 +4,8 @@
 
 //#include "common.node.vert.uniform.glsl"
 
+//#include "../common.animation.glsl"
+
 //#include "common.node.vert.in.glsl"
 
 //#include "common.node.struct.glsl"

@@ -165,11 +165,7 @@ public abstract class AbstractEdgeData {
                 edgeScale,
                 minWeight,
                 maxWeight,
-                nodeScale,
-                globalTime,
-                selectionTime,
-                backgroundColorFloats,
-                lightenNonSelectedFactor
+                nodeScale
             );
 
             if (someSelection) {
@@ -180,11 +176,7 @@ public abstract class AbstractEdgeData {
                         edgeScale,
                         minWeight,
                         maxWeight,
-                        nodeScale,
-                        globalTime,
-                        selectionTime,
-                        backgroundColorFloats,
-                        lightenNonSelectedFactor
+                        nodeScale
                     );
                 } else {
                     lineModelUndirected.useProgramWithSelectionSelected(
@@ -205,11 +197,7 @@ public abstract class AbstractEdgeData {
                     edgeScale,
                     minWeight,
                     maxWeight,
-                    nodeScale,
-                    globalTime,
-                    selectionTime,
-                    backgroundColorFloats,
-                    lightenNonSelectedFactor
+                    nodeScale
                 );
             }
 
@@ -267,11 +255,7 @@ public abstract class AbstractEdgeData {
                 edgeScale,
                 minWeight,
                 maxWeight,
-                nodeScale,
-                globalTime,
-                selectionTime,
-                backgroundColorFloats,
-                lightenNonSelectedFactor
+                nodeScale
 
             );
 
@@ -283,11 +267,7 @@ public abstract class AbstractEdgeData {
                         edgeScale,
                         minWeight,
                         maxWeight,
-                        nodeScale,
-                        globalTime,
-                        selectionTime,
-                        backgroundColorFloats,
-                        lightenNonSelectedFactor
+                        nodeScale
 
                     );
                 } else {
@@ -299,9 +279,7 @@ public abstract class AbstractEdgeData {
                         maxWeight,
                         nodeScale,
                         globalTime,
-                        selectionTime,
-                        backgroundColorFloats,
-                        lightenNonSelectedFactor
+                        selectionTime
 
                     );
                 }
@@ -312,11 +290,7 @@ public abstract class AbstractEdgeData {
                     edgeScale,
                     minWeight,
                     maxWeight,
-                    nodeScale,
-                    globalTime,
-                    selectionTime,
-                    backgroundColorFloats,
-                    lightenNonSelectedFactor
+                    nodeScale
                 );
             }
 

@@ -3,6 +3,10 @@
 //#include "common.edge.vert.glsl"
 
 //#include "common.edge.vert.uniform.glsl"
+uniform vec4 backgroundColor;
+uniform float colorLightenFactor;
+
+//#include "../common.animation.glsl"
 
 //#include "common.edge.vert.in.glsl"
 

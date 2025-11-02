@@ -6,6 +6,8 @@
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
+//#include "../common.animation.glsl"
+
 //#include "common.node.vert.in.glsl"
 
 //#include "common.node.struct.glsl"
