@@ -112,10 +112,10 @@ public abstract class AbstractEdgeData {
                                                                 final EdgeWorldData data,
                                                                 final float[] mvpFloats) {
         final boolean someSelection = data.hasSomeSelection();
-        final float globalTime = (System.currentTimeMillis() - this.startedTime)/1000.0f;
+        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
-        if(selectionToggle != someSelection) {
-            this.selectionToggle=someSelection;
+        if (selectionToggle != someSelection) {
+            this.selectionToggle = someSelection;
             this.selectionTime = globalTime;
         }
         final boolean renderingUnselectedEdges = layer.isBack();
@@ -223,10 +223,10 @@ public abstract class AbstractEdgeData {
         if (!someSelection && renderingUnselectedEdges) {
             return 0;
         }
-        final float globalTime = (System.currentTimeMillis() - this.startedTime)/1000.0f;
+        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
-        if(selectionToggle != someSelection) {
-            this.selectionToggle=someSelection;
+        if (selectionToggle != someSelection) {
+            this.selectionToggle = someSelection;
             this.selectionTime = globalTime;
         }
         final float[] backgroundColorFloats = data.getBackgroundColor();

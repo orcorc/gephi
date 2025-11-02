@@ -168,29 +168,34 @@ public class EdgeLineModelDirected {
     }
 
     public void useProgram(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight, float maxWeight,
-                           float nodeScale,float globalTime, float selectionTime,float[] backgroundColorFloats,
+                           float nodeScale, float globalTime, float selectionTime, float[] backgroundColorFloats,
                            float colorLightenFactor) {
         program.use(gl);
-        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale,globalTime,selectionTime,backgroundColorFloats,colorLightenFactor);
+        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, globalTime, selectionTime,
+            backgroundColorFloats, colorLightenFactor);
     }
 
     public void useProgramWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                float maxWeight, float nodeScale,float globalTime, float selectionTime,float[] backgroundColorFloats,
+                                                float maxWeight, float nodeScale, float globalTime, float selectionTime,
+                                                float[] backgroundColorFloats,
                                                 float colorLightenFactor) {
         programWithSelectionSelected.use(gl);
-        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale,globalTime, selectionTime,backgroundColorFloats,colorLightenFactor);
+        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, globalTime,
+            selectionTime, backgroundColorFloats, colorLightenFactor);
     }
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
                                                   float maxWeight, float[] backgroundColorFloats,
-                                                  float colorLightenFactor, float nodeScale,float globalTime, float selectionTime) {
+                                                  float colorLightenFactor, float nodeScale, float globalTime,
+                                                  float selectionTime) {
         programWithSelectionUnselected.use(gl);
         prepareProgramDataWithSelectionUnselected(gl, mvpFloats, edgeScale, minWeight, maxWeight, backgroundColorFloats,
-            colorLightenFactor, nodeScale ,globalTime,selectionTime);
+            colorLightenFactor, nodeScale, globalTime, selectionTime);
     }
 
     private void prepareProgramData(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight, float maxWeight,
-                                    float nodeScale,float globalTime, float selectionTime,float[] backgroundColorFloats,
+                                    float nodeScale, float globalTime, float selectionTime,
+                                    float[] backgroundColorFloats,
                                     float colorLightenFactor) {
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MIN), EDGE_SCALE_MIN * scale);
@@ -212,7 +217,8 @@ public class EdgeLineModelDirected {
 
     private void prepareProgramDataWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
                                                          float maxWeight, float nodeScale,
-                                                         float globalTime, float selectionTime,float[] backgroundColorFloats,
+                                                         float globalTime, float selectionTime,
+                                                         float[] backgroundColorFloats,
                                                          float colorLightenFactor) {
         gl.glUniformMatrix4fv(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
             false, mvpFloats, 0);
@@ -238,7 +244,8 @@ public class EdgeLineModelDirected {
 
     private void prepareProgramDataWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
                                                            float maxWeight, float[] backgroundColorFloats,
-                                                           float colorLightenFactor, float nodeScale,float globalTime,float selectionTime) {
+                                                           float colorLightenFactor, float nodeScale, float globalTime,
+                                                           float selectionTime) {
         gl.glUniformMatrix4fv(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
             false, mvpFloats, 0);
         gl.glUniform4fv(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_BACKGROUND_COLOR), 1,

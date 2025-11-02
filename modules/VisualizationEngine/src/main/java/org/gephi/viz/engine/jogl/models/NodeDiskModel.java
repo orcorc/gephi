@@ -115,7 +115,7 @@ public class NodeDiskModel {
     }
 
     public void useProgramWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float sizeMultiplier,
-                                                float colorMultiplier,float globalTime,float selectedTime) {
+                                                float colorMultiplier, float globalTime, float selectedTime) {
         //Circle:
         programWithSelectionSelected.use(gl);
 
@@ -129,7 +129,7 @@ public class NodeDiskModel {
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float sizeMultiplier,
                                                   float[] backgroundColorFloats, float colorLightenFactor,
-                                                  float colorMultiplier,float globalTime,float selectedTime) {
+                                                  float colorMultiplier, float globalTime, float selectedTime) {
         //Circle:
         programWithSelectionUnselected.use(gl);
 
@@ -147,7 +147,8 @@ public class NodeDiskModel {
     }
 
     public void useProgram(GL2ES2 gl, float[] mvpFloats, float sizeMultiplier, float colorMultiplier,
-                           float globalTime,float selectedTime,float colorLightenFactor,  float[] backgroundColorFloats) {
+                           float globalTime, float selectedTime, float colorLightenFactor,
+                           float[] backgroundColorFloats) {
         //Circle:
         program.use(gl);
 

@@ -173,10 +173,10 @@ public abstract class AbstractNodeData {
                                                       final boolean isRenderingOutsideCircle) {
         final boolean someSelection = data.hasSomeSelection();
         final boolean renderingUnselectedNodes = layer.isBack();
-        final float globalTime = (System.currentTimeMillis() - this.startedTime)/1000.0f;
+        final float globalTime = (System.currentTimeMillis() - this.startedTime) / 1000.0f;
 
-        if(selectionToggle != someSelection) {
-            this.selectionToggle=someSelection;
+        if (selectionToggle != someSelection) {
+            this.selectionToggle = someSelection;
             this.selectedTime = globalTime;
         }
         if (!someSelection && renderingUnselectedNodes) {
@@ -223,7 +223,7 @@ public abstract class AbstractNodeData {
                 diskModel.useProgram(gl, mvpFloats, sizeMultiplier, colorMultiplier,
                     globalTime,
                     this.selectedTime,
-                    colorLightenFactor,backgroundColorFloats);
+                    colorLightenFactor, backgroundColorFloats);
             }
 
             setupVertexArrayAttributes(gl, data);
