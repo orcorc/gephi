@@ -24,6 +24,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
     private final VizEngine engine;
     private final NodeLabelData nodeLabelData;
+    private TextRenderer textRenderer;
 
     // Scratch
     private final float[] mvp = new float[16];
@@ -39,32 +40,34 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     }
 
     @Override
+    public void dispose(JOGLRenderingTarget target) {
+        if (textRenderer != null) {
+            textRenderer.dispose();
+            textRenderer = null;
+        }
+    }
+
+    @Override
     public NodeLabelWorldData worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
         // This is the synchronization point between updater and renderer threads
         // The updater has finished preparing batches, now swap the buffers
         nodeLabelData.swapBuffers();
 
         return new NodeLabelWorldData(
-            nodeLabelData.getTextRenderer(),
-            model.getRenderingOptions().isShowNodeLabels(),
-            model.getRenderingOptions().getZoom(),
-            model.getRenderingOptions().getNodeScale(),
-            model.getRenderingOptions().getNodeLabelFont(),
-            model.getRenderingOptions().getNodeLabelScale(),
-            model.getRenderingOptions().getNodeLabelColorMode(),
-            model.getRenderingOptions().getNodeLabelSizeMode(),
-            model.getRenderingOptions().getNodeLabelSizeFactor(),
-            model.getRenderingOptions().isHideNonSelectedNodeLabels(),
-            model.getRenderingOptions().isNodeLabelFitToNodeSize(),
-            model.getRenderingOptions().getNodeLabelFitToNodeSizeFactor(),
-            model.getRenderingOptions().getLightenNonSelectedFactor()
+            nodeLabelData.getTextRenderer()
         );
     }
 
     @Override
     public void render(NodeLabelWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
-        if (!data.isShowNodeLabels() || data.getTextRenderer() == null) {
+        if (data.getTextRenderer() == null) {
+            if (textRenderer != null) {
+                textRenderer.dispose();
+                textRenderer = null;
+            }
             return;
+        } else {
+            textRenderer = data.getTextRenderer();
         }
 
         // Get the pre-computed batches from the updater
@@ -77,7 +80,6 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
         final GL gl = GLContext.getCurrentGL();
 
-        TextRenderer textRenderer = data.getTextRenderer();
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
 

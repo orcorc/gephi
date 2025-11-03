@@ -31,6 +31,12 @@ public class NodeLabelData {
         return nodesCallback;
     }
 
+    public void dispose() {
+        textRenderer = null;
+        currentFont = null;
+        labelBatches = new LabelBatch[0];
+    }
+
     /**
      * Ensures the text renderer is initialized with the correct font.
      * This is called from the updater thread and doesn't require GL context.

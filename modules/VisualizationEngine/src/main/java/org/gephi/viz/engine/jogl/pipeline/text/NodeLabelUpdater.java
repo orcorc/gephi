@@ -32,7 +32,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
     @Override
     public void dispose(JOGLRenderingTarget target) {
-        // Nothing to do here, renderer will handle TextRenderer disposal
+        labelData.dispose();
     }
 
     @Override
@@ -41,6 +41,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
         if (!options.isShowNodeLabels()) {
             // No labels to show - will be handled by renderer checking isValid()
+            labelData.dispose();
             return;
         }
 
