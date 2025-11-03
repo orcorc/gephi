@@ -37,6 +37,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     }
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, EdgeWorldData data, float[] mvpFloats) {
+        refreshTime();
+
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
     }

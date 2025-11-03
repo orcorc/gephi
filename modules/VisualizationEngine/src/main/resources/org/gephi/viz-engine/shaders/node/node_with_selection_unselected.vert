@@ -6,6 +6,8 @@
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
 
+//#include "../common.animation.glsl"
+
 //#include "common.node.vert.in.glsl"
 
 //#include "common.node.struct.glsl"
@@ -20,7 +22,7 @@ void main() {
     vec4 color = elementColor.bgra / 255.0;
 
     color.rgb = color.rgb * colorMultiplier;
-    color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor);
+    color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor * animationCurve);
 
     vertexData.color = color;
 }

@@ -4,13 +4,15 @@
 
 //#include "common.edge.vert.uniform.glsl"
 
+//#include "../common.animation.glsl"
+
 //#include "common.edge.vert.in.glsl"
 
 //#include "common.edge.struct.glsl"
 out VertexData vertexData;
 
 void main() {
-    float thickness =edge_thickness(edgeScaleMin, edgeScaleMax, size ,minWeight, weightDifferenceDivisor);
+    float thickness =edge_thickness(edgeScaleMin, edgeScaleMax, size, minWeight, weightDifferenceDivisor);
 
     vec2 direction = targetPosition - position;
     vec2 directionNormalized = normalize(direction);
@@ -26,6 +28,8 @@ void main() {
 
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
+
+    color = mix(color, color * 1.1, animationCurve);
 
     vertexData.color = color;
 }
