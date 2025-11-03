@@ -25,10 +25,6 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     private final VizEngine engine;
     private final NodeLabelData nodeLabelData;
 
-    // Java2D text renderer
-    private TextRenderer textRenderer;
-    private Font lastUsedFont;
-
     // Scratch
     private final float[] mvp = new float[16];
 
@@ -49,6 +45,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         nodeLabelData.swapBuffers();
 
         return new NodeLabelWorldData(
+            nodeLabelData.getTextRenderer(),
             model.getRenderingOptions().isShowNodeLabels(),
             model.getRenderingOptions().getZoom(),
             model.getRenderingOptions().getNodeScale(),
@@ -66,40 +63,46 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
     @Override
     public void render(NodeLabelWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
-        if (!data.isShowNodeLabels()) {
+        if (!data.isShowNodeLabels() || data.getTextRenderer() == null) {
             return;
         }
 
-        final int batchCount = nodeLabelData.getBatchCount();
-        if (batchCount == 0) {
+        // Get the pre-computed batches from the updater
+        final NodeLabelData.LabelBatch[] batches = nodeLabelData.getLabelBatches();
+        if (batches == null || batches.length == 0) {
             return;
         }
-
-        // Ensure we have a text renderer configured for rendering
-        // The updater has already prepared all batches
-        refreshTextRendererIfNeeded(data.getNodeLabelFont(), target);
         
         engine.getModelViewProjectionMatrixFloats(mvp);
 
         final GL gl = GLContext.getCurrentGL();
 
+        TextRenderer textRenderer = data.getTextRenderer();
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
 
-        // Get the pre-computed batches from the updater
-        final List<NodeLabelData.LabelBatch> batches = nodeLabelData.getLabelBatches();
-
         // Render each prepared batch
         // All glyphs, positions, colors were pre-computed in the updater thread
-        for (int i = 0; i < batchCount; i++) {
-            final NodeLabelData.LabelBatch batch = batches.get(i);
+        for (final NodeLabelData.LabelBatch batch : batches) {
+            // Skip null or invalid batches
+            if (batch == null || !batch.isValid()) {
+                continue;
+            }
+            
+            final List<Glyph> glyphs = batch.getGlyphs();
+            if (glyphs == null || glyphs.isEmpty()) {
+                continue;
+            }
             
             // Set color for this batch
-            textRenderer.setColor(batch.r, batch.g, batch.b, batch.a);
+            textRenderer.setColor(batch.getR(), batch.getG(), batch.getB(), batch.getA());
             
             // Render each glyph in the batch
-            float x = batch.x;
-            for (final Glyph glyph : batch.glyphs) {
+            float x = batch.getX();
+            final float y = batch.getY();
+            final float scale = batch.getScale();
+            
+            for (final Glyph glyph : glyphs) {
                 // Upload glyph to texture cache if needed (requires GL)
                 if (glyph.location == null) {
                     textRenderer.getGlyphCache().upload(glyph);
@@ -110,36 +113,13 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
                 
                 // Draw the glyph
                 final float advance = textRenderer.getGlyphRenderer().drawGlyph(
-                    gl, glyph, x, batch.y, 0f, batch.scale, coords
+                    gl, glyph, x, y, 0f, scale, coords
                 );
-                x += advance * batch.scale;
+                x += advance * scale;
             }
         }
 
         textRenderer.end3DRendering();
-    }
-
-    private void refreshTextRendererIfNeeded(Font font, JOGLRenderingTarget target) {
-        if (textRenderer == null || !font.equals(lastUsedFont)) {
-            if (textRenderer != null) {
-                textRenderer.dispose();
-            }
-            
-            // Get the TextRenderer from nodeLabelData if it exists
-            // The updater has already created it without GL context
-            textRenderer = nodeLabelData.getTextRenderer();
-            
-            if (textRenderer == null) {
-                // Fallback: create a new one if updater hasn't run yet
-                textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
-            }
-            
-            final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
-            final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-            textRenderer.setUseVertexArrays(capabilities.isVAOSupported(openGLOptions));
-            textRenderer.setSmoothing(true);
-            lastUsedFont = font;
-        }
     }
 
     @Override

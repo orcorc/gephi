@@ -1,11 +1,13 @@
 package org.gephi.viz.engine.jogl.pipeline.common;
 
 import java.awt.Font;
+import jogamp.text.TextRenderer;
 import org.gephi.viz.engine.spi.WorldData;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 
 public class NodeLabelWorldData implements WorldData {
 
+    private final TextRenderer textRenderer;
     private final boolean showNodeLabels;
     private final float nodeScale;
     private final Font nodeLabelFont;
@@ -19,7 +21,8 @@ public class NodeLabelWorldData implements WorldData {
     private final float nodeLabelSizeFactor;
     private final float zoom;
 
-    public NodeLabelWorldData(boolean showNodeLabels,
+    public NodeLabelWorldData(TextRenderer textRenderer,
+                              boolean showNodeLabels,
                               float zoom,
                               float nodeScale,
                               Font nodeLabelFont,
@@ -31,6 +34,7 @@ public class NodeLabelWorldData implements WorldData {
                               boolean fitNodeLabelsToNodeSize,
                               float fitNodeLabelsToNodeSizeFactor,
                               float lightenNonSelectedFactor) {
+        this.textRenderer = textRenderer;
         this.showNodeLabels = showNodeLabels;
         this.zoom = zoom;
         this.nodeScale = nodeScale;
@@ -43,6 +47,10 @@ public class NodeLabelWorldData implements WorldData {
         this.fitNodeLabelsToNodeSize = fitNodeLabelsToNodeSize;
         this.fitNodeLabelsToNodeSizeFactor = fitNodeLabelsToNodeSizeFactor;
         this.lightenNonSelectedFactor = lightenNonSelectedFactor;
+    }
+
+    public TextRenderer getTextRenderer() {
+        return textRenderer;
     }
 
     public boolean isShowNodeLabels() {

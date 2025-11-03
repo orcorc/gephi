@@ -1,20 +1,22 @@
 package org.gephi.viz.engine.jogl.pipeline.text;
 
-import java.awt.geom.Rectangle2D;
 import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
+import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.spi.WorldUpdater;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
+import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node> {
 
     private final VizEngine engine;
     private final NodeLabelData labelData;
+    private boolean vaoSupported = false;
 
     public NodeLabelUpdater(VizEngine engine, NodeLabelData labelData) {
         this.engine = engine;
@@ -23,7 +25,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
     @Override
     public void init(JOGLRenderingTarget target) {
-        // Nothing to do
+        final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
+        final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
+        vaoSupported = capabilities.isVAOSupported(openGLOptions);
     }
 
     @Override
@@ -36,16 +40,13 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final GraphRenderingOptions options = model.getRenderingOptions();
 
         if (!options.isShowNodeLabels()) {
-            labelData.clearLabelData();
+            // No labels to show - will be handled by renderer checking isValid()
             return;
         }
 
         // Ensure we have a text renderer with the right font
         // This doesn't require GL context
-        labelData.ensureTextRenderer(options.getNodeLabelFont());
-
-        // Clear previous frame's data
-        labelData.clearLabelData();
+        labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported);
 
         // Get nodes and their properties
         final NodesCallback nodesCallback = labelData.getNodesCallback();
@@ -58,6 +59,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
         final Node[] nodes = nodesCallback.getNodesArray();
         final int maxIndex = nodesCallback.getMaxIndex();
+
+        // Ensure label batches array is large enough
+        labelData.ensureLabelBatchesSize(maxIndex);
 
         // Rendering parameters
         final GraphRenderingOptions.LabelColorMode labelColorMode = options.getNodeLabelColorMode();
@@ -75,23 +79,29 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
             return;
         }
 
-        // Pre-compute all label rendering data and create batches
-        // This is the heavy lifting that happens WITHOUT GL context
+        // Update label data for each node
+        // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed
         for (int i = 0; i <= maxIndex; i++) {
             final Node node = nodes[i];
 
             if (node == null) {
+                // Mark this slot as invalid
+                labelData.invalidateBatch(i);
                 continue;
             }
 
             boolean selected = someSelection && nodesCallback.isSelected(i);
 
             if (hideNonSelectedLabels && !selected) {
+                // Mark as invalid (hidden)
+                labelData.invalidateBatch(i);
                 continue;
             }
 
             final String text = texts[i];
             if (text == null || text.isEmpty()) {
+                // Mark as invalid (no text)
+                labelData.invalidateBatch(i);
                 continue;
             }
 
@@ -102,22 +112,6 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
             if (labelSizeMode.equals(GraphRenderingOptions.LabelSizeMode.SCREEN)) {
                 sizeFactor /= zoom;
             }
-
-            // Position calculation (using pre-computed bounds)
-            final Rectangle2D bounds = labelData.getTextBounds(text);
-            if (bounds == null) {
-                continue;
-            }
-            
-            final float widthPx = (float) bounds.getWidth();
-            final float ascentPx = (float) (-bounds.getY());
-            final float heightPx = (float) bounds.getHeight();
-            final float descentPx = heightPx - ascentPx;
-            final float drawX = node.x() - (widthPx * sizeFactor) * 0.5f;
-            final float drawY = node.y() - ((ascentPx - descentPx) * sizeFactor) * 0.5f;
-            
-            // Store dimensions back to node
-            node.getTextProperties().setDimensions(widthPx * sizeFactor, heightPx * sizeFactor);
 
             // Color calculation
             final int rgba = labelColorMode.equals(GraphRenderingOptions.LabelColorMode.OBJECT) ? node.getRGBA() :
@@ -141,9 +135,12 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
                 finalA = a;
             }
 
-            // Create a prepared batch for this label (no GL context needed)
-            // This pre-creates glyphs using Java2D only
-            labelData.addBatch(text, drawX, drawY, sizeFactor, finalR, finalG, finalB, finalA);
+            // Update batch for this node (by storeId)
+            // Glyphs are only recreated if text changed, bounds only recomputed if sizeFactor changed
+            labelData.updateBatch(i, text, sizeFactor, node.x(), node.y(), sizeFactor, finalR, finalG, finalB, finalA);
+            
+            // Store computed dimensions back to node (for use by other systems)
+            node.getTextProperties().setDimensions(labelData.getLabelWidth(i), labelData.getLabelHeight(i));
         }
     }
 

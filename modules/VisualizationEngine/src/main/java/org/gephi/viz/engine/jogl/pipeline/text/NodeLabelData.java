@@ -1,5 +1,7 @@
 package org.gephi.viz.engine.jogl.pipeline.text;
 
+import static org.gephi.viz.engine.util.ArrayUtils.getNextPowerOf2;
+
 import java.awt.Font;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
@@ -12,15 +14,9 @@ public class NodeLabelData {
 
     private final NodesCallback nodesCallback;
 
-    // Double-buffered batches for thread-safe concurrent access
-    private final List<LabelBatch> labelBatchesA = new ArrayList<>();
-    private final List<LabelBatch> labelBatchesB = new ArrayList<>();
-    
-    // Updater writes to write buffer, renderer reads from read buffer
-    private volatile List<LabelBatch> writeLabelBatches = labelBatchesA;
-    private volatile List<LabelBatch> readLabelBatches = labelBatchesB;
-    private volatile int readBatchCount = 0;
-    private int writeBatchCount = 0;
+    // Array of label batches indexed by node storeId (like NodesCallback)
+    // Each batch contains double-buffered data (read by renderer, write by updater)
+    private volatile LabelBatch[] labelBatches = new LabelBatch[0];
 
     // TextRenderer for glyph preparation (doesn't need GL context)
     // Volatile to ensure visibility across threads
@@ -39,15 +35,27 @@ public class NodeLabelData {
      * Ensures the text renderer is initialized with the correct font.
      * This is called from the updater thread and doesn't require GL context.
      */
-    public void ensureTextRenderer(Font font) {
+    public void ensureTextRenderer(Font font, boolean vaoSupported) {
         if (textRenderer == null || !font.equals(currentFont)) {
-            if (textRenderer != null) {
-                // Note: We can't dispose here as it requires GL context
-                // The renderer will handle disposal
-                textRenderer = null;
-            }
             textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
+            textRenderer.setUseVertexArrays(vaoSupported);
+            textRenderer.setSmoothing(true);
+
             currentFont = font;
+            
+            // Font changed - invalidate all cached glyphs
+            invalidateAllGlyphs();
+        }
+    }
+    
+    /**
+     * Invalidates all cached glyphs when font changes.
+     */
+    private void invalidateAllGlyphs() {
+        for (LabelBatch batch : labelBatches) {
+            if (batch != null) {
+                batch.invalidateGlyphs();
+            }
         }
     }
 
@@ -63,85 +71,154 @@ public class NodeLabelData {
     }
 
     /**
-     * Clears the pre-computed batches.
-     * Called by updater thread - writes to write buffer.
+     * Ensures the label batches array is large enough to hold the given storeId.
      */
-    public void clearLabelData() {
-        writeBatchCount = 0;
+    public void ensureLabelBatchesSize(int maxStoreId) {
+        if (maxStoreId >= labelBatches.length) {
+            int newSize = getNextPowerOf2(maxStoreId + 1);
+            LabelBatch[] newArray = new LabelBatch[newSize];
+            System.arraycopy(labelBatches, 0, newArray, 0, labelBatches.length);
+            labelBatches = newArray; // Volatile write for visibility
+        }
     }
 
     /**
-     * Adds a pre-computed batch for rendering.
-     * Pre-creates glyphs without requiring GL context.
-     * Called by updater thread - writes to write buffer.
+     * Updates the label data for a specific node (by storeId).
+     * Only recomputes glyphs if text changed, only recomputes bounds if text or sizeFactor changed.
+     * Called by updater thread - writes to write buffer of the batch.
+     * 
+     * @param storeId The node's storeId
+     * @param text The label text
+     * @param sizeFactor The size factor (for caching bounds)
+     * @param nodeX Node position X (will be centered)
+     * @param nodeY Node position Y (will be centered)
+     * @param scale Scale factor
+     * @param r Red component
+     * @param g Green component
+     * @param b Blue component
+     * @param a Alpha component
      */
-    public void addBatch(String text, float x, float y, float scale, float r, float g, float b, float a) {
+    public void updateBatch(int storeId, String text, float sizeFactor, float nodeX, float nodeY, float scale, 
+                           float r, float g, float b, float a) {
         if (textRenderer == null || text == null || text.isEmpty()) {
             return;
         }
 
-        // Pre-create glyphs using Java2D (no GL context needed)
-        final List<Glyph> glyphs = textRenderer.getGlyphProducer().createGlyphs(text);
-        if (glyphs == null || glyphs.isEmpty()) {
-            return;
+        // Get or create batch for this storeId
+        LabelBatch batch = labelBatches[storeId];
+        if (batch == null) {
+            batch = new LabelBatch();
+            labelBatches[storeId] = batch;
         }
 
-        // Store batch data in write buffer
-        if (writeBatchCount >= writeLabelBatches.size()) {
-            writeLabelBatches.add(new LabelBatch());
+        // Check if we need to recompute glyphs (expensive)
+        boolean textChanged = !text.equals(batch.writeText);
+        
+        if (textChanged) {
+            // Text changed - must recreate glyphs
+            final List<Glyph> glyphs = textRenderer.getGlyphProducer().createGlyphs(text);
+            if (glyphs == null || glyphs.isEmpty()) {
+                batch.markInvalid();
+                return;
+            }
+            
+            // Store new glyphs
+            if (batch.writeGlyphs == null) {
+                batch.writeGlyphs = new ArrayList<>(glyphs);
+            } else {
+                batch.writeGlyphs.clear();
+                batch.writeGlyphs.addAll(glyphs);
+            }
+            batch.writeText = text;
         }
         
-        final LabelBatch batch = writeLabelBatches.get(writeBatchCount);
+        // Check if we need to recompute bounds (expensive)
+        boolean sizeFactorChanged = Math.abs(sizeFactor - batch.writeSizeFactor) > 0.0001f;
         
-        // Make a defensive copy to avoid concurrent modification
-        // The glyphs list might be reused by TextRenderer
-        if (batch.glyphs == null) {
-            batch.glyphs = new ArrayList<>(glyphs);
-        } else {
-            batch.glyphs.clear();
-            batch.glyphs.addAll(glyphs);
+        if (textChanged || sizeFactorChanged) {
+            // Recompute bounds
+            final Rectangle2D bounds = getTextBounds(text);
+            if (bounds != null) {
+                batch.writeWidthPx = (float) bounds.getWidth();
+                batch.writeHeightPx = (float) bounds.getHeight();
+                batch.writeAscentPx = (float) (-bounds.getY());
+            } else {
+                batch.markInvalid();
+                return;
+            }
+            batch.writeSizeFactor = sizeFactor;
         }
         
-        batch.x = x;
-        batch.y = y;
-        batch.scale = scale;
-        batch.r = r;
-        batch.g = g;
-        batch.b = b;
-        batch.a = a;
+        // Compute centered draw position using cached bounds
+        final float descentPx = batch.writeHeightPx - batch.writeAscentPx;
+        final float drawX = nodeX - (batch.writeWidthPx * scale) * 0.5f;
+        final float drawY = nodeY - ((batch.writeAscentPx - descentPx) * scale) * 0.5f;
         
-        writeBatchCount++;
+        // Always update position, scale, and color (cheap)
+        batch.writeX = drawX;
+        batch.writeY = drawY;
+        batch.writeScale = scale;
+        batch.writeR = r;
+        batch.writeG = g;
+        batch.writeB = b;
+        batch.writeA = a;
+        batch.writeValid = true;
     }
 
     /**
-     * Swaps the read/write buffers.
+     * Marks a batch as invalid (e.g., node has no label).
+     * Called by updater thread.
+     */
+    public void invalidateBatch(int storeId) {
+        if (storeId < labelBatches.length && labelBatches[storeId] != null) {
+            labelBatches[storeId].markInvalid();
+        }
+    }
+
+    /**
+     * Gets the computed label width for a node.
+     * Called by updater thread after updateBatch.
+     */
+    public float getLabelWidth(int storeId) {
+        if (storeId < labelBatches.length && labelBatches[storeId] != null) {
+            LabelBatch batch = labelBatches[storeId];
+            return batch.writeWidthPx * batch.writeScale;
+        }
+        return 0f;
+    }
+
+    /**
+     * Gets the computed label height for a node.
+     * Called by updater thread after updateBatch.
+     */
+    public float getLabelHeight(int storeId) {
+        if (storeId < labelBatches.length && labelBatches[storeId] != null) {
+            LabelBatch batch = labelBatches[storeId];
+            return batch.writeHeightPx * batch.writeScale;
+        }
+        return 0f;
+    }
+
+    /**
+     * Swaps the read/write buffers for all batches.
      * Called by renderer thread in worldUpdated() after updater completes.
      * This makes the newly prepared data visible to the renderer.
      */
     public void swapBuffers() {
-        // Swap the buffers
-        final List<LabelBatch> temp = readLabelBatches;
-        readLabelBatches = writeLabelBatches;
-        writeLabelBatches = temp;
-        
-        // Update read count (volatile write ensures visibility)
-        readBatchCount = writeBatchCount;
+        final LabelBatch[] batches = labelBatches; // Read volatile once
+        for (LabelBatch batch : batches) {
+            if (batch != null) {
+                batch.swap();
+            }
+        }
     }
 
     /**
-     * Gets the list of pre-computed batches for rendering.
-     * Called by renderer thread - reads from read buffer.
+     * Gets the label batch array for rendering.
+     * Called by renderer thread - reads from read buffer of each batch.
      */
-    public List<LabelBatch> getLabelBatches() {
-        return readLabelBatches;
-    }
-
-    /**
-     * Gets the number of batches to render.
-     * Called by renderer thread - reads from read buffer.
-     */
-    public int getBatchCount() {
-        return readBatchCount;
+    public LabelBatch[] getLabelBatches() {
+        return labelBatches;
     }
 
     /**
@@ -154,15 +231,107 @@ public class NodeLabelData {
 
     /**
      * Pre-computed batch containing glyphs and rendering parameters.
+     * Each batch is double-buffered: updater writes to write* fields,
+     * renderer reads from read* fields. swap() atomically publishes changes.
      */
     public static class LabelBatch {
-        public List<Glyph> glyphs;
-        public float x;
-        public float y;
-        public float scale;
-        public float r;
-        public float g;
-        public float b;
-        public float a;
+        // Read buffer (accessed by renderer)
+        private volatile boolean readValid = false;
+        private List<Glyph> readGlyphs;
+        private float readX;
+        private float readY;
+        private float readScale;
+        private float readR;
+        private float readG;
+        private float readB;
+        private float readA;
+        
+        // Write buffer (accessed by updater)
+        private boolean writeValid = false;
+        private List<Glyph> writeGlyphs;
+        private String writeText = "";
+        private float writeSizeFactor = 0f;
+        private float writeWidthPx = 0f;
+        private float writeHeightPx = 0f;
+        private float writeAscentPx = 0f;
+        private float writeX;
+        private float writeY;
+        private float writeScale;
+        private float writeR;
+        private float writeG;
+        private float writeB;
+        private float writeA;
+
+        /**
+         * Swaps read and write buffers, publishing the write data to the renderer.
+         * Called by renderer thread at synchronization point.
+         */
+        public void swap() {
+            readValid = writeValid;
+            if (writeValid) {
+                readGlyphs = writeGlyphs;
+                readX = writeX;
+                readY = writeY;
+                readScale = writeScale;
+                readR = writeR;
+                readG = writeG;
+                readB = writeB;
+                readA = writeA;
+            }
+        }
+
+        /**
+         * Marks this batch as invalid (no label to render).
+         * Called by updater thread.
+         */
+        public void markInvalid() {
+            writeValid = false;
+        }
+        
+        /**
+         * Invalidates cached glyphs (e.g., when font changes).
+         */
+        public void invalidateGlyphs() {
+            writeText = "";
+            writeGlyphs = null;
+        }
+
+        // Renderer read methods
+        
+        public boolean isValid() {
+            return readValid;
+        }
+
+        public List<Glyph> getGlyphs() {
+            return readGlyphs;
+        }
+
+        public float getX() {
+            return readX;
+        }
+
+        public float getY() {
+            return readY;
+        }
+
+        public float getScale() {
+            return readScale;
+        }
+
+        public float getR() {
+            return readR;
+        }
+
+        public float getG() {
+            return readG;
+        }
+
+        public float getB() {
+            return readB;
+        }
+
+        public float getA() {
+            return readA;
+        }
     }
 }
