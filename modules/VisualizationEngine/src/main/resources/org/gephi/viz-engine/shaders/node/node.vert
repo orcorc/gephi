@@ -10,7 +10,7 @@
 
 out VertexData vertexData;
 
-void main() {	
+void main() {
     vec2 instancePosition = size * sizeMultiplier * vert + position;
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 
