@@ -147,9 +147,9 @@ public class SimpleViewerTest {
                     break;
                 case KeyEvent.VK_MINUS:
                     engine.getRenderingOptions()
-                        .setNodeLabelScale(engine.getRenderingOptions().getNodeLabelScale() - 0.1f);
+                        .setNodeLabelScale(Math.max(engine.getRenderingOptions().getNodeLabelScale() - 0.1f, 0.1f));
                     break;
-                case KeyEvent.VK_PLUS:
+                case KeyEvent.VK_EQUALS:
                     engine.getRenderingOptions()
                         .setNodeLabelScale(engine.getRenderingOptions().getNodeLabelScale() + 0.1f);
                     break;

@@ -9,31 +9,45 @@ public class TextLabelBuilder {
 
     public static String buildText(Element element, GraphView view, Column[] columns) {
         if (columns.length == 0) {
-            return "";
+            return null;
         } else if (columns.length == 1) {
             return buildText(element, view, columns[0]);
         } else {
             StringBuilder sb = new StringBuilder();
             int i = 0;
             for (Column c : columns) {
+                String str = buildText(element, view, c);
+                if (str == null) {
+                    continue;
+                }
                 if (i++ > 0) {
                     sb.append(" - ");
                 }
-                sb.append(buildText(element, view, c));
+                sb.append(str);
             }
-            return sb.toString();
+            String finalStr = sb.toString();
+            if (finalStr.isEmpty()) {
+                return null;
+            } else {
+                return finalStr;
+            }
         }
     }
 
     public static String buildText(Element element, GraphView view, Column column) {
         Object val = element.getAttribute(column, view);
         if (val == null) {
-            return "";
+            return null;
         }
         if (column.isArray()) {
             return AttributeUtils.printArray(val);
         } else {
-            return val.toString();
+            String str = val.toString();
+            if (str.isEmpty()) {
+                return null;
+            } else {
+                return str;
+            }
         }
     }
 }

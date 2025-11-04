@@ -8,14 +8,18 @@ import java.util.ArrayList;
 import java.util.List;
 import jogamp.text.TextRenderer;
 import jogamp.text.util.Glyph;
+import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class NodeLabelData {
 
+    private static final boolean SMOOTHING = true;
+    private static final boolean ANTIALIASED = true;
+    private static final boolean FRACTIONAL_METRICS = true;
+
     private final NodesCallback nodesCallback;
 
-    // Array of label batches indexed by node storeId (like NodesCallback)
-    // Each batch contains double-buffered data (read by renderer, write by updater)
+    // Array of label batches indexed by node storeId
     private volatile LabelBatch[] labelBatches = new LabelBatch[0];
 
     // TextRenderer for glyph preparation (doesn't need GL context)
@@ -43,9 +47,9 @@ public class NodeLabelData {
      */
     public void ensureTextRenderer(Font font, boolean vaoSupported) {
         if (textRenderer == null || !font.equals(currentFont)) {
-            textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
+            textRenderer = new TextRenderer(font, ANTIALIASED, FRACTIONAL_METRICS);
             textRenderer.setUseVertexArrays(vaoSupported);
-            textRenderer.setSmoothing(true);
+            textRenderer.setSmoothing(SMOOTHING);
 
             currentFont = font;
             
@@ -67,7 +71,6 @@ public class NodeLabelData {
 
     /**
      * Gets the bounds of text using the text renderer.
-     * This doesn't require GL context.
      */
     public Rectangle2D getTextBounds(String text) {
         if (textRenderer == null || text == null || text.isEmpty()) {
@@ -84,7 +87,7 @@ public class NodeLabelData {
             int newSize = getNextPowerOf2(maxStoreId + 1);
             LabelBatch[] newArray = new LabelBatch[newSize];
             System.arraycopy(labelBatches, 0, newArray, 0, labelBatches.length);
-            labelBatches = newArray; // Volatile write for visibility
+            labelBatches = newArray;
         }
     }
 
@@ -92,23 +95,19 @@ public class NodeLabelData {
      * Updates the label data for a specific node (by storeId).
      * Only recomputes glyphs if text changed, only recomputes bounds if text or sizeFactor changed.
      * Called by updater thread - writes to write buffer of the batch.
-     * 
+     *
      * @param storeId The node's storeId
      * @param text The label text
      * @param sizeFactor The size factor (for caching bounds)
      * @param nodeX Node position X (will be centered)
      * @param nodeY Node position Y (will be centered)
-     * @param scale Scale factor
      * @param r Red component
      * @param g Green component
      * @param b Blue component
      * @param a Alpha component
      */
-    public void updateBatch(int storeId, String text, float sizeFactor, float nodeX, float nodeY, float scale, 
-                           float r, float g, float b, float a) {
-        if (textRenderer == null || text == null || text.isEmpty()) {
-            return;
-        }
+    public void updateBatch(Node node, int storeId, String text, float sizeFactor, float nodeX, float nodeY,
+                            float r, float g, float b, float a) {
 
         // Get or create batch for this storeId
         LabelBatch batch = labelBatches[storeId];
@@ -139,31 +138,39 @@ public class NodeLabelData {
         }
         
         // Check if we need to recompute bounds (expensive)
-        boolean sizeFactorChanged = Math.abs(sizeFactor - batch.writeSizeFactor) > 0.0001f;
-        
+        boolean sizeFactorChanged = Math.abs(sizeFactor - batch.writeScale) > 0.0001f;
+
+        float width, height, ascent;
         if (textChanged || sizeFactorChanged) {
             // Recompute bounds
             final Rectangle2D bounds = getTextBounds(text);
-            if (bounds != null) {
-                batch.writeWidthPx = (float) bounds.getWidth();
-                batch.writeHeightPx = (float) bounds.getHeight();
-                batch.writeAscentPx = (float) (-bounds.getY());
-            } else {
+            if (bounds == null) {
                 batch.markInvalid();
                 return;
             }
-            batch.writeSizeFactor = sizeFactor;
+
+            width = (float) bounds.getWidth() * sizeFactor;
+            height = (float) bounds.getHeight() * sizeFactor;
+            ascent = (float) (-bounds.getY());
+
+            node.getTextProperties().setDimensions(width, height);
+        } else {
+            // Use cached bounds
+            width = node.getTextProperties().getWidth();
+            height = node.getTextProperties().getHeight();
+            ascent = batch.writeAscent;
         }
         
         // Compute centered draw position using cached bounds
-        final float descentPx = batch.writeHeightPx - batch.writeAscentPx;
-        final float drawX = nodeX - (batch.writeWidthPx * scale) * 0.5f;
-        final float drawY = nodeY - ((batch.writeAscentPx - descentPx) * scale) * 0.5f;
+        final float descentPx = (height / sizeFactor) - ascent;
+        final float drawX = nodeX - width * 0.5f;
+        final float drawY = nodeY - ((ascent - descentPx) * sizeFactor) * 0.5f;
         
         // Always update position, scale, and color (cheap)
+        batch.writeAscent = ascent;
         batch.writeX = drawX;
         batch.writeY = drawY;
-        batch.writeScale = scale;
+        batch.writeScale = sizeFactor;
         batch.writeR = r;
         batch.writeG = g;
         batch.writeB = b;
@@ -181,29 +188,6 @@ public class NodeLabelData {
         }
     }
 
-    /**
-     * Gets the computed label width for a node.
-     * Called by updater thread after updateBatch.
-     */
-    public float getLabelWidth(int storeId) {
-        if (storeId < labelBatches.length && labelBatches[storeId] != null) {
-            LabelBatch batch = labelBatches[storeId];
-            return batch.writeWidthPx * batch.writeScale;
-        }
-        return 0f;
-    }
-
-    /**
-     * Gets the computed label height for a node.
-     * Called by updater thread after updateBatch.
-     */
-    public float getLabelHeight(int storeId) {
-        if (storeId < labelBatches.length && labelBatches[storeId] != null) {
-            LabelBatch batch = labelBatches[storeId];
-            return batch.writeHeightPx * batch.writeScale;
-        }
-        return 0f;
-    }
 
     /**
      * Swaps the read/write buffers for all batches.
@@ -255,11 +239,8 @@ public class NodeLabelData {
         // Write buffer (accessed by updater)
         private boolean writeValid = false;
         private List<Glyph> writeGlyphs;
-        private String writeText = "";
-        private float writeSizeFactor = 0f;
-        private float writeWidthPx = 0f;
-        private float writeHeightPx = 0f;
-        private float writeAscentPx = 0f;
+        private String writeText = null;
+        private float writeAscent;
         private float writeX;
         private float writeY;
         private float writeScale;
@@ -298,7 +279,7 @@ public class NodeLabelData {
          * Invalidates cached glyphs (e.g., when font changes).
          */
         public void invalidateGlyphs() {
-            writeText = "";
+            writeText = null;
             writeGlyphs = null;
         }
 

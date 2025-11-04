@@ -40,14 +40,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final GraphRenderingOptions options = model.getRenderingOptions();
 
         if (!options.isShowNodeLabels()) {
-            // No labels to show - will be handled by renderer checking isValid()
             labelData.dispose();
             return;
         }
-
-        // Ensure we have a text renderer with the right font
-        // This doesn't require GL context
-        labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported);
 
         // Get nodes and their properties
         final NodesCallback nodesCallback = labelData.getNodesCallback();
@@ -58,11 +53,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
             return;
         }
 
+        // Get nodes array
         final Node[] nodes = nodesCallback.getNodesArray();
         final int maxIndex = nodesCallback.getMaxIndex();
-
-        // Ensure label batches array is large enough
-        labelData.ensureLabelBatchesSize(maxIndex);
 
         // Rendering parameters
         final GraphRenderingOptions.LabelColorMode labelColorMode = options.getNodeLabelColorMode();
@@ -76,9 +69,16 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final float zoom = options.getZoom();
         final float nodeScale = options.getNodeScale();
 
+        // No labels to show
         if (hideNonSelectedLabels && !someSelection) {
             return;
         }
+
+        // Ensure label batches array is large enough
+        labelData.ensureLabelBatchesSize(maxIndex);
+
+        // Ensure we have a text renderer with the right font
+        labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported);
 
         // Update label data for each node
         // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed
@@ -91,17 +91,17 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
                 continue;
             }
 
-            boolean selected = someSelection && nodesCallback.isSelected(i);
-
-            if (hideNonSelectedLabels && !selected) {
-                // Mark as invalid (hidden)
+            final String text = texts[i];
+            if (text == null) {
+                // Mark as invalid (no text)
                 labelData.invalidateBatch(i);
                 continue;
             }
 
-            final String text = texts[i];
-            if (text == null || text.isEmpty()) {
-                // Mark as invalid (no text)
+            boolean selected = someSelection && nodesCallback.isSelected(i);
+
+            if (hideNonSelectedLabels && !selected) {
+                // Mark as invalid (hidden)
                 labelData.invalidateBatch(i);
                 continue;
             }
@@ -138,10 +138,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
             // Update batch for this node (by storeId)
             // Glyphs are only recreated if text changed, bounds only recomputed if sizeFactor changed
-            labelData.updateBatch(i, text, sizeFactor, node.x(), node.y(), sizeFactor, finalR, finalG, finalB, finalA);
-            
-            // Store computed dimensions back to node (for use by other systems)
-            node.getTextProperties().setDimensions(labelData.getLabelWidth(i), labelData.getLabelHeight(i));
+            labelData.updateBatch(node, i, text, sizeFactor, node.x(), node.y(), finalR, finalG, finalB, finalA);
         }
     }
 
