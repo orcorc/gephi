@@ -52,6 +52,12 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import org.gephi.appearance.spi.TransformerCategory;
+import org.gephi.desktop.appearance.AppearanceUIController;
+import org.gephi.ui.appearance.plugin.UniqueElementColorTransformerUI;
+import org.gephi.ui.appearance.plugin.UniqueLabelColorTransformerUI;
+import org.gephi.ui.appearance.plugin.category.DefaultCategory;
+import org.gephi.visualization.api.EdgeColorMode;
 import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
 import org.gephi.visualization.api.VisualisationModel;
@@ -63,6 +69,7 @@ import org.openide.NotifyDescriptor;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
+import org.openide.windows.TopComponent;
 import org.openide.windows.WindowManager;
 
 /**
@@ -83,6 +90,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
     private javax.swing.JButton nodeFontButton;
     private javax.swing.JComboBox<LabelSizeMode> nodeSizeCombo;
     private javax.swing.JSlider nodeSizeSlider;
+    private org.jdesktop.swingx.JXHyperlink selfColorLink;
     private javax.swing.JCheckBox showLabelsCheckbox;
     // End of variables declaration//GEN-END:variables
 
@@ -97,7 +105,14 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         // Color node
         final DefaultComboBoxModel<LabelColorMode> colorModeModel = new DefaultComboBoxModel<>(LabelColorMode.values());
         nodeColorCombo.setModel(colorModeModel);
-        nodeColorCombo.addActionListener(e -> vizController.setNodeLabelColorMode((LabelColorMode) nodeColorCombo.getSelectedItem()));
+        nodeColorCombo.addActionListener(e -> {
+                LabelColorMode selected = (LabelColorMode) nodeColorCombo.getSelectedItem();
+                if (selected == null) {
+                    return;
+                }
+                vizController.setNodeLabelColorMode(selected);
+                selfColorLink.setVisible(selected.equals(LabelColorMode.SELF));
+            });
         nodeColorCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
@@ -114,6 +129,20 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                 }
                 return this;
             }
+        });
+
+        selfColorLink.addActionListener(e -> {
+            TopComponent topComponent = WindowManager.getDefault().findTopComponent("AppearanceTopComponent");
+            topComponent.open();
+            topComponent.requestActive();
+
+            AppearanceUIController appearanceUIController = Lookup.getDefault().lookup(AppearanceUIController.class);
+            TransformerCategory category = DefaultCategory.LABEL_COLOR;
+            appearanceUIController.setSelectedElementClass("nodes");
+            appearanceUIController.setSelectedCategory(category);
+            UniqueLabelColorTransformerUI transformerUI =
+                Lookup.getDefault().lookup(UniqueLabelColorTransformerUI.class);
+            appearanceUIController.setSelectedTransformerUI(transformerUI);
         });
 
         // Size node
@@ -235,6 +264,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         if (fitToNodeSizeToggleButton.isSelected() != vizModel.isNodeLabelFitToNodeSize()) {
             fitToNodeSizeToggleButton.setSelected(vizModel.isNodeLabelFitToNodeSize());
         }
+        selfColorLink.setVisible(nodeColorCombo.getSelectedItem() == LabelColorMode.SELF);
     }
 
     private void setEnable(boolean enable) {
@@ -250,6 +280,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         fitToNodeSizeToggleButton.setEnabled(enable && showLabelsCheckbox.isSelected());
         hideNonSelectedCheckbox.setEnabled(enable && showLabelsCheckbox.isSelected());
         attributesButton.setEnabled(enable && showLabelsCheckbox.isSelected());
+        selfColorLink.setEnabled(enable && showLabelsCheckbox.isSelected());
     }
 
     /**
@@ -273,6 +304,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         fitToNodeSizeToggleButton = new javax.swing.JToggleButton();
         hideNonSelectedCheckbox = new javax.swing.JCheckBox();
         attributesButton = new javax.swing.JButton();
+        selfColorLink = new org.jdesktop.swingx.JXHyperlink();
 
         showLabelsCheckbox.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         showLabelsCheckbox.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.showLabelsCheckbox.text")); // NOI18N
@@ -304,6 +336,8 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
 
         attributesButton.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.attributesButton.text")); // NOI18N
 
+        selfColorLink.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class, "NodeLabelsSettingsPanel.selfColorLink.text")); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -312,17 +346,22 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(19, 19, 19)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(labelNodeColor)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(nodeColorCombo, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(nodeColorCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(labelNodeSize)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(nodeSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(fitToNodeSizeToggleButton)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(fitToNodeSizeToggleButton))
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addGroup(layout.createSequentialGroup()
@@ -340,7 +379,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(showLabelsCheckbox)))
-                .addContainerGap(231, Short.MAX_VALUE))
+                .addContainerGap(230, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -354,7 +393,8 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                     .addComponent(labelNodeFont, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(nodeFontButton)
                     .addComponent(labelNodeScale)
-                    .addComponent(nodeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(nodeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelNodeSize)
