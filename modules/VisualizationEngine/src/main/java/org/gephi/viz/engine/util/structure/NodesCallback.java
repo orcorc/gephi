@@ -80,7 +80,7 @@ public class NodesCallback implements ElementsCallback<Node> {
 
         if (hasLabels && node.getTextProperties().isVisible() && (!hideNonSelectedLabels || isSelected(storeId))) {
             nodesLabelsArray[storeId] = TextLabelBuilder.buildText(node, graphView, nodeLabelColumns);
-        } else {
+        } else if (hasLabels) {
             nodesLabelsArray[storeId] = null;
         }
     }

@@ -701,4 +701,8 @@ public final class GLCapabilitiesSummary {
                 extensions.ARB_multi_draw_indirect &&
                 extensions.ARB_buffer_storage;
     }
+
+    public boolean isVendorIntel() {
+        return version.VENDOR != null && version.VENDOR.toLowerCase().contains("intel");
+    }
 }

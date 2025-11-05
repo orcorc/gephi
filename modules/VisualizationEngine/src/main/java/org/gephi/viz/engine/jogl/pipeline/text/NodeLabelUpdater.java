@@ -17,6 +17,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
     private final VizEngine engine;
     private final NodeLabelData labelData;
     private boolean vaoSupported = false;
+    private boolean mipMapSupported = false;
 
     public NodeLabelUpdater(VizEngine engine, NodeLabelData labelData) {
         this.engine = engine;
@@ -28,6 +29,8 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
         final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
         vaoSupported = capabilities.isVAOSupported(openGLOptions);
+        // Disable mipmap generation in intel GPUs. See https://github.com/gephi/gephi/issues/1494 (Some label characters fade away when zooming out)
+        mipMapSupported = !capabilities.isVendorIntel();
     }
 
     @Override
@@ -78,7 +81,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         labelData.ensureLabelBatchesSize(maxIndex);
 
         // Ensure we have a text renderer with the right font
-        labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported);
+        labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported, mipMapSupported);
 
         // Update label data for each node
         // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed

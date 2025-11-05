@@ -16,6 +16,7 @@ public class NodeLabelData {
     private static final boolean SMOOTHING = true;
     private static final boolean ANTIALIASED = true;
     private static final boolean FRACTIONAL_METRICS = true;
+    private static final boolean MIPMAP = true;
 
     private final NodesCallback nodesCallback;
 
@@ -45,9 +46,9 @@ public class NodeLabelData {
      * Ensures the text renderer is initialized with the correct font.
      * This is called from the updater thread and doesn't require GL context.
      */
-    public void ensureTextRenderer(Font font, boolean vaoSupported) {
+    public void ensureTextRenderer(Font font, boolean vaoSupported, boolean mipMapSupported) {
         if (textRenderer == null || !font.equals(currentFont)) {
-            textRenderer = new TextRenderer(font, ANTIALIASED, FRACTIONAL_METRICS);
+            textRenderer = new TextRenderer(font, ANTIALIASED, FRACTIONAL_METRICS, null, mipMapSupported && MIPMAP);
             textRenderer.setUseVertexArrays(vaoSupported);
             textRenderer.setSmoothing(SMOOTHING);
 
