@@ -78,8 +78,10 @@ public class NodesCallback implements ElementsCallback<Node> {
         }
         nodesArray[storeId] = node;
 
-        if (hasLabels && (!hideNonSelectedLabels || isSelected(storeId))) {
+        if (hasLabels && node.getTextProperties().isVisible() && (!hideNonSelectedLabels || isSelected(storeId))) {
             nodesLabelsArray[storeId] = TextLabelBuilder.buildText(node, graphView, nodeLabelColumns);
+        } else if (hasLabels) {
+            nodesLabelsArray[storeId] = null;
         }
     }
 

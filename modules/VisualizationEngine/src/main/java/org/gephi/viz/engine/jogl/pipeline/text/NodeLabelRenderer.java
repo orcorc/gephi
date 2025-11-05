@@ -1,22 +1,19 @@
 package org.gephi.viz.engine.jogl.pipeline.text;
 
-import java.awt.Font;
-import java.awt.geom.Rectangle2D;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.util.texture.TextureCoords;
 import java.util.EnumSet;
+import java.util.List;
 import jogamp.text.TextRenderer;
-import org.gephi.graph.api.Node;
+import jogamp.text.util.Glyph;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeLabelWorldData;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.spi.Renderer;
-import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.util.gl.Constants;
-import org.gephi.viz.engine.util.gl.OpenGLOptions;
-import org.gephi.viz.engine.util.structure.NodesCallback;
 
 @SuppressWarnings("rawtypes")
 public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabelWorldData> {
@@ -24,8 +21,6 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
     private final VizEngine engine;
     private final NodeLabelData nodeLabelData;
-
-    // Java2D text
     private TextRenderer textRenderer;
 
     // Scratch
@@ -42,133 +37,88 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     }
 
     @Override
+    public void dispose(JOGLRenderingTarget target) {
+        if (textRenderer != null) {
+            textRenderer.dispose();
+            textRenderer = null;
+        }
+    }
+
+    @Override
     public NodeLabelWorldData worldUpdated(VizEngineModel model, JOGLRenderingTarget target) {
-        final GraphRenderingOptions options = model.getRenderingOptions();
+        // This is the synchronization point between updater and renderer threads
+        // The updater has finished preparing batches, now swap the buffers
+        nodeLabelData.swapBuffers();
 
         return new NodeLabelWorldData(
-            options.isShowNodeLabels(),
-            options.getZoom(),
-            options.getNodeScale(),
-            options.getNodeLabelFont(),
-            options.getNodeLabelScale(),
-            options.getNodeLabelColorMode(),
-            options.getNodeLabelSizeMode(),
-            options.getNodeLabelSizeFactor(),
-            options.isHideNonSelectedNodeLabels(),
-            options.isNodeLabelFitToNodeSize(),
-            options.getNodeLabelFitToNodeSizeFactor(),
-            options.getLightenNonSelectedFactor()
+            nodeLabelData.getTextRenderer()
         );
     }
 
     @Override
     public void render(NodeLabelWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
-        if (!data.isShowNodeLabels()) {
+        if (data.getTextRenderer() == null) {
+            if (textRenderer != null) {
+                textRenderer.dispose();
+                textRenderer = null;
+            }
+            return;
+        } else {
+            textRenderer = data.getTextRenderer();
+        }
+
+        // Get the pre-computed batches from the updater
+        final NodeLabelData.LabelBatch[] batches = nodeLabelData.getLabelBatches();
+        if (batches == null || batches.length == 0) {
             return;
         }
+
         engine.getModelViewProjectionMatrixFloats(mvp);
 
-        final NodesCallback nodesCallback = nodeLabelData.getNodesCallback();
-        final boolean someSelection = nodesCallback.hasSelection();
-        final String[] texts = nodesCallback.getNodesLabelsArray();
-        if (texts == null || texts.length == 0) {
-            return;
-        }
-        final GraphRenderingOptions.LabelColorMode labelColorMode = data.getNodeLabelColorMode();
-        final GraphRenderingOptions.LabelSizeMode labelSizeMode = data.getNodeLabelSizeMode();
-        final float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
-        final float nodeLabelScale = data.getNodeLabelScale();
-        final float nodeLabelSizeFactor = data.getNodeLabelSizeFactor();
-        final float fitNodeLabelsToNodeSizeFactor = data.getFitNodeLabelsToNodeSizeFactor();
-        final boolean fitToNodeSize = data.isFitNodeLabelsToNodeSize();
-        final boolean hideNonSelectedLabels = data.isHideNonSelectedLabels();
-        final float zoom = data.getZoom();
-        final float nodeScale = data.getNodeScale();
+        final GL gl = GLContext.getCurrentGL();
 
-        if (hideNonSelectedLabels && !someSelection) {
-            return;
-        }
-
-        refreshTextRendererIfNeeded(data.getNodeLabelFont(), target);
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
 
-        final Node[] nodes = nodesCallback.getNodesArray();
-        final int maxIndex = nodesCallback.getMaxIndex();
-
-        for (int i = 0; i <= maxIndex; i++) {
-            final Node node = nodes[i];
-
-            if (node == null) {
-                continue;
-            }
-            boolean selected = someSelection && nodesCallback.isSelected(i);
-
-            if (hideNonSelectedLabels && !selected) {
+        // Render each prepared batch
+        // All glyphs, positions, colors were pre-computed in the updater thread
+        for (final NodeLabelData.LabelBatch batch : batches) {
+            // Skip null or invalid batches
+            if (batch == null || !batch.isValid()) {
                 continue;
             }
 
-            final String text = texts[i];
-            if (text == null || text.isEmpty()) {
+            final List<Glyph> glyphs = batch.getGlyphs();
+            if (glyphs == null || glyphs.isEmpty()) {
                 continue;
             }
 
-            // Size
-            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale :
-                node.getTextProperties().getSize() * nodeLabelSizeFactor;
-            float sizeFactor = nodeLabelScale * nodeSizeFactor;
-            if (labelSizeMode.equals(GraphRenderingOptions.LabelSizeMode.SCREEN)) {
-                sizeFactor /= zoom;
+            // Set color for this batch
+            textRenderer.setColor(batch.getR(), batch.getG(), batch.getB(), batch.getA());
+
+            // Render each glyph in the batch
+            float x = batch.getX();
+            final float y = batch.getY();
+            final float scale = batch.getScale();
+
+            for (final Glyph glyph : glyphs) {
+                // Upload glyph to texture cache if needed (requires GL)
+                if (glyph.location == null) {
+                    textRenderer.getGlyphCache().upload(glyph);
+                }
+
+                // Get texture coordinates
+                final TextureCoords coords = textRenderer.getGlyphCache().find(glyph);
+
+                // Draw the glyph
+                final float advance = textRenderer.getGlyphRenderer().drawGlyph(
+                    gl, glyph, x, y, 0f, scale, coords
+                );
+                x += advance * scale;
             }
-
-            // Position
-            final Rectangle2D bounds = textRenderer.getBounds(text);
-            final float widthPx = (float) bounds.getWidth();
-            final float ascentPx = (float) (-bounds.getY());
-            final float heightPx = (float) bounds.getHeight();
-            final float descentPx = heightPx - ascentPx;
-            final float drawX = node.x() - (widthPx * sizeFactor) * 0.5f;
-            final float drawY = node.y() - ((ascentPx - descentPx) * sizeFactor) * 0.5f;
-            node.getTextProperties().setDimensions(widthPx * sizeFactor, heightPx * sizeFactor);
-
-            // Color
-            final int rgba = labelColorMode.equals(GraphRenderingOptions.LabelColorMode.OBJECT) ? node.getRGBA() :
-                node.getTextProperties().getRGBA();
-            final float r = (rgba >> 16 & 255) / 255.0F;
-            final float g = (rgba >> 8 & 255) / 255.0F;
-            final float b = (rgba & 255) / 255.0F;
-            final float a = ((rgba >> 24) & 0xFF) / 255f;
-
-            if (someSelection && !selected) {
-                float lightColorFactor = 1 - lightenNonSelectedFactor;
-                textRenderer.setColor(r, g, b, lightColorFactor);
-            } else {
-                textRenderer.setColor(r, g, b, a);
-            }
-
-            textRenderer.draw3D(
-                text,
-                drawX,
-                drawY,
-                0f,
-                sizeFactor
-            );
         }
 
         textRenderer.end3DRendering();
-    }
-
-    private void refreshTextRendererIfNeeded(Font font, JOGLRenderingTarget target) {
-        if (textRenderer == null || !textRenderer.getFont().equals(font)) {
-            if (textRenderer != null) {
-                textRenderer.dispose();
-            }
-            textRenderer = new TextRenderer(font, /*antialiased*/ true, /*fractionalMetrics*/ true);
-            final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
-            final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-            textRenderer.setUseVertexArrays(capabilities.isVAOSupported(openGLOptions));
-            textRenderer.setSmoothing(true);
-        }
     }
 
     @Override
@@ -178,7 +128,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
     @Override
     public int getOrder() {
-        return Constants.RENDERING_ORDER_LABELS;
+        return org.gephi.viz.engine.util.gl.Constants.RENDERING_ORDER_LABELS;
     }
 
     @Override

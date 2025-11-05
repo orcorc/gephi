@@ -605,6 +605,36 @@ public final class TextRenderer {
     }
 
     /**
+     * Gets the glyph cache used by this {@link TextRenderer}.
+     *
+     * @return Glyph cache, not null
+     */
+    /*@Nonnull*/
+    public GlyphCache getGlyphCache() {
+        return glyphCache;
+    }
+
+    /**
+     * Gets the glyph producer used by this {@link TextRenderer}.
+     *
+     * @return Glyph producer, not null
+     */
+    /*@Nonnull*/
+    public GlyphProducer getGlyphProducer() {
+        return glyphProducer;
+    }
+
+    /**
+     * Gets the glyph renderer used by this {@link TextRenderer}.
+     *
+     * @return Glyph renderer, not null
+     */
+    /*@Nonnull*/
+    public GlyphRenderer getGlyphRenderer() {
+        return glyphRenderer;
+    }
+
+    /**
      * Checks if the backing texture is using linear interpolation.
      *
      * @return True if the backing texture is using linear interpolation.
