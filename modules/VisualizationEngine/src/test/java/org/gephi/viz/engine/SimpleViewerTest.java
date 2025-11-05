@@ -49,7 +49,6 @@ public class SimpleViewerTest {
         private static final boolean DISABLE_INSTANCED_RENDERING = false;
         private static final boolean DISABLE_VAOS = false;
 
-        private static final boolean SHOW_LABELS = false;
         private static final boolean DEBUG = false;
 
         private VizEngine<JOGLRenderingTarget, NEWTEvent> engine;
@@ -86,11 +85,8 @@ public class SimpleViewerTest {
                 )
             );
 
-            if (SHOW_LABELS) {
-                final GraphRenderingOptions renderingOptions = engine.getRenderingOptions();
-                renderingOptions.setShowNodeLabels(true);
-                renderingOptions.setNodeLabelColumns(new Column[] {graphModel.defaultColumns().nodeLabel()});
-            }
+            final GraphRenderingOptions renderingOptions = engine.getRenderingOptions();
+            renderingOptions.setNodeLabelColumns(new Column[] {graphModel.defaultColumns().nodeLabel()});
 
             final OpenGLOptions glOptions = engine.getOpenGLOptions();
             glOptions.setDisableIndirectDrawing(DISABLE_INDIRECT_RENDERING);
@@ -123,6 +119,8 @@ public class SimpleViewerTest {
 
             System.out.println("Press space bar to start/stop force atlas 2 layout");
             System.out.println("Press ctrl key to toggle selection mode");
+            System.out.println("Press T to toggle node labels");
+            System.out.println("Press +/- to scale node labels");
 
             try {
                 latch.await(); // Blocks until window is closed
@@ -152,6 +150,10 @@ public class SimpleViewerTest {
                 case KeyEvent.VK_EQUALS:
                     engine.getRenderingOptions()
                         .setNodeLabelScale(engine.getRenderingOptions().getNodeLabelScale() + 0.1f);
+                    break;
+                case KeyEvent.VK_T:
+                    final boolean showLabels = engine.getRenderingOptions().isShowNodeLabels();
+                    engine.getRenderingOptions().setShowNodeLabels(!showLabels);
                     break;
 
             }
