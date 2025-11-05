@@ -82,17 +82,6 @@ public final class ShaderLoader {
     }
 
     /**
-     * Checks that a shader program was validated successfully.
-     *
-     * @param gl      OpenGL context, assumed not null
-     * @param program OpenGL handle to a shader program
-     * @return True if program was validated successfully
-     */
-    private static boolean isProgramValidated(/*@Nonnull*/ final GL2ES2 gl, final int program) {
-        return ShaderUtil.isProgramStatusValid(gl, program, GL2ES2.GL_VALIDATE_STATUS);
-    }
-
-    /**
      * Loads a shader program from a pair of strings.
      *
      * @param gl  Current OpenGL context
@@ -101,7 +90,7 @@ public final class ShaderLoader {
      * @return OpenGL handle to the shader program, not negative
      * @throws NullPointerException     if context or either source is null
      * @throws IllegalArgumentException if either source is empty
-     * @throws GLException              if program did not compile, link, or validate successfully
+     * @throws GLException              if program did not compile or link successfully
      */
     /*@Nonnegative*/
     public static int loadProgram(/*@Nonnull*/ final GL2ES2 gl,
@@ -123,13 +112,16 @@ public final class ShaderLoader {
         gl.glAttachShader(program, vs);
         gl.glAttachShader(program, fs);
 
-        // Link and validate the program
+        // Link the program
         gl.glLinkProgram(program);
-        gl.glValidateProgram(program);
-        if ((!isProgramLinked(gl, program)) || (!isProgramValidated(gl, program))) {
+        if (!isProgramLinked(gl, program)) {
             final String log = ShaderUtil.getProgramInfoLog(gl, program);
             throw new GLException(log);
         }
+        
+        // Note: We don't validate here because glValidateProgram checks if the program
+        // can execute in the CURRENT GL state, which may not have a VAO bound yet.
+        // The program will still fail at runtime with clear errors if there are issues.
 
         // Clean up the shaders
         gl.glDeleteShader(vs);
