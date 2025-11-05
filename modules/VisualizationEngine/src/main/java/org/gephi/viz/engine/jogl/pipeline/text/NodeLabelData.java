@@ -53,12 +53,12 @@ public class NodeLabelData {
             textRenderer.setSmoothing(SMOOTHING);
 
             currentFont = font;
-            
+
             // Font changed - invalidate all cached glyphs
             invalidateAllGlyphs();
         }
     }
-    
+
     /**
      * Invalidates all cached glyphs when font changes.
      */
@@ -97,15 +97,15 @@ public class NodeLabelData {
      * Only recomputes glyphs if text changed, only recomputes bounds if text or sizeFactor changed.
      * Called by updater thread - writes to write buffer of the batch.
      *
-     * @param storeId The node's storeId
-     * @param text The label text
+     * @param storeId    The node's storeId
+     * @param text       The label text
      * @param sizeFactor The size factor (for caching bounds)
-     * @param nodeX Node position X (will be centered)
-     * @param nodeY Node position Y (will be centered)
-     * @param r Red component
-     * @param g Green component
-     * @param b Blue component
-     * @param a Alpha component
+     * @param nodeX      Node position X (will be centered)
+     * @param nodeY      Node position Y (will be centered)
+     * @param r          Red component
+     * @param g          Green component
+     * @param b          Blue component
+     * @param a          Alpha component
      */
     public void updateBatch(Node node, int storeId, String text, float sizeFactor, float nodeX, float nodeY,
                             float r, float g, float b, float a) {
@@ -119,7 +119,7 @@ public class NodeLabelData {
 
         // Check if we need to recompute glyphs (expensive)
         boolean textChanged = !text.equals(batch.writeText);
-        
+
         if (textChanged) {
             // Text changed - must recreate glyphs
             final List<Glyph> glyphs = textRenderer.getGlyphProducer().createGlyphs(text);
@@ -127,7 +127,7 @@ public class NodeLabelData {
                 batch.markInvalid();
                 return;
             }
-            
+
             // Store new glyphs
             if (batch.writeGlyphs == null) {
                 batch.writeGlyphs = new ArrayList<>(glyphs);
@@ -137,7 +137,7 @@ public class NodeLabelData {
             }
             batch.writeText = text;
         }
-        
+
         // Check if we need to recompute bounds (expensive)
         boolean sizeFactorChanged = Math.abs(sizeFactor - batch.writeScale) > 0.0001f;
 
@@ -161,12 +161,12 @@ public class NodeLabelData {
             height = node.getTextProperties().getHeight();
             ascent = batch.writeAscent;
         }
-        
+
         // Compute centered draw position using cached bounds
         final float descentPx = (height / sizeFactor) - ascent;
         final float drawX = nodeX - width * 0.5f;
         final float drawY = nodeY - ((ascent - descentPx) * sizeFactor) * 0.5f;
-        
+
         // Always update position, scale, and color (cheap)
         batch.writeAscent = ascent;
         batch.writeX = drawX;
@@ -236,7 +236,7 @@ public class NodeLabelData {
         private float readG;
         private float readB;
         private float readA;
-        
+
         // Write buffer (accessed by updater)
         private boolean writeValid = false;
         private List<Glyph> writeGlyphs;
@@ -275,7 +275,7 @@ public class NodeLabelData {
         public void markInvalid() {
             writeValid = false;
         }
-        
+
         /**
          * Invalidates cached glyphs (e.g., when font changes).
          */
@@ -285,7 +285,7 @@ public class NodeLabelData {
         }
 
         // Renderer read methods
-        
+
         public boolean isValid() {
             return readValid;
         }

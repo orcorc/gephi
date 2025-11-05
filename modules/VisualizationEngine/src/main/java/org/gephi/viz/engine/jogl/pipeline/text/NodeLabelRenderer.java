@@ -3,7 +3,6 @@ package org.gephi.viz.engine.jogl.pipeline.text;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GLContext;
 import com.jogamp.opengl.util.texture.TextureCoords;
-import java.awt.Font;
 import java.util.EnumSet;
 import java.util.List;
 import jogamp.text.TextRenderer;
@@ -12,11 +11,9 @@ import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeLabelWorldData;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.spi.Renderer;
-import org.gephi.viz.engine.util.gl.OpenGLOptions;
 
 @SuppressWarnings("rawtypes")
 public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabelWorldData> {
@@ -75,7 +72,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         if (batches == null || batches.length == 0) {
             return;
         }
-        
+
         engine.getModelViewProjectionMatrixFloats(mvp);
 
         final GL gl = GLContext.getCurrentGL();
@@ -90,29 +87,29 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             if (batch == null || !batch.isValid()) {
                 continue;
             }
-            
+
             final List<Glyph> glyphs = batch.getGlyphs();
             if (glyphs == null || glyphs.isEmpty()) {
                 continue;
             }
-            
+
             // Set color for this batch
             textRenderer.setColor(batch.getR(), batch.getG(), batch.getB(), batch.getA());
-            
+
             // Render each glyph in the batch
             float x = batch.getX();
             final float y = batch.getY();
             final float scale = batch.getScale();
-            
+
             for (final Glyph glyph : glyphs) {
                 // Upload glyph to texture cache if needed (requires GL)
                 if (glyph.location == null) {
                     textRenderer.getGlyphCache().upload(glyph);
                 }
-                
+
                 // Get texture coordinates
                 final TextureCoords coords = textRenderer.getGlyphCache().find(glyph);
-                
+
                 // Draw the glyph
                 final float advance = textRenderer.getGlyphRenderer().drawGlyph(
                     gl, glyph, x, y, 0f, scale, coords

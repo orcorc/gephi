@@ -51,7 +51,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final NodesCallback nodesCallback = labelData.getNodesCallback();
         final boolean someSelection = nodesCallback.hasSelection();
         final String[] texts = nodesCallback.getNodesLabelsArray();
-        
+
         if (texts == null || texts.length == 0) {
             return;
         }
