@@ -106,7 +106,7 @@ public class VizConfig {
     public static final boolean DEFAULT_EDGE_LABELS = false;
     public static final boolean DEFAULT_SHOW_EDGES = true;
     public static final boolean DEFAULT_HIGHLIGHT = true;
-    public static final float DEFAULT_HIGHLIGHT_FACTOR = 0.5f;
+    public static final float DEFAULT_HIGHLIGHT_FACTOR = 0.9f;
     public static final boolean DEFAULT_NEIGHBOUR_SELECT = true;
     public static final EdgeColorMode DEFAULT_EDGE_COLOR_MODE = EdgeColorMode.SOURCE;
     public static final boolean DEFAULT_HIDE_NONSELECTED_EDGES = false;
