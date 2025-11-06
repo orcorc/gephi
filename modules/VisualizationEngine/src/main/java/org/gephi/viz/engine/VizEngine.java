@@ -57,7 +57,6 @@ public class VizEngine<R extends RenderingTarget, I> {
     //Rendering target
     private final R renderingTarget;
     private boolean isSetUp = false;
-    private boolean isPaused = false;
     private boolean isDestroyed = false;
 
     //State
@@ -115,11 +114,11 @@ public class VizEngine<R extends RenderingTarget, I> {
     }
 
     private void setup() {
-        this.renderingTarget.setup(this);
-
         if (isSetUp) {
             return;
         }
+
+        this.renderingTarget.setup(this);
 
         isSetUp = true;
         Logger.getLogger(VizEngine.class.getName())
@@ -329,7 +328,6 @@ public class VizEngine<R extends RenderingTarget, I> {
     }
 
     public synchronized void start() {
-        isPaused = false;
         if (isDestroyed) {
             throw new IllegalStateException("VizEngine already destroyed, cannot start again. Use pause instead");
         }
@@ -343,6 +341,12 @@ public class VizEngine<R extends RenderingTarget, I> {
             renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl());
         // Sync local translate from new model's pan
         this.translate.set(engineModel.getRenderingOptions().getPan());
+        loadModelViewProjection();
+    }
+
+    public synchronized void unsetGraphModel() {
+        this.engineModel = VizEngineModel.createEmptyModel();
+        this.translate.set(0, 0);
         loadModelViewProjection();
     }
 
@@ -376,10 +380,6 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         loadModelViewProjection();
-    }
-
-    public synchronized void pause() {
-        isPaused = true;
     }
 
     public synchronized void destroy() {
@@ -451,10 +451,6 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     @SuppressWarnings("unchecked")
     public void display() {
-        if (isPaused) {
-            return;
-        }
-
         renderingTarget.frameStart();
 
         // Get world data (might be empty if no world update was done this frame)

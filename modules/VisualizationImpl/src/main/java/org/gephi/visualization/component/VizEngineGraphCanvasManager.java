@@ -171,6 +171,7 @@ public class VizEngineGraphCanvasManager {
         }
         VizModel model = vizController.getModel(workspace);
         model.unsetup();
+        engine.unsetGraphModel();
         return model;
     }
 
@@ -182,7 +183,7 @@ public class VizEngineGraphCanvasManager {
 
         // Keep viz-engine state for when it's restarted:
         if (engine != null) {
-            engine.pause();
+//            engine.pause();
 
 //            engineTranslate = engine.getTranslate();
 //            engineZoom = engine.getZoom();
