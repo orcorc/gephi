@@ -51,7 +51,9 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         nodeLabelData.swapBuffers();
 
         return new NodeLabelWorldData(
-            nodeLabelData.getTextRenderer()
+            nodeLabelData.getTextRenderer(),
+            nodeLabelData.getLabelBatches(),
+            nodeLabelData.getMaxValidIndex()
         );
     }
 
@@ -63,7 +65,7 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         if (oldRenderer != null) {
             oldRenderer.dispose();
         }
-        
+
         if (data.getTextRenderer() == null) {
             if (textRenderer != null) {
                 textRenderer.dispose();
@@ -74,9 +76,12 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
             textRenderer = data.getTextRenderer();
         }
 
-        // Get the pre-computed batches from the updater
-        final NodeLabelData.LabelBatch[] batches = nodeLabelData.getLabelBatches();
-        if (batches == null || batches.length == 0) {
+        // Get the pre-computed batches from the WorldData (captured at worldUpdated time)
+        // This ensures we use a consistent snapshot for this frame
+        final NodeLabelData.LabelBatch[] batches = data.getLabelBatches();
+        final int maxIndex = data.getMaxIndex();
+
+        if (batches == null || batches.length == 0 || maxIndex < 0) {
             return;
         }
 
@@ -87,9 +92,11 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
         textRenderer.begin3DRendering();
         textRenderer.setTransform(mvp);
 
-        // Render each prepared batch
+        // Render each prepared batch up to maxIndex
         // All glyphs, positions, colors were pre-computed in the updater thread
-        for (final NodeLabelData.LabelBatch batch : batches) {
+        for (int i = 0; i <= maxIndex && i < batches.length; i++) {
+            final NodeLabelData.LabelBatch batch = batches[i];
+
             // Skip null or invalid batches
             if (batch == null || !batch.isValid()) {
                 continue;

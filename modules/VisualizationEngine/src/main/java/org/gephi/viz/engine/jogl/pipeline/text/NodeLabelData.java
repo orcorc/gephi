@@ -23,11 +23,14 @@ public class NodeLabelData {
     // Array of label batches indexed by node storeId
     private volatile LabelBatch[] labelBatches = new LabelBatch[0];
 
+    // Maximum valid index in the batches array (updated by updater thread)
+    private volatile int maxValidIndex = -1;
+
     // TextRenderer for glyph preparation (doesn't need GL context)
     // Volatile to ensure visibility across threads
     private volatile TextRenderer textRenderer;
     private volatile Font currentFont;
-    
+
     // Old TextRenderer pending disposal (requires GL context, so done in render thread)
     private volatile TextRenderer textRendererToDispose;
 
@@ -44,6 +47,7 @@ public class NodeLabelData {
         textRendererToDispose = null;
         currentFont = null;
         labelBatches = new LabelBatch[0];
+        maxValidIndex = -1;
     }
 
     /**
@@ -56,7 +60,7 @@ public class NodeLabelData {
             if (textRenderer != null) {
                 textRendererToDispose = textRenderer;
             }
-            
+
             textRenderer = new TextRenderer(font, ANTIALIASED, FRACTIONAL_METRICS, null, mipMapSupported && MIPMAP);
             textRenderer.setUseVertexArrays(vaoSupported);
             textRenderer.setSmoothing(SMOOTHING);
@@ -198,6 +202,22 @@ public class NodeLabelData {
         }
     }
 
+    /**
+     * Sets the maximum valid index for this update cycle.
+     * Called by updater thread.
+     */
+    public void setMaxValidIndex(int maxIndex) {
+        this.maxValidIndex = maxIndex;
+    }
+
+    /**
+     * Gets the maximum valid index.
+     * Called by renderer thread via worldUpdated().
+     */
+    public int getMaxValidIndex() {
+        return maxValidIndex;
+    }
+
 
     /**
      * Swaps the read/write buffers for all batches.
@@ -228,10 +248,11 @@ public class NodeLabelData {
     public TextRenderer getTextRenderer() {
         return textRenderer;
     }
-    
+
     /**
      * Gets and clears any old TextRenderer that needs disposal.
      * Called from render thread which has GL context.
+     *
      * @return Old renderer to dispose, or null if none
      */
     public TextRenderer getAndClearRendererToDispose() {
@@ -279,7 +300,18 @@ public class NodeLabelData {
         public void swap() {
             readValid = writeValid;
             if (writeValid) {
-                readGlyphs = writeGlyphs;
+                // Create a new list for readGlyphs to avoid concurrent modification
+                // when the updater modifies writeGlyphs in the next update cycle
+                if (writeGlyphs != null) {
+                    if (readGlyphs == null) {
+                        readGlyphs = new ArrayList<>(writeGlyphs);
+                    } else {
+                        readGlyphs.clear();
+                        readGlyphs.addAll(writeGlyphs);
+                    }
+                } else {
+                    readGlyphs = null;
+                }
                 readX = writeX;
                 readY = writeY;
                 readScale = writeScale;

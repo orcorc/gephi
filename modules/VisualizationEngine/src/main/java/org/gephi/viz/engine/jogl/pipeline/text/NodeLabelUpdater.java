@@ -83,6 +83,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         // Ensure we have a text renderer with the right font
         labelData.ensureTextRenderer(options.getNodeLabelFont(), vaoSupported, mipMapSupported);
 
+        // Set the max valid index for this frame (used by renderer to limit iteration)
+        labelData.setMaxValidIndex(maxIndex);
+
         // Update label data for each node
         // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed
         for (int i = 0; i <= maxIndex; i++) {
