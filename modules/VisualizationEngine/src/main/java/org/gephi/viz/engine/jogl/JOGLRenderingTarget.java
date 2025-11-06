@@ -35,7 +35,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     private GLCapabilitiesSummary glCapabilitiesSummary;
 
     //Animators
-    private AnimatorBase animator;
+    private final AnimatorBase animator;
     private VizEngine<JOGLRenderingTarget, NEWTEvent> engine;
 
     //For displaying FPS in window title (optional)
@@ -51,6 +51,9 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
+        this.animator = new FPSAnimator(drawable, VizEngine.DEFAULT_FPS, true);
+        this.animator.setExclusiveContext(false);
+        this.animator.setUpdateFPSFrames(VizEngine.DEFAULT_FPS, null);
     }
 
     @Override
@@ -101,24 +104,19 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     @Override
     public synchronized void start() {
-        if (animator != null) {
-            throw new IllegalStateException("Call stop first!");
+        if (animator.isStarted()) {
+            throw new IllegalStateException("Already started!");
         }
-
-        animator = new FPSAnimator(drawable, VizEngine.DEFAULT_FPS, true);
-        animator.setExclusiveContext(false);
-        animator.setUpdateFPSFrames(VizEngine.DEFAULT_FPS, null);
 
         animator.start();
     }
 
     @Override
     public synchronized void stop() {
-        if (animator == null) {
-            throw new IllegalStateException("Call start first!");
+        if (!animator.isStarted()) {
+            throw new IllegalStateException("Not started!");
         }
         animator.stop();
-        animator = null;
     }
 
     @Override
