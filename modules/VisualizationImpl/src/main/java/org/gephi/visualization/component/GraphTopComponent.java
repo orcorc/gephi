@@ -199,10 +199,10 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
     }
 
     private void doInitEngine() {
+        controller.getCanvasManager().init(this);
         SwingUtilities.invokeLater(() -> {
             remove(waitingLabel);
         });
-        controller.getCanvasManager().init(this);
     }
 
     private void deactivateWorkspaceVizEngine(final Workspace workspace) {
