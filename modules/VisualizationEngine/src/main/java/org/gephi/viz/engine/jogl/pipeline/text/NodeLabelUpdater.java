@@ -15,7 +15,7 @@ import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node> {
 
-    private static final int GRID_SIZE = 20;
+    private static final int GRID_SIZE = 15;
 
     private final VizEngine engine;
     private final NodeLabelData labelData;
