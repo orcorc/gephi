@@ -117,11 +117,14 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
 
             for (final Glyph glyph : glyphs) {
                 // Upload glyph to texture cache if needed (requires GL)
+                // Note: After the fix in GlyphCache.clearUnusedEntries(), 
+                // both location and coordinates are cleared on eviction.
+                // GlyphCache.find() will recompute coordinates if needed.
                 if (glyph.location == null) {
                     textRenderer.getGlyphCache().upload(glyph);
                 }
 
-                // Get texture coordinates
+                // Get texture coordinates (will recompute if needed)
                 final TextureCoords coords = textRenderer.getGlyphCache().find(glyph);
 
                 // Draw the glyph
