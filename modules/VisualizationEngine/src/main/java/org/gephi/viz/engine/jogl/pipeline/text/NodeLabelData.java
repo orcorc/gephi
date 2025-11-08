@@ -119,8 +119,9 @@ public class NodeLabelData {
      * @param g          Green component
      * @param b          Blue component
      * @param a          Alpha component
+     * @return The updated LabelBatch (for overlap detection)
      */
-    public void updateBatch(Node node, int storeId, String text, float sizeFactor, float nodeX, float nodeY,
+    public LabelBatch updateBatch(Node node, int storeId, String text, float sizeFactor, float nodeX, float nodeY,
                             float r, float g, float b, float a) {
 
         // Get or create batch for this storeId
@@ -138,7 +139,7 @@ public class NodeLabelData {
             final List<Glyph> glyphs = textRenderer.getGlyphProducer().createGlyphs(text);
             if (glyphs == null || glyphs.isEmpty()) {
                 batch.markInvalid();
-                return;
+                return batch;
             }
 
             // Store new glyphs
@@ -160,7 +161,7 @@ public class NodeLabelData {
             final Rectangle2D bounds = getTextBounds(text);
             if (bounds == null) {
                 batch.markInvalid();
-                return;
+                return batch;
             }
 
             width = (float) bounds.getWidth() * sizeFactor;
@@ -190,6 +191,19 @@ public class NodeLabelData {
         batch.writeB = b;
         batch.writeA = a;
         batch.writeValid = true;
+        
+        return batch;
+    }
+
+    /**
+     * Gets a label batch by storeId (for overlap detection).
+     * Returns null if no batch exists at that index.
+     */
+    public LabelBatch getBatch(int storeId) {
+        if (storeId >= 0 && storeId < labelBatches.length) {
+            return labelBatches[storeId];
+        }
+        return null;
     }
 
     /**
@@ -342,6 +356,16 @@ public class NodeLabelData {
 
         public boolean isValid() {
             return readValid;
+        }
+
+        // Updater access methods (for overlap detection)
+
+        public boolean isWriteValid() {
+            return writeValid;
+        }
+
+        public float getWriteScale() {
+            return writeScale;
         }
 
         public List<Glyph> getGlyphs() {

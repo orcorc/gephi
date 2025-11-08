@@ -61,6 +61,7 @@ public interface GraphRenderingOptions {
     boolean DEFAULT_HIDE_NON_SELECTED_NODE_LABELS = false;
     float DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE_FACTOR = 0.05f;
     float DEFAULT_NODE_LABEL_SIZE_FACTOR = 2f;
+    boolean DEFAULT_AVOID_NODE_LABEL_OVERLAP = true;
 
     //Selection:
     boolean DEFAULT_HIDE_NON_SELECTED_EDGES = false;
@@ -181,6 +182,10 @@ public interface GraphRenderingOptions {
     float getNodeLabelSizeFactor();
 
     void setNodeLabelSizeFactor(float factor);
+
+    boolean isAvoidNodeLabelOverlap();
+
+    void setAvoidNodeLabelOverlap(boolean avoidOverlap);
 
     // Edge Labels
 
