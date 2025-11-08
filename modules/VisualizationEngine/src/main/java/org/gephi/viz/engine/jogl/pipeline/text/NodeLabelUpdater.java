@@ -170,8 +170,8 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
             }
 
             // Update batch first - this computes dimensions and glyphs
-            NodeLabelData.LabelBatch batch = labelData.updateBatch(node, i, text, sizeFactor, node.x(), node.y(), 
-                                                                    finalR, finalG, finalB, finalA);
+            NodeLabelData.LabelBatch batch = labelData.updateBatch(node, i, text, sizeFactor, node.x(), node.y(),
+                finalR, finalG, finalB, finalA);
 
             // Check for overlap if enabled (after dimensions are computed)
             boolean shouldRender = true;

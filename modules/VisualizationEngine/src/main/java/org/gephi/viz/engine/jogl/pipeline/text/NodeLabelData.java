@@ -122,7 +122,7 @@ public class NodeLabelData {
      * @return The updated LabelBatch (for overlap detection)
      */
     public LabelBatch updateBatch(Node node, int storeId, String text, float sizeFactor, float nodeX, float nodeY,
-                            float r, float g, float b, float a) {
+                                  float r, float g, float b, float a) {
 
         // Get or create batch for this storeId
         LabelBatch batch = labelBatches[storeId];
@@ -191,7 +191,7 @@ public class NodeLabelData {
         batch.writeB = b;
         batch.writeA = a;
         batch.writeValid = true;
-        
+
         return batch;
     }
 
