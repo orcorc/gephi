@@ -13,7 +13,7 @@ import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class NodeLabelData {
 
-    private static final boolean SMOOTHING = true;
+    private static final boolean SMOOTHING = false;
     private static final boolean ANTIALIASED = true;
     private static final boolean FRACTIONAL_METRICS = true;
     private static final boolean MIPMAP = true;
@@ -31,9 +31,6 @@ public class NodeLabelData {
     private volatile TextRenderer textRenderer;
     private volatile Font currentFont;
 
-    // Old TextRenderer pending disposal (requires GL context, so done in render thread)
-    private volatile TextRenderer textRendererToDispose;
-
     public NodeLabelData(NodesCallback nodesCallback) {
         this.nodesCallback = nodesCallback;
     }
@@ -44,7 +41,6 @@ public class NodeLabelData {
 
     public void dispose() {
         textRenderer = null;
-        textRendererToDispose = null;
         currentFont = null;
         labelBatches = new LabelBatch[0];
         maxValidIndex = -1;
@@ -56,11 +52,6 @@ public class NodeLabelData {
      */
     public void ensureTextRenderer(Font font, boolean vaoSupported, boolean mipMapSupported) {
         if (textRenderer == null || !font.equals(currentFont)) {
-            // Mark old renderer for disposal (will be disposed in render thread with GL context)
-            if (textRenderer != null) {
-                textRendererToDispose = textRenderer;
-            }
-
             textRenderer = new TextRenderer(font, ANTIALIASED, FRACTIONAL_METRICS, null, mipMapSupported && MIPMAP);
             textRenderer.setUseVertexArrays(vaoSupported);
             textRenderer.setSmoothing(SMOOTHING);
@@ -261,20 +252,6 @@ public class NodeLabelData {
      */
     public TextRenderer getTextRenderer() {
         return textRenderer;
-    }
-
-    /**
-     * Gets and clears any old TextRenderer that needs disposal.
-     * Called from render thread which has GL context.
-     *
-     * @return Old renderer to dispose, or null if none
-     */
-    public TextRenderer getAndClearRendererToDispose() {
-        TextRenderer toDispose = textRendererToDispose;
-        if (toDispose != null) {
-            textRendererToDispose = null;
-        }
-        return toDispose;
     }
 
     /**

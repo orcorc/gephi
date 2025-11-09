@@ -61,11 +61,11 @@ public class NodeLabelRenderer implements Renderer<JOGLRenderingTarget, NodeLabe
     public void render(NodeLabelWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         // Dispose any old renderer that was replaced (e.g., due to font change)
         // This must be done in render thread because dispose() requires GL context
-        TextRenderer oldRenderer = nodeLabelData.getAndClearRendererToDispose();
-        if (oldRenderer != null) {
-            oldRenderer.dispose();
+        if (textRenderer != null && data.getTextRenderer() != null &&  textRenderer != data.getTextRenderer()) {
+            textRenderer.dispose();
         }
 
+        // Update to the new TextRenderer
         if (data.getTextRenderer() == null) {
             if (textRenderer != null) {
                 textRenderer.dispose();
