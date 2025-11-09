@@ -28,9 +28,6 @@ public class InstancedNodeData extends AbstractNodeData {
     public void drawInstanced(GL2ES3 gl, RenderingLayer layer, NodeWorldData data, float[] mvpFloats) {
         refreshTime();
 
-        //First we draw outside circle (for border) and then inside circle:
-        //FIXME: all node parts should be drawn at the same time, otherwise internal parts of nodes can cover external parts!
-//        drawInstancedInternal(gl, layer, data, mvpFloats, true);
         drawInstancedInternal(gl, layer, data, mvpFloats);
     }
 
