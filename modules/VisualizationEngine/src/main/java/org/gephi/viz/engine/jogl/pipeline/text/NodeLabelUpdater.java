@@ -140,8 +140,10 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
             }
 
             // Size calculation
-            final float nodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale :
+            final float baseNodeSizeFactor = fitToNodeSize ? node.size() * fitNodeLabelsToNodeSizeFactor * nodeScale :
                 node.getTextProperties().getSize() * nodeLabelSizeFactor;
+            // Add tiny bias (<1%) based on node size to prioritize labels of larger nodes in overlap detection
+            final float nodeSizeFactor = baseNodeSizeFactor * (1.0f + node.size() * nodeScale * 0.00001f);
             float sizeFactor = nodeLabelScale * nodeSizeFactor;
             if (labelSizeMode.equals(GraphRenderingOptions.LabelSizeMode.SCREEN)) {
                 sizeFactor /= zoom;
