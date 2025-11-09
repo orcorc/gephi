@@ -173,13 +173,12 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         if (renderingUnselectedNodes) {
             instanceCount = instanceCounter.unselectedCountToDraw;
             final float colorLightenFactor = data.getLightenNonSelectedFactor();
-            final float colorMultiplier = 1f;// TODO remove
+
             diskModel.useProgramWithSelectionUnselected(
                     gl,
                     mvpFloats,
                     backgroundColorFloats,
                     colorLightenFactor,
-                    colorMultiplier,
                     globalTime,
                     this.selectedTime
             );
@@ -189,17 +188,16 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             instanceCount = instanceCounter.selectedCountToDraw;
 
             if (someSelection) {
-                final float colorMultiplier = 1f;// TODO remove
+
                 diskModel.useProgramWithSelectionSelected(
                         gl,
                         mvpFloats,
-                        colorMultiplier,
                         globalTime,
                         this.selectedTime
                 );
             } else {
-                final float colorMultiplier = 1f;// TODO remove
-                diskModel.useProgram(gl, mvpFloats, colorMultiplier);
+
+                diskModel.useProgram(gl, mvpFloats);
             }
 
             setupVertexArrayAttributes(gl, data);

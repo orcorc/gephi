@@ -24,7 +24,7 @@ void main() {
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    color.rgb = color.rgb * colorMultiplier;
+    color.rgb = color.rgb ;
     color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor * animationCurve);
 
     vertexData.color = color;
