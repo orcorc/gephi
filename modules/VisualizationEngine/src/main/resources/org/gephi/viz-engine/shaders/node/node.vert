@@ -14,13 +14,13 @@ out vec2 vLocal;
 void main() {
     vLocal = vert;
 
-    vec2 instancePosition = size * sizeMultiplier * vert + position;
+    vec2 instancePosition = size * vert + position;
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    color.rgb = color.rgb * colorMultiplier;
+    color.rgb = color.rgb;
 
     vertexData.color = color;
 }
