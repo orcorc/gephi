@@ -44,7 +44,7 @@ public class Constants {
     public static final String UNIFORM_NAME_SELECTION_TIME = "selectionTime";
 
     public static final String UNIFORM_NAME_BORDER_SIZE = "borderSize";
-    public static final String UNIFORM_DARKEN_FACTOR = "nodeBorderDarkenFactor";
+    public static final String UNIFORM_NAME_DARKEN_FACTOR = "nodeBorderDarkenFactor";
     //Rendering order:
     public static final int RENDERING_ORDER_LABELS = 200;
     public static final int RENDERING_ORDER_NODES = 100;
