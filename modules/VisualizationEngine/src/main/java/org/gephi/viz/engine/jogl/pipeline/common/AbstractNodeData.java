@@ -168,12 +168,12 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         final float[] backgroundColorFloats = data.getBackgroundColor();
 
         final int instanceCount;
-        final float sizeMultiplier = isRenderingOutsideCircle ? 1f : INSIDE_CIRCLE_SIZE;
+        final float sizeMultiplier = 1; // TODO remove
 
         if (renderingUnselectedNodes) {
             instanceCount = instanceCounter.unselectedCountToDraw;
             final float colorLightenFactor = data.getLightenNonSelectedFactor();
-            final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
+            final float colorMultiplier = 1f;// TODO remove
             diskModel.useProgramWithSelectionUnselected(
                     gl,
                     mvpFloats,
@@ -190,7 +190,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             instanceCount = instanceCounter.selectedCountToDraw;
 
             if (someSelection) {
-                final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
+                final float colorMultiplier = 1f;// TODO remove
                 diskModel.useProgramWithSelectionSelected(
                         gl,
                         mvpFloats,
@@ -200,7 +200,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
                         this.selectedTime
                 );
             } else {
-                final float colorMultiplier = isRenderingOutsideCircle ? NODER_BORDER_DARKEN_FACTOR : 1f;
+                final float colorMultiplier = 1f;// TODO remove
                 diskModel.useProgram(gl, mvpFloats, sizeMultiplier, colorMultiplier);
             }
 

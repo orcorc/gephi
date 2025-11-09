@@ -32,7 +32,7 @@ public class ArrayDrawNodeData extends AbstractNodeData {
 
         //First we draw outside circle (for border) and then inside circle:
         //FIXME: all node parts should be drawn at the same time, otherwise internal parts of nodes can cover external parts!
-        drawArraysInternal(gl, layer, data, mvpFloats, true);
+//        drawArraysInternal(gl, layer, data, mvpFloats, true);
         drawArraysInternal(gl, layer, data, mvpFloats, false);
     }
 
