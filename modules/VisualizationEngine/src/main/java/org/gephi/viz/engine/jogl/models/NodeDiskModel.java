@@ -122,9 +122,9 @@ public class NodeDiskModel {
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_SELECTION_TIME), selectedTime);
 
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
-            Constants.NODE_BORDER_SIZE);
+            Constants.getNodeBorderSize());
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_DARKEN_FACTOR),
-            Constants.NODE_BORDER_DARKEN_FACTOR);
+            Constants.getNodeBorderDarkenFactor());
     }
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats,
@@ -145,9 +145,9 @@ public class NodeDiskModel {
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_SELECTION_TIME), selectedTime);
 
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
-            Constants.NODE_BORDER_SIZE);
+            Constants.getNodeBorderSize());
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_DARKEN_FACTOR),
-            Constants.NODE_BORDER_DARKEN_FACTOR);
+            Constants.getNodeBorderDarkenFactor());
     }
 
     public void useProgram(GL2ES2 gl, float[] mvpFloats) {
@@ -156,9 +156,9 @@ public class NodeDiskModel {
 
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
-            Constants.NODE_BORDER_SIZE);
+            Constants.getNodeBorderSize());
         gl.glUniform1f(program.getUniformLocation(UNIFORM_DARKEN_FACTOR),
-            Constants.NODE_BORDER_DARKEN_FACTOR);
+            Constants.getNodeBorderDarkenFactor());
 
     }
 
