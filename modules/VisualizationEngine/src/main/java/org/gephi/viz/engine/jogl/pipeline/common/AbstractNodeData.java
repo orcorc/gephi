@@ -128,10 +128,6 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
     }
 
     protected void initCirclesGLVertexBuffer(GL gl, final int bufferName) {
-        final NodeDiskVertexDataGenerator generator64 = new NodeDiskVertexDataGenerator(64);
-        final NodeDiskVertexDataGenerator generator32 = new NodeDiskVertexDataGenerator(32);
-        final NodeDiskVertexDataGenerator generator16 = new NodeDiskVertexDataGenerator(16);
-        final NodeDiskVertexDataGenerator generator8 = new NodeDiskVertexDataGenerator(8);
 
         final float[] circleVertexData = new float[
                 generator64.getVertexData().length
