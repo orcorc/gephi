@@ -11,10 +11,11 @@ flat in VertexData vertexData;
 out vec4 fragColor;
 
 void main(void) {
-    float r = length(vLocal);            // 0..1
+    float r2 = dot(vLocal, vLocal);
+    float t  = 1.0 - BORDER_SIZE; // inner edge of border
+    float t2 = t * t;
 
-    float t = 1.0 - BORDER_SIZE;          // inner edge of border
-    float mask = step(t, r);             // 0 inside, 1 in border band
+    float mask = step(t2, r2);  // 0 inside, 1 in border
 
     vec3 base = vertexData.color.rgb;
     vec3 dark = base * NODER_BORDER_DARKEN_FACTOR;
