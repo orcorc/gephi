@@ -14,11 +14,8 @@ void main(void) {
     float t  = 1.0 - borderSize;// inner edge of border
     float t2 = t * t;
 
-    float mask = step(t2, r2);// 0 inside, 1 in border
-
-
     vec4 color = vertexData.color;
-    color.rgb = mix(color.rgb, color.rgb * nodeBorderDarkenFactor, mask);
+    color.rgb = r2 < t2 ? color.rgb: color.rgb * nodeBorderDarkenFactor;
 
     fragColor = color;
 }
