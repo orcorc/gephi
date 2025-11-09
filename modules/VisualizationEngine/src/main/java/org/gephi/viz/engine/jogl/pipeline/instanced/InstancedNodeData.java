@@ -31,16 +31,15 @@ public class InstancedNodeData extends AbstractNodeData {
         //First we draw outside circle (for border) and then inside circle:
         //FIXME: all node parts should be drawn at the same time, otherwise internal parts of nodes can cover external parts!
 //        drawInstancedInternal(gl, layer, data, mvpFloats, true);
-        drawInstancedInternal(gl, layer, data, mvpFloats, false);
+        drawInstancedInternal(gl, layer, data, mvpFloats);
     }
 
     private void drawInstancedInternal(final GL2ES3 gl,
                                        final RenderingLayer layer,
                                        final NodeWorldData data,
-                                       final float[] mvpFloats,
-                                       final boolean isRenderingOutsideCircle) {
+                                       final float[] mvpFloats) {
         final int instanceCount =
-            setupShaderProgramForRenderingLayer(gl, layer, data, mvpFloats, isRenderingOutsideCircle);
+            setupShaderProgramForRenderingLayer(gl, layer, data, mvpFloats);
 
         if (instanceCount <= 0) {
             diskModel.stopUsingProgram(gl);

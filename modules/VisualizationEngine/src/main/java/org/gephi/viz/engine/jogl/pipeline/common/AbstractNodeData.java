@@ -156,8 +156,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
     protected int setupShaderProgramForRenderingLayer(final GL2ES2 gl,
                                                       final RenderingLayer layer,
                                                       final NodeWorldData data,
-                                                      final float[] mvpFloats,
-                                                      final boolean isRenderingOutsideCircle) {
+                                                      final float[] mvpFloats) {
         final boolean someSelection = data.hasSomeSelection();
         final boolean renderingUnselectedNodes = layer.isBack();
 

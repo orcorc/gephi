@@ -23,7 +23,7 @@ void main() {
     vec4 color = elementColor.bgra / 255.0;
 
     color.rgb = color.rgb;
-    color = mix(color, color*1.1, animationCurve);
+    color = mix(color, color * 1.1, animationCurve);
 
     vertexData.color = color;
 }

@@ -3,6 +3,11 @@
 #define BORDER_SIZE 0.16
 #define NODER_BORDER_DARKEN_FACTOR 0.498
 
+uniform vec4 backgroundColor;
+uniform float colorLightenFactor;
+
+//#include "../common.animation.glsl"
+
 //#include "common.node.struct.glsl"
 
 in vec2 vLocal;
@@ -17,9 +22,11 @@ void main(void) {
 
     float mask = step(t2, r2);// 0 inside, 1 in border
 
-
     vec4 color = vertexData.color;
     color.rgb = mix(color.rgb, color.rgb * NODER_BORDER_DARKEN_FACTOR, mask);
+
+    // Animation:
+    color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor * animationCurve);
 
     fragColor = color;
 }
