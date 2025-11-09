@@ -1,7 +1,6 @@
 //#include "../common.frag.glsl"
 
-#define BORDER_SIZE 0.16
-#define NODER_BORDER_DARKEN_FACTOR 0.498
+//#include "common.node.frag.glsl"
 
 uniform vec4 backgroundColor;
 uniform float colorLightenFactor;
