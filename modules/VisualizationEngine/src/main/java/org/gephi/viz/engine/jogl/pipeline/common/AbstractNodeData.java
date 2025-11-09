@@ -123,18 +123,18 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         if (indirectCommands) {
             commandsBufferBatch = new int[INDIRECT_DRAW_COMMAND_INTS_COUNT * BATCH_NODES_SIZE];
             commandsBuffer =
-                    new ManagedDirectBuffer(GL_UNSIGNED_INT, INDIRECT_DRAW_COMMAND_INTS_COUNT * BATCH_NODES_SIZE);
+                new ManagedDirectBuffer(GL_UNSIGNED_INT, INDIRECT_DRAW_COMMAND_INTS_COUNT * BATCH_NODES_SIZE);
         }
     }
 
     protected void initCirclesGLVertexBuffer(GL gl, final int bufferName) {
 
         final float[] circleVertexData = new float[
-                generator64.getVertexData().length
-                        + generator32.getVertexData().length
-                        + generator16.getVertexData().length
-                        + generator8.getVertexData().length
-                ];
+            generator64.getVertexData().length
+                + generator32.getVertexData().length
+                + generator16.getVertexData().length
+                + generator8.getVertexData().length
+            ];
 
         int offset = 0;
         System.arraycopy(generator64.getVertexData(), 0, circleVertexData, offset, generator64.getVertexData().length);
@@ -175,12 +175,12 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             final float colorLightenFactor = data.getLightenNonSelectedFactor();
 
             diskModel.useProgramWithSelectionUnselected(
-                    gl,
-                    mvpFloats,
-                    backgroundColorFloats,
-                    colorLightenFactor,
-                    globalTime,
-                    this.selectedTime
+                gl,
+                mvpFloats,
+                backgroundColorFloats,
+                colorLightenFactor,
+                globalTime,
+                this.selectedTime
             );
 
             setupSecondaryVertexArrayAttributes(gl, data);
@@ -190,10 +190,10 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             if (someSelection) {
 
                 diskModel.useProgramWithSelectionSelected(
-                        gl,
-                        mvpFloats,
-                        globalTime,
-                        this.selectedTime
+                    gl,
+                    mvpFloats,
+                    globalTime,
+                    this.selectedTime
                 );
             } else {
 
@@ -208,13 +208,13 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
 
     public NodeWorldData createWorldData(VizEngineModel model, VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
         return new NodeWorldData(
-                someSelection,
-                model.getRenderingOptions().getBackgroundColor(),
-                maxNodeSize,
-                currentZoom,
-                model.getRenderingOptions().getLightenNonSelectedFactor(),
-                engine.getOpenGLOptions(),
-                engine.getRenderingTarget().getGlCapabilitiesSummary()
+            someSelection,
+            model.getRenderingOptions().getBackgroundColor(),
+            maxNodeSize,
+            currentZoom,
+            model.getRenderingOptions().getLightenNonSelectedFactor(),
+            engine.getOpenGLOptions(),
+            engine.getRenderingTarget().getGlCapabilitiesSummary()
         );
     }
 
@@ -287,7 +287,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             }
 
             instanceId =
-                    0;//Reset instance id, since we draw elements in 2 separate attribute buffers (main/selected and secondary/unselected)
+                0;//Reset instance id, since we draw elements in 2 separate attribute buffers (main/selected and secondary/unselected)
             //Then selected ones (up):
             for (int j = 0; j <= maxIndex; j++) {
                 final Node node = visibleNodesArray[j];
@@ -416,8 +416,8 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
     public void setupVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAO == null) {
             nodesVAO = new NodesVAO(
-                    data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
-                    vertexGLBuffer, attributesGLBuffer
+                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
+                vertexGLBuffer, attributesGLBuffer
             );
         }
 
@@ -427,8 +427,8 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
     public void setupSecondaryVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAOSecondary == null) {
             nodesVAOSecondary = new NodesVAO(
-                    data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
-                    vertexGLBuffer, attributesGLBufferSecondary
+                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
+                vertexGLBuffer, attributesGLBufferSecondary
             );
         }
 
@@ -502,15 +502,15 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
                     int offset = 0;
 
                     gl.glVertexAttribPointer(SHADER_POSITION_LOCATION, NodeDiskModel.POSITION_FLOATS, GL_FLOAT, false,
-                            stride, offset);
+                        stride, offset);
                     offset += NodeDiskModel.POSITION_FLOATS * Float.BYTES;
 
                     gl.glVertexAttribPointer(SHADER_COLOR_LOCATION, NodeDiskModel.COLOR_FLOATS * Float.BYTES,
-                            GL_UNSIGNED_BYTE, false, stride, offset);
+                        GL_UNSIGNED_BYTE, false, stride, offset);
                     offset += NodeDiskModel.COLOR_FLOATS * Float.BYTES;
 
                     gl.glVertexAttribPointer(SHADER_SIZE_LOCATION, NodeDiskModel.SIZE_FLOATS, GL_FLOAT, false, stride,
-                            offset);
+                        offset);
                 }
                 attributesBuffer.unbind(gl);
             }
@@ -519,15 +519,15 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         @Override
         protected int[] getUsedAttributeLocations() {
             if (instancedRendering) {
-                return new int[]{
-                        SHADER_VERT_LOCATION,
-                        SHADER_POSITION_LOCATION,
-                        SHADER_COLOR_LOCATION,
-                        SHADER_SIZE_LOCATION
+                return new int[] {
+                    SHADER_VERT_LOCATION,
+                    SHADER_POSITION_LOCATION,
+                    SHADER_COLOR_LOCATION,
+                    SHADER_SIZE_LOCATION
                 };
             } else {
-                return new int[]{
-                        SHADER_VERT_LOCATION
+                return new int[] {
+                    SHADER_VERT_LOCATION
                 };
             }
         }
@@ -535,10 +535,10 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         @Override
         protected int[] getInstancedAttributeLocations() {
             if (instancedRendering) {
-                return new int[]{
-                        SHADER_POSITION_LOCATION,
-                        SHADER_COLOR_LOCATION,
-                        SHADER_SIZE_LOCATION
+                return new int[] {
+                    SHADER_POSITION_LOCATION,
+                    SHADER_COLOR_LOCATION,
+                    SHADER_SIZE_LOCATION
                 };
             } else {
                 return null;
