@@ -1,6 +1,7 @@
 //#include "../common.frag.glsl"
 
-#define BORDER_SIZE 0.16
+//#include "common.node.frag.uniform.glsl"
+
 #define NODER_BORDER_DARKEN_FACTOR 0.498
 
 //#include "common.node.struct.glsl"
@@ -12,7 +13,7 @@ out vec4 fragColor;
 
 void main(void) {
     float r2 = dot(vLocal, vLocal);
-    float t  = 1.0 - BORDER_SIZE; // inner edge of border
+    float t  = 1.0 - borderSize; // inner edge of border
     float t2 = t * t;
 
     float mask = step(t2, r2);  // 0 inside, 1 in border
