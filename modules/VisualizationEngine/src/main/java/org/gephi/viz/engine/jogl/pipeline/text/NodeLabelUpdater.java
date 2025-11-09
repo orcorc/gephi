@@ -68,7 +68,6 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final GraphRenderingOptions.LabelSizeMode labelSizeMode = options.getNodeLabelSizeMode();
         final float lightenNonSelectedFactor = options.getLightenNonSelectedFactor();
         final float nodeLabelScale = options.getNodeLabelScale();
-        final float nodeLabelSizeFactor = options.getNodeLabelSizeFactor();
         final float fitNodeLabelsToNodeSizeFactor = options.getNodeLabelFitToNodeSizeFactor();
         final boolean fitToNodeSize = options.isNodeLabelFitToNodeSize();
         final boolean hideNonSelectedLabels = options.isHideNonSelectedNodeLabels();
