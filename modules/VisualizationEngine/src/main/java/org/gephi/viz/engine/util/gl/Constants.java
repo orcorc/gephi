@@ -44,13 +44,14 @@ public class Constants {
     public static final String UNIFORM_NAME_SELECTION_TIME = "selectionTime";
 
     public static final String UNIFORM_NAME_BORDER_SIZE = "borderSize";
+    public static final String UNIFORM_DARKEN_FACTOR = "nodeBorderDarkenFactor";
     //Rendering order:
     public static final int RENDERING_ORDER_LABELS = 200;
     public static final int RENDERING_ORDER_NODES = 100;
     public static final int RENDERING_ORDER_EDGES = 50;
 
     public static final float NODE_BORDER_SIZE = 0.16f;
-    public static final float NODER_BORDER_DARKEN_FACTOR = 0.498f;//Configurable?
+    public static final float NODE_BORDER_DARKEN_FACTOR = 0.498f;//Configurable?
 
     public static final float EDGE_SCALE_MIN = 0.4f;
     public static final float EDGE_SCALE_MAX = 8.0f;

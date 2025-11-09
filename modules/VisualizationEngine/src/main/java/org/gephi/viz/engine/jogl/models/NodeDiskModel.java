@@ -9,6 +9,7 @@ import static org.gephi.viz.engine.util.gl.Constants.SHADER_COLOR_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_SIZE_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_VERT_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_DARKEN_FACTOR;
 import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_BACKGROUND_COLOR;
 import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_BORDER_SIZE;
 import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_COLOR_LIGHTEN_FACTOR;
@@ -52,6 +53,7 @@ public class NodeDiskModel {
         program = new GLShaderProgram(SHADERS_ROOT, SHADERS_NODE_CIRCLE_SOURCE, SHADERS_NODE_CIRCLE_SOURCE)
             .addUniformName(UNIFORM_NAME_MODEL_VIEW_PROJECTION)
             .addUniformName(UNIFORM_NAME_BORDER_SIZE)
+            .addUniformName(UNIFORM_DARKEN_FACTOR)
             .addAttribLocation(ATTRIB_NAME_VERT, SHADER_VERT_LOCATION)
             .addAttribLocation(ATTRIB_NAME_POSITION, SHADER_POSITION_LOCATION)
             .addAttribLocation(ATTRIB_NAME_COLOR, SHADER_COLOR_LOCATION)
@@ -65,6 +67,7 @@ public class NodeDiskModel {
                 .addUniformName(UNIFORM_NAME_GLOBAL_TIME)
                 .addUniformName(UNIFORM_NAME_SELECTION_TIME)
                 .addUniformName(UNIFORM_NAME_BORDER_SIZE)
+                .addUniformName(UNIFORM_DARKEN_FACTOR)
                 .addAttribLocation(ATTRIB_NAME_VERT, SHADER_VERT_LOCATION)
                 .addAttribLocation(ATTRIB_NAME_POSITION, SHADER_POSITION_LOCATION)
                 .addAttribLocation(ATTRIB_NAME_COLOR, SHADER_COLOR_LOCATION)
@@ -80,6 +83,7 @@ public class NodeDiskModel {
                 .addUniformName(UNIFORM_NAME_GLOBAL_TIME)
                 .addUniformName(UNIFORM_NAME_SELECTION_TIME)
                 .addUniformName(UNIFORM_NAME_BORDER_SIZE)
+                .addUniformName(UNIFORM_DARKEN_FACTOR)
                 .addAttribLocation(ATTRIB_NAME_VERT, SHADER_VERT_LOCATION)
                 .addAttribLocation(ATTRIB_NAME_POSITION, SHADER_POSITION_LOCATION)
                 .addAttribLocation(ATTRIB_NAME_COLOR, SHADER_COLOR_LOCATION)
@@ -119,6 +123,8 @@ public class NodeDiskModel {
 
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
             Constants.NODE_BORDER_SIZE);
+        gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_DARKEN_FACTOR),
+            Constants.NODE_BORDER_DARKEN_FACTOR);
     }
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats,
@@ -140,6 +146,8 @@ public class NodeDiskModel {
 
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
             Constants.NODE_BORDER_SIZE);
+        gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_DARKEN_FACTOR),
+            Constants.NODE_BORDER_DARKEN_FACTOR);
     }
 
     public void useProgram(GL2ES2 gl, float[] mvpFloats) {
@@ -149,6 +157,8 @@ public class NodeDiskModel {
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
             Constants.NODE_BORDER_SIZE);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_DARKEN_FACTOR),
+            Constants.NODE_BORDER_DARKEN_FACTOR);
 
     }
 

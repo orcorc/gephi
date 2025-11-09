@@ -2,8 +2,6 @@
 
 //#include "common.node.frag.uniform.glsl"
 
-#define NODER_BORDER_DARKEN_FACTOR 0.498
-
 //#include "common.node.struct.glsl"
 
 in vec2 vLocal;
@@ -19,7 +17,7 @@ void main(void) {
     float mask = step(t2, r2);  // 0 inside, 1 in border
 
     vec3 base = vertexData.color.rgb;
-    vec3 dark = base * NODER_BORDER_DARKEN_FACTOR;
+    vec3 dark = base * nodeBorderDarkenFactor;
 
     vec3 rgb = mix(base, dark, mask);
     fragColor = vec4(rgb, vertexData.color.a);
