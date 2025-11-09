@@ -76,7 +76,7 @@ public class NodeDiskModel {
 
         programWithSelectionUnselected =
             new GLShaderProgram(SHADERS_ROOT, SHADERS_NODE_CIRCLE_SOURCE_WITH_SELECTION_UNSELECTED,
-                SHADERS_NODE_CIRCLE_SOURCE)
+                SHADERS_NODE_CIRCLE_SOURCE_WITH_SELECTION_UNSELECTED)
                 .addUniformName(UNIFORM_NAME_MODEL_VIEW_PROJECTION)
                 .addUniformName(UNIFORM_NAME_BACKGROUND_COLOR)
                 .addUniformName(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR)

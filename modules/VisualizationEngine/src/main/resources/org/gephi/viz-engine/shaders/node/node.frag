@@ -16,9 +16,9 @@ void main(void) {
 
     float mask = step(t2, r2);// 0 inside, 1 in border
 
-    vec3 base = vertexData.color.rgb;
-    vec3 dark = base * nodeBorderDarkenFactor;
 
-    vec3 rgb = mix(base, dark, mask);
-    fragColor = vec4(rgb, vertexData.color.a);
+    vec4 color = vertexData.color;
+    color.rgb = mix(color.rgb, color.rgb * nodeBorderDarkenFactor, mask);
+
+    fragColor = color;
 }
