@@ -261,6 +261,8 @@ public final class GlyphCache implements TextureBackingStore.EventListener {
         if (!deadRects.isEmpty() && (frag > MAX_VERTICAL_FRAGMENTATION)) {
             log("Compacting due to fragmentation %s", frag);
             packer.compact();
+            // After compaction, all Rects have moved to new positions, so texture coordinates are stale
+            clearTextureCoordinates();
         }
 
         // Force the backing store to update
