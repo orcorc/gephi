@@ -21,15 +21,14 @@ public class NodeLabelData {
     private final NodesCallback nodesCallback;
 
     // Array of label batches indexed by node storeId
-    private volatile LabelBatch[] labelBatches = new LabelBatch[0];
+    private LabelBatch[] labelBatches = new LabelBatch[0];
 
     // Maximum valid index in the batches array (updated by updater thread)
-    private volatile int maxValidIndex = -1;
+    private int maxValidIndex = -1;
 
     // TextRenderer for glyph preparation (doesn't need GL context)
-    // Volatile to ensure visibility across threads
-    private volatile TextRenderer textRenderer;
-    private volatile Font currentFont;
+    private TextRenderer textRenderer;
+    private Font currentFont;
 
     public NodeLabelData(NodesCallback nodesCallback) {
         this.nodesCallback = nodesCallback;
@@ -261,7 +260,7 @@ public class NodeLabelData {
      */
     public static class LabelBatch {
         // Read buffer (accessed by renderer)
-        private volatile boolean readValid = false;
+        private boolean readValid = false;
         private List<Glyph> readGlyphs;
         private float readX;
         private float readY;
