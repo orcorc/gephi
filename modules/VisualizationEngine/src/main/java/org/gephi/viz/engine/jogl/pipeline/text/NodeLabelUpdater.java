@@ -56,6 +56,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         final String[] texts = nodesCallback.getNodesLabelsArray();
 
         if (texts == null || texts.length == 0) {
+            labelData.setMaxValidIndex(-1);
             return;
         }
 
@@ -77,6 +78,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
         // No labels to show
         if (hideNonSelectedLabels && !someSelection) {
+            labelData.setMaxValidIndex(-1);
             return;
         }
 
