@@ -13,7 +13,7 @@ import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class NodeLabelData {
 
-    private static final boolean SMOOTHING = false;
+    private static final boolean SMOOTHING = true;
     private static final boolean ANTIALIASED = true;
     private static final boolean FRACTIONAL_METRICS = true;
     private static final boolean MIPMAP = true;
