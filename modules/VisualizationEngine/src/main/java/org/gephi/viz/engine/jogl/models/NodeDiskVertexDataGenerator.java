@@ -2,20 +2,16 @@ package org.gephi.viz.engine.jogl.models;
 
 public class NodeDiskVertexDataGenerator {
     public static final int VERTEX_FLOATS = 2;
-    private final int triangleAmount;
+
     private final float[] vertexData;
     private final int vertexCount;
 
     public NodeDiskVertexDataGenerator(int triangleAmount) {
-        this.triangleAmount = triangleAmount;
         this.vertexData = generateFilledCircle(triangleAmount);
 
         this.vertexCount = triangleAmount * 3;
     }
 
-    public int getTriangleAmount() {
-        return triangleAmount;
-    }
 
     public int getVertexCount() {
         return vertexCount;
