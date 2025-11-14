@@ -19,7 +19,7 @@ import java.util.EnumSet;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.models.NodeDiskVertexMeshGenerator;
+import org.gephi.viz.engine.jogl.models.mesh.NodeDiskVertexMeshGenerator;
 import org.gephi.viz.engine.jogl.pipeline.common.VoidWorldData;
 import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
 import org.gephi.viz.engine.jogl.util.Mesh;

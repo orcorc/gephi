@@ -1,4 +1,4 @@
-package org.gephi.viz.engine.jogl.models;
+package org.gephi.viz.engine.jogl.models.mesh;
 
 
 import org.gephi.viz.engine.jogl.util.Mesh;
