@@ -1075,7 +1075,6 @@
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-                    <encoding>UTF-8</encoding>
                     <failsOnError>true</failsOnError>
                     <consoleOutput>false</consoleOutput>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
