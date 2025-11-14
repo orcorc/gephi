@@ -62,7 +62,7 @@ public class InstancedNodeData extends AbstractNodeData {
             firstVertex = firstVertex8;
         }
 
-        diskModel.drawInstanced(
+        GLFunctions.drawInstanced(
             gl,
             firstVertex, circleVertexCount, instanceCount
         );

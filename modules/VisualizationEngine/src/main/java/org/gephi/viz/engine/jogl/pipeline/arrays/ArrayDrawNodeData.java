@@ -99,7 +99,7 @@ public class ArrayDrawNodeData extends AbstractNodeData {
             gl.glVertexAttrib1f(SHADER_SIZE_LOCATION, size);
 
             //Draw the instance:
-            diskModel.drawArraysSingleInstance(gl, firstVertex, circleVertexCount);
+            GLFunctions.drawArraysSingleInstance(gl, firstVertex, circleVertexCount);
         }
 
         GLFunctions.stopUsingProgram(gl);

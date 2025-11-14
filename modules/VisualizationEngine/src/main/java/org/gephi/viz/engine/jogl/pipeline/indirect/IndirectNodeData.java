@@ -54,7 +54,7 @@ public class IndirectNodeData extends AbstractNodeData {
         final int instancesOffset = renderingUnselectedNodes ? 0 : instanceCounter.unselectedCountToDraw;
 
         commandsGLBuffer.bind(gl);
-        diskModel.drawIndirect(
+        GLFunctions.drawIndirect(
             gl, instanceCount, instancesOffset
         );
         commandsGLBuffer.unbind(gl);

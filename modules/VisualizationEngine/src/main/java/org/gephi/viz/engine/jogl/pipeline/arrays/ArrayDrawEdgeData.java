@@ -1,10 +1,12 @@
 package org.gephi.viz.engine.jogl.pipeline.arrays;
 
 import static com.jogamp.opengl.GL.GL_FLOAT;
+import static org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected.VERTEX_COUNT;
 import static org.gephi.viz.engine.pipeline.RenderingLayer.BACK1;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
+import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.FloatBuffer;
 import org.gephi.graph.api.Edge;
@@ -82,7 +84,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             attributesGLBufferUndirected.bind(gl);
             attributesGLBufferUndirected.updateWithOrphaning(gl, batchUpdateBuffer);
             attributesGLBufferUndirected.unbind(gl);
-            lineModelUndirected.drawArraysMultipleInstance(gl, drawBatchCount);
+
+            GLFunctions.drawInstanced((GL3ES3) gl, 0, drawBatchCount, VERTEX_COUNT * drawBatchCount);
         }
 
         GLFunctions.stopUsingProgram(gl);
@@ -133,7 +136,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             attributesGLBufferDirected.updateWithOrphaning(gl, batchUpdateBuffer);
             attributesGLBufferDirected.unbind(gl);
 
-            lineModelDirected.drawArraysMultipleInstance(gl, drawBatchCount);
+
+            GLFunctions.drawArraysSingleInstance(gl, 0, EdgeLineModelDirected.VERTEX_COUNT * drawBatchCount);
         }
 
         GLFunctions.stopUsingProgram(gl);
