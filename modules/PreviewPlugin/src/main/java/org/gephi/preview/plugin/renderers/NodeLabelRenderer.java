@@ -111,7 +111,8 @@ public class NodeLabelRenderer implements Renderer {
     protected final DependantColor defaultBoxColor = new DependantColor(DependantColor.Mode.PARENT);
     protected final int defaultBoxOpacity = 100;
     //Font cache
-    protected Map<Integer, Font> fontCache;
+    protected final Map<Integer, Font> fontCache = new HashMap<>();
+    protected final FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
 
     @Override
     public void preProcess(PreviewModel previewModel) {
@@ -141,18 +142,16 @@ public class NodeLabelRenderer implements Renderer {
         }
 
         //Calculate font size and cache fonts
-        fontCache = new HashMap<>();
         Font font = properties.getFontValue(PreviewProperty.NODE_LABEL_FONT);
         for (Item item : previewModel.getItems(Item.NODE_LABEL)) {
-            Float nodeSize = item.getData(NODE_SIZE);
-            Float fontSize = 1f;
-            if (item.getData(NodeLabelItem.SIZE) != null) {
-                fontSize = item.getData(NodeLabelItem.SIZE);
-            }
+            float fontSize = font.getSize();
             if (properties.getBooleanValue(PreviewProperty.NODE_LABEL_PROPORTIONAL_SIZE)) {
-                fontSize *= nodeSize / 10f;
+                Float nodeSize = item.getData(NODE_SIZE);
+                fontSize *= (nodeSize / 2f) * 0.05f;
+            } else if (item.getData(NodeLabelItem.SIZE) != null) {
+                Float labelSize = item.getData(NodeLabelItem.SIZE);
+                fontSize *= labelSize;
             }
-            fontSize *= font.getSize();
             Font labelFont = font.deriveFont(fontSize);
             fontCache.put(labelFont.getSize(), labelFont);
             item.setData(FONT_SIZE, labelFont.getSize());
@@ -228,8 +227,6 @@ public class NodeLabelRenderer implements Renderer {
         Integer fontSize = item.getData(FONT_SIZE);
 
         Font font = fontCache.get(fontSize);
-        AffineTransform affinetransform = new AffineTransform();
-        FontRenderContext frc = new FontRenderContext(affinetransform,true,true);
         String label = item.getData(NodeLabelItem.LABEL);
         float textWidth = (float) font.getStringBounds(label, frc).getWidth();
         float textHeight = (float) font.getStringBounds(label, frc).getHeight();
@@ -246,7 +243,9 @@ public class NodeLabelRenderer implements Renderer {
 
         FontMetrics fm = graphics.getFontMetrics();
         float posX = x - fm.stringWidth(label) / 2f;
-        float posY = y + fm.getDescent();
+        // Center text vertically: baseline = centerY + (ascent - descent) / 2
+        // This matches the TextRenderer approach for consistent positioning
+        float posY = y + (fm.getAscent() - fm.getDescent()) / 2f;
 
         Shape outlineGlyph = null;
 
@@ -283,14 +282,22 @@ public class NodeLabelRenderer implements Renderer {
                           float outlineSize, Color outlineColor, boolean showBox, Color boxColor) {
         Text labelText = target.createTextNode(label);
         Font font = fontCache.get(fontSize);
+        
+        // Calculate proper baseline Y position using font metrics
+        // This matches G2D and TextRenderer approaches for consistency
+
+        Rectangle2D bounds = font.getStringBounds(label, frc);
+        float ascent = (float) -bounds.getY();
+        float descent = (float) (bounds.getHeight() + bounds.getY());
+        float baselineY = y + (ascent - descent) / 2f;
 
         if (outlineSize > 0) {
             Text labelTextOutline = target.createTextNode(label);
             Element outlineElem = target.createElement("text");
             outlineElem.setAttribute("class", SVGUtils.idAsClassAttribute(node.getId()));
             outlineElem.setAttribute("x", String.valueOf(x));
-            outlineElem.setAttribute("y", String.valueOf(y));
-            outlineElem.setAttribute("style", "text-anchor: middle; dominant-baseline: central;");
+            outlineElem.setAttribute("y", String.valueOf(baselineY));
+            outlineElem.setAttribute("style", "text-anchor: middle;");
             outlineElem.setAttribute("fill", target.toHexString(color));
             outlineElem.setAttribute("font-family", font.getFamily());
             outlineElem.setAttribute("font-size", String.valueOf(fontSize));
@@ -301,30 +308,22 @@ public class NodeLabelRenderer implements Renderer {
             outlineElem.setAttribute("stroke-opacity", String.valueOf(outlineColor.getAlpha() / 255f));
             outlineElem.appendChild(labelTextOutline);
             target.getTopElement(SVGTarget.TOP_NODE_LABELS_OUTLINE).appendChild(outlineElem);
-
-            //Trick to center text vertically on node:
-            SVGRect rect = ((SVGLocatable) outlineElem).getBBox();
-            outlineElem.setAttribute("y", String.valueOf(y + (rect != null ? rect.getHeight() / 4f : 0)));
         }
 
         Element labelElem = target.createElement("text");
         labelElem.setAttribute("class", SVGUtils.idAsClassAttribute(node.getId()));
         labelElem.setAttribute("x", String.valueOf(x));
-        labelElem.setAttribute("y", String.valueOf(y));
-        labelElem.setAttribute("style", "text-anchor: middle; dominant-baseline: central;");
+        labelElem.setAttribute("y", String.valueOf(baselineY));
+        labelElem.setAttribute("style", "text-anchor: middle;");
         labelElem.setAttribute("fill", target.toHexString(color));
         labelElem.setAttribute("font-family", font.getFamily());
         labelElem.setAttribute("font-size", String.valueOf(fontSize));
         labelElem.appendChild(labelText);
         target.getTopElement(SVGTarget.TOP_NODE_LABELS).appendChild(labelElem);
 
-        //Trick to center text vertically on node:
-        SVGRect rect = ((SVGLocatable) labelElem).getBBox();
-        labelElem.setAttribute("y", String.valueOf(y + (rect != null ? rect.getHeight() / 4f : 0)));
-
         //Box
         if (showBox) {
-            rect = ((SVGLocatable) labelElem).getBBox();
+            SVGRect rect = ((SVGLocatable) labelElem).getBBox();
             Element boxElem = target.createElement("rect");
             boxElem.setAttribute("x", Float.toString(rect.getX() - outlineSize / 2f));
             boxElem.setAttribute("y", Float.toString(rect.getY() - outlineSize / 2f));

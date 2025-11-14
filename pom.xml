@@ -134,7 +134,7 @@
         <netbeans.run.params>${netbeans.run.params.ide}</netbeans.run.params>
         
         <!-- Netbeans Platform version -->
-        <netbeans.version>RELEASE260</netbeans.version>
+        <netbeans.version>RELEASE280</netbeans.version>
         
         <!-- GraphStore version -->
         <graphstore.version>0.8.1</graphstore.version>
@@ -1082,7 +1082,6 @@
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
                     <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
-                    <encoding>UTF-8</encoding>
                     <failsOnError>true</failsOnError>
                     <consoleOutput>false</consoleOutput>
                     <includeTestSourceDirectory>true</includeTestSourceDirectory>
