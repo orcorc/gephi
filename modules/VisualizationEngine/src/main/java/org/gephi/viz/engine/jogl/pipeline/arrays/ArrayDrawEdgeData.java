@@ -14,6 +14,7 @@ import org.gephi.viz.engine.jogl.pipeline.common.AbstractEdgeData;
 import org.gephi.viz.engine.jogl.pipeline.common.EdgeWorldData;
 import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
+import org.gephi.viz.engine.jogl.util.gl.GLFunctions;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.util.ArrayUtils;
@@ -84,7 +85,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             lineModelUndirected.drawArraysMultipleInstance(gl, drawBatchCount);
         }
 
-        lineModelUndirected.stopUsingProgram(gl);
+        GLFunctions.stopUsingProgram(gl);
         unsetupUndirectedVertexArrayAttributes(gl);
     }
 
@@ -135,7 +136,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             lineModelDirected.drawArraysMultipleInstance(gl, drawBatchCount);
         }
 
-        lineModelDirected.stopUsingProgram(gl);
+        GLFunctions.stopUsingProgram(gl);
         unsetupDirectedVertexArrayAttributes(gl);
     }
 

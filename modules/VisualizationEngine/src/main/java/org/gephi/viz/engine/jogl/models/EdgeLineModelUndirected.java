@@ -182,10 +182,6 @@ public class EdgeLineModelUndirected {
             colorLightenFactor, nodeScale, globalTime, selectionTime);
     }
 
-    public void stopUsingProgram(GL2ES2 gl) {
-        gl.glUseProgram(0);
-    }
-
     private void prepareProgramData(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight, float maxWeight,
                                     float nodeScale) {
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);

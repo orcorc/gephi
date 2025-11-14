@@ -10,6 +10,7 @@ import java.nio.IntBuffer;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeWorldData;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
+import org.gephi.viz.engine.jogl.util.gl.GLFunctions;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
@@ -44,7 +45,7 @@ public class IndirectNodeData extends AbstractNodeData {
             setupShaderProgramForRenderingLayer(gl, layer, data, mvpFloats);
 
         if (instanceCount <= 0) {
-            diskModel.stopUsingProgram(gl);
+            GLFunctions.stopUsingProgram(gl);
             unsetupVertexArrayAttributes(gl);
             return;
         }
@@ -57,7 +58,7 @@ public class IndirectNodeData extends AbstractNodeData {
             gl, instanceCount, instancesOffset
         );
         commandsGLBuffer.unbind(gl);
-        diskModel.stopUsingProgram(gl);
+        GLFunctions.stopUsingProgram(gl);
         unsetupVertexArrayAttributes(gl);
     }
 

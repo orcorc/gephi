@@ -161,8 +161,5 @@ public class NodeDiskModel {
             Constants.getNodeBorderDarkenFactor());
 
     }
-
-    public void stopUsingProgram(GL2ES2 gl) {
-        gl.glUseProgram(0);
-    }
+    
 }

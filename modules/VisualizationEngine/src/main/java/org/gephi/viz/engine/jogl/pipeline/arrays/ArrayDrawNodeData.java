@@ -9,6 +9,7 @@ import com.jogamp.opengl.GL2ES2;
 import java.nio.FloatBuffer;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractNodeData;
 import org.gephi.viz.engine.jogl.pipeline.common.NodeWorldData;
+import org.gephi.viz.engine.jogl.util.gl.GLFunctions;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
@@ -41,7 +42,7 @@ public class ArrayDrawNodeData extends AbstractNodeData {
             setupShaderProgramForRenderingLayer(gl, layer, data, mvpFloats);
 
         if (instanceCount <= 0) {
-            diskModel.stopUsingProgram(gl);
+            GLFunctions.stopUsingProgram(gl);
             unsetupVertexArrayAttributes(gl);
             return;
         }
@@ -101,7 +102,7 @@ public class ArrayDrawNodeData extends AbstractNodeData {
             diskModel.drawArraysSingleInstance(gl, firstVertex, circleVertexCount);
         }
 
-        diskModel.stopUsingProgram(gl);
+        GLFunctions.stopUsingProgram(gl);
         unsetupVertexArrayAttributes(gl);
     }
 

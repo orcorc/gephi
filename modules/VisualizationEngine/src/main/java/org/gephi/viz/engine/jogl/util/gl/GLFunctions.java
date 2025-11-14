@@ -45,4 +45,8 @@ public class GLFunctions {
             return gl.getGL3ES3().glGetStringi(name, index);
         }
     }
+
+    public static void stopUsingProgram(GL2ES2 gl) {
+        gl.glUseProgram(0);
+    }
 }
