@@ -20,10 +20,10 @@ public abstract class GLVertexArrayObject {
     private int[] attributeLocations;
     private int[] instancedAttributeLocations;
     private int arrayId = -1;
-    private int[] previousArrayId = new int[1];
+    private final int[] previousArrayId = new int[1];
 
-    public GLVertexArrayObject(GLCapabilitiesSummary capabilities, OpenGLOptions openGLOptions) {
-        vaoSupported = capabilities.isVAOSupported(openGLOptions);
+    public GLVertexArrayObject(OpenGLOptions openGLOptions) {
+        vaoSupported = GLCapabilitiesSummary.isVAOSupported(openGLOptions);
     }
 
     private void init(GL2ES2 gl) {

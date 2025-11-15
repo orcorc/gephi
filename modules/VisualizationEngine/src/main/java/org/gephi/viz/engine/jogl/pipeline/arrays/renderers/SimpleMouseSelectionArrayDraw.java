@@ -25,7 +25,6 @@ import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
 import org.gephi.viz.engine.jogl.util.gl.GLShaderProgram;
 import org.gephi.viz.engine.jogl.util.gl.GLVertexArrayObject;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.spi.Renderer;
@@ -201,7 +200,6 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         vertexGLBuffer.unbind(gl);
         vao = new SelectionMouseVAO(
-            target.getGlCapabilitiesSummary(),
             engine.getOpenGLOptions()
         );
     }
@@ -213,8 +211,8 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
 
     private class SelectionMouseVAO extends GLVertexArrayObject {
 
-        public SelectionMouseVAO(GLCapabilitiesSummary capabilities, OpenGLOptions openGLOptions) {
-            super(capabilities, openGLOptions);
+        public SelectionMouseVAO(OpenGLOptions openGLOptions) {
+            super(openGLOptions);
         }
 
         @Override

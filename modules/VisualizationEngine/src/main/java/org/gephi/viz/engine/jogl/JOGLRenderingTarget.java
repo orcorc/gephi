@@ -31,9 +31,6 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     private final GLAutoDrawable drawable;
 
-    // Capabilities (set at init)
-    private GLCapabilitiesSummary glCapabilitiesSummary;
-
     //Animators
     private final AnimatorBase animator;
     private VizEngine<JOGLRenderingTarget, NEWTEvent> engine;
@@ -123,7 +120,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     public synchronized void init(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL();
 
-        this.glCapabilitiesSummary = new GLCapabilitiesSummary(gl, Profile.CORE);
+        GLCapabilitiesSummary.init(gl, Profile.CORE);
 
         gl.setSwapInterval(0);//Disable Vertical synchro
 
@@ -238,9 +235,5 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     public int getFps() {
         return animator != null ? (int) animator.getLastFPS() : 0;
-    }
-
-    public GLCapabilitiesSummary getGlCapabilitiesSummary() {
-        return glCapabilitiesSummary;
     }
 }

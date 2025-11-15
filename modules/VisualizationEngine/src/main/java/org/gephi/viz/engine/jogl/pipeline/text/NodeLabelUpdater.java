@@ -29,11 +29,11 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
 
     @Override
     public void init(JOGLRenderingTarget target) {
-        final GLCapabilitiesSummary capabilities = target.getGlCapabilitiesSummary();
+
         final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-        vaoSupported = capabilities.isVAOSupported(openGLOptions);
+        vaoSupported = GLCapabilitiesSummary.isVAOSupported(openGLOptions);
         // Disable mipmap generation in intel GPUs. See https://github.com/gephi/gephi/issues/1494 (Some label characters fade away when zooming out)
-        mipMapSupported = !capabilities.isVendorIntel();
+        mipMapSupported = !GLCapabilitiesSummary.isVendorIntel();
     }
 
     @Override

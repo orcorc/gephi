@@ -25,7 +25,22 @@ import org.gephi.viz.engine.util.gl.OpenGLOptions;
  */
 public final class GLCapabilitiesSummary {
 
-    public GLCapabilitiesSummary(GL gl, Profile profile) {
+
+    private static GLVersionData version;
+    private static GLExtensionData extensions;
+
+    static public GLVersionData getVersion() {
+        return version;
+    }
+
+    static public GLExtensionData getExtensions() {
+        return extensions;
+    }
+
+
+    private static final IntBuffer data = GLBuffers.newDirectIntBuffer(1);
+
+    public static void init(GL gl, Profile profile) {
         initVersion(gl, profile);
         initExtensions(gl);
         if (check(4, 3) || extensions.KHR_debug) {
@@ -34,25 +49,13 @@ public final class GLCapabilitiesSummary {
         }
     }
 
-    private GLVersionData version;
-    private GLExtensionData extensions;
-
-    private final IntBuffer data = GLBuffers.newDirectIntBuffer(1);
-
-    private boolean check(int majorVersionRequire, int minorVersionRequire) {
+    private static boolean check(int majorVersionRequire, int minorVersionRequire) {
         return (version.MAJOR_VERSION * 100 + version.MINOR_VERSION * 10)
             >= (majorVersionRequire * 100 + minorVersionRequire * 10);
     }
 
-    public GLVersionData getVersion() {
-        return version;
-    }
 
-    public GLExtensionData getExtensions() {
-        return extensions;
-    }
-
-    private void initVersion(GL gl, Profile profile) {
+    private static void initVersion(GL gl, Profile profile) {
         version = new GLVersionData(profile);
 
         gl.glGetIntegerv(GL_MINOR_VERSION, data);
@@ -66,7 +69,7 @@ public final class GLCapabilitiesSummary {
         version.SHADING_LANGUAGE_VERSION = gl.glGetString(GL_SHADING_LANGUAGE_VERSION);
     }
 
-    private void initExtensions(GL gl) {
+    private static void initExtensions(GL gl) {
         extensions = new GLExtensionData();
 
         final List<String> extensionsList = new ArrayList<>();
@@ -687,22 +690,22 @@ public final class GLCapabilitiesSummary {
         }
     }
 
-    public boolean isVAOSupported(OpenGLOptions openGLOptions) {
+    public static boolean isVAOSupported(OpenGLOptions openGLOptions) {
         return (version.MAJOR_VERSION >= 3 || extensions.ARB_vertex_array_object) && !openGLOptions.isDisableVAOS();
     }
 
-    public boolean isInstancingSupported() {
+    public static boolean isInstancingSupported() {
         return (version.MAJOR_VERSION >= 3 || extensions.ARB_draw_instanced) && extensions.ARB_instanced_arrays;
     }
 
-    public boolean isIndirectDrawSupported() {
+    public static boolean isIndirectDrawSupported() {
         return
             extensions.ARB_draw_indirect &&
                 extensions.ARB_multi_draw_indirect &&
                 extensions.ARB_buffer_storage;
     }
 
-    public boolean isVendorIntel() {
+    public static boolean isVendorIntel() {
         return version.VENDOR != null && version.VENDOR.toLowerCase().contains("intel");
     }
 }
