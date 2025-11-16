@@ -120,7 +120,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     public synchronized void init(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL();
 
-        GLCapabilitiesSummary.init(gl, Profile.CORE);
+        engine.getOpenGLOptions().setGlCapabilitiesSummary(new GLCapabilitiesSummary(gl, Profile.CORE));
 
         gl.setSwapInterval(0);//Disable Vertical synchro
 

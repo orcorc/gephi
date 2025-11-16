@@ -4,7 +4,6 @@ import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.opengl.GLAutoDrawable;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 
 /**
  *
@@ -22,6 +21,6 @@ public class InstancedDraw {
         }
 
         return drawable.getGLProfile().isGL2ES3()
-            && GLCapabilitiesSummary.isInstancingSupported();
+            && engine.getOpenGLOptions().isInstancingSupported();
     }
 }

@@ -5,7 +5,6 @@ import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.spi.WorldUpdater;
@@ -31,9 +30,9 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
     public void init(JOGLRenderingTarget target) {
 
         final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-        vaoSupported = GLCapabilitiesSummary.isVAOSupported(openGLOptions);
+        vaoSupported = openGLOptions.isVAOSupported();
         // Disable mipmap generation in intel GPUs. See https://github.com/gephi/gephi/issues/1494 (Some label characters fade away when zooming out)
-        mipMapSupported = !GLCapabilitiesSummary.isVendorIntel();
+        mipMapSupported = !openGLOptions.isVendorIntel();
     }
 
     @Override
