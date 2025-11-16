@@ -27,7 +27,6 @@ import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
 import org.gephi.viz.engine.jogl.util.gl.GLVertexArrayObject;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
@@ -216,8 +215,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
             maxNodeSize,
             currentZoom,
             model.getRenderingOptions().getLightenNonSelectedFactor(),
-            engine.getOpenGLOptions(),
-            engine.getRenderingTarget().getGlCapabilitiesSummary()
+            engine.getOpenGLOptions()
         );
     }
 
@@ -418,8 +416,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
 
     public void setupVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAO == null) {
-            nodesVAO = new NodesVAO(
-                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
+            nodesVAO = new NodesVAO(data.getOpenGLOptions(),
                 vertexGLBuffer, attributesGLBuffer
             );
         }
@@ -429,8 +426,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
 
     public void setupSecondaryVertexArrayAttributes(GL2ES2 gl, NodeWorldData data) {
         if (nodesVAOSecondary == null) {
-            nodesVAOSecondary = new NodesVAO(
-                data.getGLCapabilitiesSummary(), data.getOpenGLOptions(),
+            nodesVAOSecondary = new NodesVAO(data.getOpenGLOptions(),
                 vertexGLBuffer, attributesGLBufferSecondary
             );
         }
@@ -483,9 +479,9 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         private final GLBuffer vertexBuffer;
         private final GLBuffer attributesBuffer;
 
-        public NodesVAO(GLCapabilitiesSummary capabilities, OpenGLOptions openGLOptions, final GLBuffer vertexBuffer,
+        public NodesVAO(OpenGLOptions openGLOptions, final GLBuffer vertexBuffer,
                         final GLBuffer attributesBuffer) {
-            super(capabilities, openGLOptions);
+            super(openGLOptions);
             this.vertexBuffer = vertexBuffer;
             this.attributesBuffer = attributesBuffer;
         }

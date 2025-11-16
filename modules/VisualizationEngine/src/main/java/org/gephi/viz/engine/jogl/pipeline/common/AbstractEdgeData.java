@@ -1,8 +1,19 @@
 package org.gephi.viz.engine.jogl.pipeline.common;
 
+import static com.jogamp.opengl.GL.GL_FLOAT;
+import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_COLOR_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_TARGET_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_SIZE_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_SOURCE_SIZE_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_TARGET_SIZE_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.SHADER_VERT_LOCATION;
+
 import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
+import java.nio.FloatBuffer;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
@@ -14,7 +25,6 @@ import org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected;
 import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLVertexArrayObject;
-import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
@@ -22,12 +32,6 @@ import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
-
-import java.nio.FloatBuffer;
-
-import static com.jogamp.opengl.GL.GL_FLOAT;
-import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
-import static org.gephi.viz.engine.util.gl.Constants.*;
 
 /**
  *
@@ -289,8 +293,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             model.getRenderingOptions().getNodeScale(),
             model.getRenderingOptions().getEdgeScale(),
             model.getRenderingOptions().getLightenNonSelectedFactor(),
-            engine.getOpenGLOptions(),
-            engine.getRenderingTarget().getGlCapabilitiesSummary()
+            engine.getOpenGLOptions()
         );
     }
 
@@ -836,7 +839,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     public void setupUndirectedVertexArrayAttributes(GL2ES2 gl, EdgeWorldData data) {
         if (undirectedEdgesVAO == null) {
             undirectedEdgesVAO = new UndirectedEdgesVAO(
-                data.getGLCapabilitiesSummary(),
                 data.getOpenGLOptions(),
                 attributesGLBufferUndirected
             );
@@ -849,7 +851,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                                               EdgeWorldData data) {
         if (undirectedEdgesVAOSecondary == null) {
             undirectedEdgesVAOSecondary = new UndirectedEdgesVAO(
-                data.getGLCapabilitiesSummary(),
                 data.getOpenGLOptions(),
                 attributesGLBufferUndirectedSecondary
             );
@@ -871,7 +872,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     public void setupDirectedVertexArrayAttributes(GL2ES2 gl, EdgeWorldData data) {
         if (directedEdgesVAO == null) {
             directedEdgesVAO = new DirectedEdgesVAO(
-                data.getGLCapabilitiesSummary(),
                 data.getOpenGLOptions(),
                 attributesGLBufferDirected
             );
@@ -884,7 +884,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                                             EdgeWorldData data) {
         if (directedEdgesVAOSecondary == null) {
             directedEdgesVAOSecondary = new DirectedEdgesVAO(
-                data.getGLCapabilitiesSummary(),
                 data.getOpenGLOptions(),
                 attributesGLBufferDirectedSecondary
             );
@@ -935,9 +934,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         private final GLBuffer attributesBuffer;
 
-        public UndirectedEdgesVAO(GLCapabilitiesSummary capabilities, OpenGLOptions openGLOptions,
+        public UndirectedEdgesVAO(OpenGLOptions openGLOptions,
                                   GLBuffer attributesBuffer) {
-            super(capabilities, openGLOptions);
+            super(openGLOptions);
             this.attributesBuffer = attributesBuffer;
         }
 
@@ -1015,9 +1014,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         private final GLBuffer attributesBuffer;
 
-        public DirectedEdgesVAO(GLCapabilitiesSummary capabilities, OpenGLOptions openGLOptions,
+        public DirectedEdgesVAO(OpenGLOptions openGLOptions,
                                 GLBuffer attributesBuffer) {
-            super(capabilities, openGLOptions);
+            super(openGLOptions);
             this.attributesBuffer = attributesBuffer;
         }
 
