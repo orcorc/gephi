@@ -64,5 +64,7 @@ public interface CollapseGroup {
 
     boolean hasToolbar();
 
+    default boolean drawSeparator() { return true; }
+
     boolean hasExtended();
 }

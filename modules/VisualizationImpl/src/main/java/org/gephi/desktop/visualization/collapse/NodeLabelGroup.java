@@ -65,7 +65,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
         for (LabelColorMode mode : LabelColorMode.values()) {
             labelColorModeButton.addItem(mode,
                 ImageUtilities.loadImageIcon("VisualizationImpl/LabelColorMode_" + mode.name() + ".svg", false),
-                NbBundle.getMessage(EdgeGroup.class, "NodeLabelColorMode." + mode.name().toLowerCase() + ".name"));
+                NbBundle.getMessage(NodeLabelGroup.class, "NodeLabelColorMode." + mode.name().toLowerCase() + ".name"));
         }
         labelColorModeButton.setChangeListener(e -> {
             vizController.setNodeLabelColorMode((LabelColorMode) e.getSource());
@@ -79,7 +79,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
         for (LabelSizeMode mode : LabelSizeMode.values()) {
             labelSizeModeButton.addItem(mode,
                 ImageUtilities.loadImageIcon("VisualizationImpl/LabelSizeMode_" + mode.name() + ".svg", false),
-                NbBundle.getMessage(EdgeGroup.class, "NodeLabelSizeMode." + mode.name().toLowerCase() + ".name"));
+                NbBundle.getMessage(NodeLabelGroup.class, "LabelSizeMode." + mode.name().toLowerCase() + ".name"));
         }
         labelSizeModeButton.setChangeListener(e -> {
             vizController.setNodeLabelSizeMode((LabelSizeMode) e.getSource());
@@ -196,5 +196,10 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
     @Override
     public boolean hasExtended() {
         return true;
+    }
+
+    @Override
+    public boolean drawSeparator() {
+        return false;
     }
 }

@@ -126,7 +126,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                     label.setIcon(ImageUtilities.loadIcon(
                         "VisualizationImpl/LabelColorMode_" + ((LabelColorMode) value).name() + ".svg"));
                 } else {
-                    throw new IllegalArgumentException("Expected NodeLabelColorMode");
+                    throw new IllegalArgumentException("Expected LabelColorMode");
                 }
                 return this;
             }
@@ -158,7 +158,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                     (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof LabelSizeMode) {
                     label.setText(org.openide.util.NbBundle.getMessage(NodeLabelsSettingsPanel.class,
-                        "NodeLabelSizeMode." + ((LabelSizeMode) value).name().toLowerCase() + ".name"));
+                        "LabelSizeMode." + ((LabelSizeMode) value).name().toLowerCase() + ".name"));
                     label.setIcon(ImageUtilities.loadIcon(
                         "VisualizationImpl/LabelSizeMode_" + ((LabelSizeMode) value).name() + ".svg"));
                 } else {
@@ -202,7 +202,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         });
 
         // Hide non selected
-        hideNonSelectedCheckbox.addActionListener(e -> vizController.setHideNonSelectedLabels(hideNonSelectedCheckbox.isSelected()));
+        hideNonSelectedCheckbox.addActionListener(e -> vizController.setHideNonSelectedNodeLabels(hideNonSelectedCheckbox.isSelected()));
 
         // Fit to node size
         fitToNodeSizeToggleButton.addActionListener(e -> vizController.setNodeLabelFitToNodeSize(fitToNodeSizeToggleButton.isSelected()));
@@ -237,7 +237,7 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
             refreshSharedConfig(model);
         } else if (evt.getPropertyName().equals("nodeLabelScale")) {
             refreshSharedConfig(model);
-        } else if (evt.getPropertyName().equals("hideNonSelectedLabels")) {
+        } else if (evt.getPropertyName().equals("hideNonSelectedNodeLabels")) {
             refreshSharedConfig(model);
         } else if (evt.getPropertyName().equals("nodeLabelSizeMode")) {
             refreshSharedConfig(model);
@@ -264,8 +264,8 @@ public class NodeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         if (nodeSizeSlider.getValue() / 100f != vizModel.getNodeLabelScale()) {
             nodeSizeSlider.setValue((int) (vizModel.getNodeLabelScale() * 100f));
         }
-        if (hideNonSelectedCheckbox.isSelected() != vizModel.isHideNonSelectedLabels()) {
-            hideNonSelectedCheckbox.setSelected(vizModel.isHideNonSelectedLabels());
+        if (hideNonSelectedCheckbox.isSelected() != vizModel.isHideNonSelectedNodeLabels()) {
+            hideNonSelectedCheckbox.setSelected(vizModel.isHideNonSelectedNodeLabels());
         }
         if (fitToNodeSizeToggleButton.isSelected() != vizModel.isNodeLabelFitToNodeSize()) {
             fitToNodeSizeToggleButton.setSelected(vizModel.isNodeLabelFitToNodeSize());
