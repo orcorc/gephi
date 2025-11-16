@@ -687,7 +687,7 @@
                                         <copy tofile="${project.build.directory}/${gephi.appbundle.name}.app/Contents/Info.plist" file="${project.build.directory}/Info.plist"/>
 
                                         <!-- Move Native Launcher into MacOS/gephi and modify the exec script to be runable -->
-                                        <copy tofile="${project.build.directory}/${gephi.appbundle.name}.app/Contents/MacOS/${brandingToken}" file="../../src/macosx-launcher/Binaries/AppLauncher_x86_64" />
+                                        <copy tofile="${project.build.directory}/${gephi.appbundle.name}.app/Contents/MacOS/${brandingToken}" file="../../src/macosx-launcher/Binaries/AppLauncher_${gephi.bundle.arch}" />
                                         <chmod file="${project.build.directory}/${gephi.appbundle.name}.app/Contents/MacOS/${brandingToken}" perm="ugo+rx"/>
                                         <chmod file="${project.build.directory}/${gephi.appbundle.name}.app/Contents/Resources/${brandingToken}/bin/${brandingToken}" perm="ugo+rx"/>
 
