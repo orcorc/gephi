@@ -115,12 +115,12 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                           boolean cellHasFocus) {
                 JLabel label =
-                        (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof LabelColorMode) {
                     label.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
-                            "EdgeLabelColorMode." + ((LabelColorMode) value).name().toLowerCase() + ".name"));
+                        "EdgeLabelColorMode." + ((LabelColorMode) value).name().toLowerCase() + ".name"));
                     label.setIcon(ImageUtilities.loadIcon(
-                            "VisualizationImpl/LabelColorMode_" + ((LabelColorMode) value).name() + ".svg"));
+                        "VisualizationImpl/LabelColorMode_" + ((LabelColorMode) value).name() + ".svg"));
                 } else {
                     throw new IllegalArgumentException("Expected LabelColorMode");
                 }
@@ -138,25 +138,26 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
             appearanceUIController.setSelectedElementClass("edges");
             appearanceUIController.setSelectedCategory(category);
             UniqueLabelColorTransformerUI transformerUI =
-                    Lookup.getDefault().lookup(UniqueLabelColorTransformerUI.class);
+                Lookup.getDefault().lookup(UniqueLabelColorTransformerUI.class);
             appearanceUIController.setSelectedTransformerUI(transformerUI);
         });
 
         // Size mode
         final DefaultComboBoxModel<LabelSizeMode> sizeModeModel = new DefaultComboBoxModel<>(LabelSizeMode.values());
         edgeSizeCombo.setModel(sizeModeModel);
-        edgeSizeCombo.addActionListener(e -> vizController.setEdgeLabelSizeMode((LabelSizeMode) edgeSizeCombo.getSelectedItem()));
+        edgeSizeCombo.addActionListener(
+            e -> vizController.setEdgeLabelSizeMode((LabelSizeMode) edgeSizeCombo.getSelectedItem()));
         edgeSizeCombo.setRenderer(new DefaultListCellRenderer() {
             @Override
             public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                           boolean cellHasFocus) {
                 JLabel label =
-                        (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
                 if (value instanceof LabelSizeMode) {
                     label.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
-                            "LabelSizeMode." + ((LabelSizeMode) value).name().toLowerCase() + ".name"));
+                        "LabelSizeMode." + ((LabelSizeMode) value).name().toLowerCase() + ".name"));
                     label.setIcon(ImageUtilities.loadIcon(
-                            "VisualizationImpl/LabelSizeMode_" + ((LabelSizeMode) value).name() + ".svg"));
+                        "VisualizationImpl/LabelSizeMode_" + ((LabelSizeMode) value).name() + ".svg"));
                 } else {
                     throw new IllegalArgumentException("Expected NodeLabelSizeMode");
                 }
@@ -189,8 +190,8 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
                 LabelAttributesPanel panel = new LabelAttributesPanel(model, true);
                 panel.setup();
                 DialogDescriptor dd = new DialogDescriptor(panel,
-                        NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "LabelAttributesPanel.title"), true,
-                        NotifyDescriptor.OK_CANCEL_OPTION, null, null);
+                    NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "LabelAttributesPanel.title"), true,
+                    NotifyDescriptor.OK_CANCEL_OPTION, null, null);
                 if (DialogDisplayer.getDefault().notify(dd).equals(NotifyDescriptor.OK_OPTION)) {
                     panel.unsetup();
                 }
@@ -199,7 +200,8 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         attributesButton.setIcon(ImageUtilities.loadImageIcon("VisualizationImpl/configureLabels.svg", false));
 
         // Hide non selected
-        hideNonSelectedCheckbox.addActionListener(e -> vizController.setHideNonSelectedEdgeLabels(hideNonSelectedCheckbox.isSelected()));
+        hideNonSelectedCheckbox.addActionListener(
+            e -> vizController.setHideNonSelectedEdgeLabels(hideNonSelectedCheckbox.isSelected()));
     }
 
     public void setup(VisualisationModel model) {
@@ -243,7 +245,8 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         if (edgeSizeCombo.getSelectedItem() != vizModel.getEdgeLabelSizeMode()) {
             edgeSizeCombo.setSelectedItem(vizModel.getEdgeLabelSizeMode());
         }
-        edgeFontButton.setText(vizModel.getEdgeLabelFont().getFontName() + ", " + vizModel.getEdgeLabelFont().getSize());
+        edgeFontButton.setText(
+            vizModel.getEdgeLabelFont().getFontName() + ", " + vizModel.getEdgeLabelFont().getSize());
         if (edgeSizeSlider.getValue() / 100f != vizModel.getEdgeLabelScale()) {
             edgeSizeSlider.setValue((int) (vizModel.getEdgeLabelScale() * 100f));
         }
@@ -291,88 +294,109 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         selfColorLink = new org.jdesktop.swingx.JXHyperlink();
 
         showLabelsCheckbox.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
-        showLabelsCheckbox.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.showLabelsCheckbox.text")); // NOI18N
+        showLabelsCheckbox.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.showLabelsCheckbox.text")); // NOI18N
 
-        labelEdgeColor.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.labelEdgeColor.text")); // NOI18N
+        labelEdgeColor.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.labelEdgeColor.text")); // NOI18N
 
-        labelEdgeFont.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.labelEdgeFont.text")); // NOI18N
+        labelEdgeFont.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.labelEdgeFont.text")); // NOI18N
         labelEdgeFont.setMaximumSize(new java.awt.Dimension(60, 15));
 
-        edgeFontButton.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.edgeFontButton.text")); // NOI18N
+        edgeFontButton.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.edgeFontButton.text")); // NOI18N
 
-        labelEdgeScale.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.labelEdgeScale.text")); // NOI18N
+        labelEdgeScale.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.labelEdgeScale.text")); // NOI18N
 
         edgeSizeSlider.setMinimum(1);
 
-        labelEdgeSize.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.labelEdgeSize.text")); // NOI18N
+        labelEdgeSize.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.labelEdgeSize.text")); // NOI18N
 
-        hideNonSelectedCheckbox.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.hideNonSelectedCheckbox.text")); // NOI18N
+        hideNonSelectedCheckbox.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.hideNonSelectedCheckbox.text")); // NOI18N
         hideNonSelectedCheckbox.setBorder(null);
         hideNonSelectedCheckbox.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         hideNonSelectedCheckbox.setMargin(new java.awt.Insets(2, 0, 2, 2));
 
-        attributesButton.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.attributesButton.text")); // NOI18N
+        attributesButton.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.attributesButton.text")); // NOI18N
 
-        selfColorLink.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class, "EdgeLabelsSettingsPanel.selfColorLink.text")); // NOI18N
+        selfColorLink.setText(org.openide.util.NbBundle.getMessage(EdgeLabelsSettingsPanel.class,
+            "EdgeLabelsSettingsPanel.selfColorLink.text")); // NOI18N
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addGap(19, 19, 19)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(labelEdgeColor)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(edgeColorCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(labelEdgeSize)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                                                .addComponent(edgeSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addGap(24, 24, 24)
-                                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                                        .addGroup(layout.createSequentialGroup()
-                                                                .addComponent(labelEdgeFont, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                                .addComponent(edgeFontButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                                        .addComponent(hideNonSelectedCheckbox))
-                                                .addGap(18, 18, 18)
-                                                .addComponent(labelEdgeScale)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(edgeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(attributesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                        .addGroup(layout.createSequentialGroup()
-                                                .addContainerGap()
-                                                .addComponent(showLabelsCheckbox)))
-                                .addContainerGap(99, Short.MAX_VALUE))
+                            .addGap(19, 19, 19)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(labelEdgeColor)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(edgeColorCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(labelEdgeSize)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                    .addComponent(edgeSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, 145,
+                                        javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE, 31,
+                                javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(24, 24, 24)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(labelEdgeFont, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(edgeFontButton, javax.swing.GroupLayout.DEFAULT_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(hideNonSelectedCheckbox))
+                            .addGap(18, 18, 18)
+                            .addComponent(labelEdgeScale)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(edgeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(attributesButton, javax.swing.GroupLayout.PREFERRED_SIZE, 125,
+                                javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(layout.createSequentialGroup()
+                            .addContainerGap()
+                            .addComponent(showLabelsCheckbox)))
+                    .addContainerGap(99, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
-                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addContainerGap()
-                                .addComponent(showLabelsCheckbox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(labelEdgeColor)
-                                        .addComponent(edgeColorCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(labelEdgeFont, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(edgeFontButton)
-                                        .addComponent(labelEdgeScale)
-                                        .addComponent(edgeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(attributesButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                        .addComponent(labelEdgeSize)
-                                        .addComponent(edgeSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addComponent(hideNonSelectedCheckbox))
-                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(showLabelsCheckbox)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelEdgeColor)
+                        .addComponent(edgeColorCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(labelEdgeFont, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(edgeFontButton)
+                        .addComponent(labelEdgeScale)
+                        .addComponent(edgeSizeSlider, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(selfColorLink, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(attributesButton))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelEdgeSize)
+                        .addComponent(edgeSizeCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(hideNonSelectedCheckbox))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 }

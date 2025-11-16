@@ -90,7 +90,8 @@ public class LabelAttributesPanel extends javax.swing.JPanel {
     public LabelAttributesPanel(VisualisationModel vizModel, boolean selectEdges) {
         vizController = Lookup.getDefault().lookup(VisualizationController.class);
         this.vizModel = vizModel;
-        this.showProperties = NbPreferences.forModule(LabelAttributesPanel.class).getBoolean("LabelAttributesPanel_showProperties", showProperties);
+        this.showProperties = NbPreferences.forModule(LabelAttributesPanel.class)
+            .getBoolean("LabelAttributesPanel_showProperties", showProperties);
 
         initComponents();
         selectedModel = selectEdges ? edgesToggleButton.getModel() : nodesToggleButton.getModel();
@@ -198,7 +199,8 @@ public class LabelAttributesPanel extends javax.swing.JPanel {
         if (!nodeColumnsList.isEmpty()) {
             vizController.setNodeLabelColumns(nodeColumnsList.toArray(new Column[0]));
         }
-        NbPreferences.forModule(LabelAttributesPanel.class).putBoolean("LabelAttributesPanel_showProperties", showProperties);
+        NbPreferences.forModule(LabelAttributesPanel.class)
+            .putBoolean("LabelAttributesPanel_showProperties", showProperties);
     }
 
     /**

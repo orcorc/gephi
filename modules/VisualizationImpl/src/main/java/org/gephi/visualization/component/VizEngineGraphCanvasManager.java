@@ -102,12 +102,13 @@ public class VizEngineGraphCanvasManager {
         engine.addInputListener(new InputListener<>() {
             @Override
             public List<NEWTEvent> processEvents(List<NEWTEvent> inputEvents) {
-                if (engine!=null && vizController.getVizEventManager() != null) {
+                if (engine != null && vizController.getVizEventManager() != null) {
                     StandardVizEventManager vizEventManager = vizController.getVizEventManager();
                     List<NEWTEvent> remainingEvents = new ArrayList<>();
                     for (NEWTEvent inputEvent : inputEvents) {
-                        if(!(inputEvent instanceof MouseEvent && vizEventManager.processMouseEvent(glCanvas, VizEngineGraphCanvasManager.this, engine,
-                            (MouseEvent) inputEvent))) {
+                        if (!(inputEvent instanceof MouseEvent &&
+                            vizEventManager.processMouseEvent(glCanvas, VizEngineGraphCanvasManager.this, engine,
+                                (MouseEvent) inputEvent))) {
                             remainingEvents.add(inputEvent);
                         }
                     }

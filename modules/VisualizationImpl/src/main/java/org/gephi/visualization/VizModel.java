@@ -568,7 +568,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != nodeLabelColorMode) {
             this.nodeLabelColorMode = nodeLabelColorMode;
             getRenderingOptions().ifPresent(options -> options.setNodeLabelColorMode(
-                    GraphRenderingOptions.LabelColorMode.valueOf(nodeLabelColorMode.name())));
+                GraphRenderingOptions.LabelColorMode.valueOf(nodeLabelColorMode.name())));
             firePropertyChange("nodeLabelColorMode", oldValue, nodeLabelColorMode);
         }
     }
@@ -583,8 +583,8 @@ public class VizModel implements VisualisationModel {
         if (oldValue != nodeLabelSizeMode) {
             this.nodeLabelSizeMode = nodeLabelSizeMode;
             getRenderingOptions().ifPresent(options -> options.setNodeLabelSizeMode(
-                    GraphRenderingOptions.LabelSizeMode.valueOf(nodeLabelSizeMode.name()))
-                );
+                GraphRenderingOptions.LabelSizeMode.valueOf(nodeLabelSizeMode.name()))
+            );
             firePropertyChange("nodeLabelSizeMode", oldValue, nodeLabelSizeMode);
         }
     }
@@ -627,7 +627,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != edgeLabelColorMode) {
             this.edgeLabelColorMode = edgeLabelColorMode;
             getRenderingOptions().ifPresent(options -> options.setEdgeLabelColorMode(
-                    GraphRenderingOptions.LabelColorMode.valueOf(edgeLabelColorMode.name())));
+                GraphRenderingOptions.LabelColorMode.valueOf(edgeLabelColorMode.name())));
             firePropertyChange("edgeLabelColorMode", oldValue, edgeLabelColorMode);
         }
     }
@@ -642,8 +642,8 @@ public class VizModel implements VisualisationModel {
         if (oldValue != edgeLabelSizeMode) {
             this.edgeLabelSizeMode = edgeLabelSizeMode;
             getRenderingOptions().ifPresent(options -> options.setEdgeLabelSizeMode(
-                    GraphRenderingOptions.LabelSizeMode.valueOf(edgeLabelSizeMode.name()))
-                );
+                GraphRenderingOptions.LabelSizeMode.valueOf(edgeLabelSizeMode.name()))
+            );
             firePropertyChange("edgeLabelSizeMode", oldValue, edgeLabelSizeMode);
         }
     }

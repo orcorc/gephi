@@ -2,8 +2,9 @@ package org.gephi.desktop.visualization.collapse;
 
 import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
-import javax.swing.*;
-
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JSlider;
 import org.gephi.visualization.api.VisualisationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;

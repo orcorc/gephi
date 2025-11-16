@@ -92,13 +92,15 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
         fitToNodeSizeButton = new JToggleButton();
         fitToNodeSizeButton.setToolTipText(NbBundle.getMessage(NodeGroup.class, "VizToolbar.Labels.fitToNodeSize"));
         fitToNodeSizeButton.setIcon(ImageUtilities.loadImageIcon("VisualizationImpl/fitToNodeSize.svg", false));
-        fitToNodeSizeButton.addActionListener(e -> vizController.setNodeLabelFitToNodeSize(fitToNodeSizeButton.isSelected()));
+        fitToNodeSizeButton.addActionListener(
+            e -> vizController.setNodeLabelFitToNodeSize(fitToNodeSizeButton.isSelected()));
 
         // Avoid overlap
         avoidOverlapButton = new JToggleButton();
         avoidOverlapButton.setToolTipText(NbBundle.getMessage(NodeLabelGroup.class, "VizToolbar.Labels.avoidOverlap"));
         avoidOverlapButton.setIcon(ImageUtilities.loadImageIcon("VisualizationImpl/avoidOverlap.svg", false));
-        avoidOverlapButton.addActionListener(e -> vizController.setAvoidNodeLabelOverlap(avoidOverlapButton.isSelected()));
+        avoidOverlapButton.addActionListener(
+            e -> vizController.setAvoidNodeLabelOverlap(avoidOverlapButton.isSelected()));
 
         //Font size
         fontSizeSlider = new JSlider(1, 100, 1);
