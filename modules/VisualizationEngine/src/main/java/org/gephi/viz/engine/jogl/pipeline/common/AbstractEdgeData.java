@@ -22,7 +22,9 @@ import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelDirected;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected;
+import org.gephi.viz.engine.jogl.models.mesh.EdgeLineMeshGenerator;
 import org.gephi.viz.engine.jogl.util.ManagedDirectBuffer;
+import org.gephi.viz.engine.jogl.util.Mesh;
 import org.gephi.viz.engine.jogl.util.gl.GLBuffer;
 import org.gephi.viz.engine.jogl.util.gl.GLVertexArrayObject;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
@@ -44,6 +46,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected final InstanceCounter undirectedInstanceCounter = new InstanceCounter();
     protected final InstanceCounter directedInstanceCounter = new InstanceCounter();
+
+    protected final Mesh undirectedEdgeMesh = EdgeLineMeshGenerator.undirectedMeshGenerator();
+    protected final Mesh directedEdgeMesh = EdgeLineMeshGenerator.directedMeshGenerator();
 
     // NOTE: Why secondary buffers and VAOs?
     // Sadly, we cannot use glDrawArraysInstancedBaseInstance in MacOS and it will be never available
