@@ -50,7 +50,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
             .setToolTipText(NbBundle.getMessage(NodeLabelGroup.class, "VizToolbar.Labels.attributes"));
         attributesButton.addActionListener(e -> {
             VisualisationModel model = vizController.getModel();
-            LabelAttributesPanel panel = new LabelAttributesPanel(model);
+            LabelAttributesPanel panel = new LabelAttributesPanel(model, false);
             panel.setup();
             DialogDescriptor dd = new DialogDescriptor(panel,
                 NbBundle.getMessage(NodeLabelGroup.class, "LabelAttributesPanel.title"), true,
@@ -180,7 +180,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
     @Override
     public JComponent[] getToolbarComponents() {
         return new JComponent[] {showLabelsButton, labelColorModeButton, labelSizeModeButton, fitToNodeSizeButton,
-            avoidOverlapButton, fontSizeSlider};
+            avoidOverlapButton, fontSizeSlider, attributesButton};
     }
 
     @Override

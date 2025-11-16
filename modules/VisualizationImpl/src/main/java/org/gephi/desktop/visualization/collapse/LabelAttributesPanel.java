@@ -86,12 +86,12 @@ public class LabelAttributesPanel extends javax.swing.JPanel {
     /**
      * Creates new form LabelAttributesPanel
      */
-    public LabelAttributesPanel(VisualisationModel vizModel) {
+    public LabelAttributesPanel(VisualisationModel vizModel, boolean selectEdges) {
         vizController = Lookup.getDefault().lookup(VisualizationController.class);
         this.vizModel = vizModel;
 
         initComponents();
-        selectedModel = nodesToggleButton.getModel();
+        selectedModel = selectEdges ? edgesToggleButton.getModel() : nodesToggleButton.getModel();
         elementButtonGroup.setSelected(selectedModel, true);
         nodesToggleButton.addActionListener(new ActionListener() {
             @Override

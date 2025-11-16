@@ -47,7 +47,7 @@ public class EdgeLabelGroup implements CollapseGroup, VisualizationPropertyChang
             .setToolTipText(NbBundle.getMessage(EdgeLabelGroup.class, "VizToolbar.Labels.attributes"));
         attributesButton.addActionListener(e -> {
             VisualisationModel model = vizController.getModel();
-            LabelAttributesPanel panel = new LabelAttributesPanel(model);
+            LabelAttributesPanel panel = new LabelAttributesPanel(model, true);
             panel.setup();
             DialogDescriptor dd = new DialogDescriptor(panel,
                 NbBundle.getMessage(EdgeLabelGroup.class, "LabelAttributesPanel.title"), true,
