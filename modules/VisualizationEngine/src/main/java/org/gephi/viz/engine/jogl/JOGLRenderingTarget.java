@@ -103,23 +103,6 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     }
 
     @Override
-    public synchronized void start() {
-        if (animator.isStarted()) {
-            throw new IllegalStateException("Already started!");
-        }
-
-        animator.start();
-    }
-
-    @Override
-    public synchronized void stop() {
-        if (!animator.isStarted()) {
-            throw new IllegalStateException("Not started!");
-        }
-        animator.stop();
-    }
-
-    @Override
     public synchronized void init(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL();
 
@@ -135,11 +118,18 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         engine.initPipeline();
 
         lastFpsTime = TimeUtils.getTimeMillis();
+
+        // Start animator
+        animator.start();
     }
 
     @Override
     public synchronized void dispose(GLAutoDrawable drawable) {
-        //NOOP
+        // Stop animator
+        animator.stop();
+
+        // Dispose pipeline
+        engine.disposePipeline();
     }
 
 

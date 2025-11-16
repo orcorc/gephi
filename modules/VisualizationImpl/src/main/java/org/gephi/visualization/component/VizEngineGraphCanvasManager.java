@@ -162,7 +162,9 @@ public class VizEngineGraphCanvasManager {
         }
         VizModel model = vizController.getModel(workspace);
         GraphModel graphModel = workspace.getLookup().lookup(GraphModel.class);
-        engine.setGraphModel(graphModel, model.toGraphRenderingOptions());
+        if (engine.getGraphModel() != graphModel) {
+            engine.setGraphModel(graphModel, model.toGraphRenderingOptions());
+        }
         return model;
     }
 
