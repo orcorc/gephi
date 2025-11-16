@@ -262,4 +262,19 @@ public class EdgeLineModelDirected {
             1, 2, -1// arrow bottom right vertex
         };
     }
+
+    public void destroy(GL2ES2 gl) {
+        if (program != null) {
+            program.destroy(gl);
+            program = null;
+        }
+        if (programWithSelectionSelected != null) {
+            programWithSelectionSelected.destroy(gl);
+            programWithSelectionSelected = null;
+        }
+        if (programWithSelectionUnselected != null) {
+            programWithSelectionUnselected.destroy(gl);
+            programWithSelectionUnselected = null;
+        }
+    }
 }
