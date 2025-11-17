@@ -1,13 +1,17 @@
 package org.gephi.viz.engine.jogl.pipeline.instanced;
 
+import static org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected.VERTEX_COUNT;
+
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.FloatBuffer;
 import org.gephi.graph.api.Edge;
+import org.gephi.viz.engine.jogl.models.EdgeLineModelDirected;
 import org.gephi.viz.engine.jogl.pipeline.common.AbstractEdgeData;
 import org.gephi.viz.engine.jogl.pipeline.common.EdgeWorldData;
 import org.gephi.viz.engine.jogl.util.gl.GLBufferMutable;
+import org.gephi.viz.engine.jogl.util.gl.GLFunctions;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
@@ -44,8 +48,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
                                 float[] mvpFloats) {
         final int instanceCount = setupShaderProgramForRenderingLayerUndirected(gl, layer, data, mvpFloats);
 
-        lineModelUndirected.drawInstanced(gl, instanceCount);
-        lineModelUndirected.stopUsingProgram(gl);
+        GLFunctions.drawInstanced(gl, 0, VERTEX_COUNT, instanceCount);
+        GLFunctions.stopUsingProgram(gl);
         unsetupUndirectedVertexArrayAttributes(gl);
     }
 
@@ -54,8 +58,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
                               float[] mvpFloats) {
         final int instanceCount = setupShaderProgramForRenderingLayerDirected(gl, layer, data, mvpFloats);
 
-        lineModelDirected.drawInstanced(gl, instanceCount);
-        lineModelDirected.stopUsingProgram(gl);
+        GLFunctions.drawInstanced(gl, 0, EdgeLineModelDirected.VERTEX_COUNT, instanceCount);
+        GLFunctions.stopUsingProgram(gl);
         unsetupDirectedVertexArrayAttributes(gl);
     }
 
