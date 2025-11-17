@@ -140,7 +140,7 @@ public class EdgeLineModelUndirected {
                 .addAttribLocation(ATTRIB_NAME_TARGET_SIZE, SHADER_TARGET_SIZE_LOCATION)
                 .init(gl);
     }
-    
+
     public void useProgram(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight, float maxWeight,
                            float nodeScale) {
         //Line:

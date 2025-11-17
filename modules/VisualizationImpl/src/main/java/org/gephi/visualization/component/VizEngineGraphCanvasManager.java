@@ -174,7 +174,7 @@ public class VizEngineGraphCanvasManager {
         VizModel model = vizController.getModel(workspace);
         GraphModel graphModel = workspace.getLookup().lookup(GraphModel.class);
 
-        if(engine.getGraphModel() == graphModel) {
+        if (engine.getGraphModel() == graphModel) {
             // We want to avoid calling that twice to not override zoom/pan with default values
             model.unsetup();
 
