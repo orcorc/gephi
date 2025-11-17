@@ -35,7 +35,7 @@ public class EdgeGroup implements CollapseGroup, VisualizationPropertyChangeList
 
         //Title
         titleLabel = new JLabel(NbBundle.getMessage(EdgeGroup.class, "VizToolbar.Edges.groupLabel"));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 4));
 
         //Show edges
         showEdgeButton = new JToggleButton();
