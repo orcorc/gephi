@@ -1,10 +1,10 @@
 package org.gephi.visualization.api;
 
 import java.io.File;
-import org.gephi.project.spi.Controller;
-import org.openide.util.NbPreferences;
 
 public interface ScreenshotController {
+
+    void takeScreenshot();
 
     void setAntiAliasing(int antiAliasing);
 
