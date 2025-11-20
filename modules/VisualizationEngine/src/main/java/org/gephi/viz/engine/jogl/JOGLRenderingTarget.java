@@ -1,9 +1,9 @@
 package org.gephi.viz.engine.jogl;
 
 import static com.jogamp.opengl.GL.GL_BACK;
+import static com.jogamp.opengl.GL.GL_BGRA;
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
-import static com.jogamp.opengl.GL.GL_RGBA;
-import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
+import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -20,13 +20,11 @@ import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLBuffers;
-import java.awt.Color;
 import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import javax.imageio.ImageIO;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
@@ -73,37 +71,12 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         setupEventListeners();
     }
 
-    @Override
-    public void frameDump(GL3ES3 gl) {
-
-
-        int height = drawable.getSurfaceHeight();
-        int width = drawable.getSurfaceWidth();
-        System.out.println(width + " " + height);
-
-
-        ByteBuffer buffer = GLBuffers.newDirectByteBuffer(width * height * 4);
-
-        gl.glReadBuffer(GL_BACK); // Some say GL_FRONT, some say GL_BACK
-
-        gl.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
-
-
-        /* It works, but i'm not fan */
-        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-        Graphics graphics = screenshot.getGraphics();
-        for (int h = 0; h < height; h++) {
-            for (int w = 0; w < width; w++) {
-                // The color are the three consecutive bytes, it's like referencing
-                // to the next consecutive array elements, so we got red, green, blue..
-                // red, green, blue, and so on..+ ", "
-                graphics.setColor(new Color((buffer.get() & 0xff), (buffer.get() & 0xff),
-                    (buffer.get() & 0xff)));
-
-                buffer.get();   // consume alpha
-                graphics.drawRect(w, height - h, 1, 1); // height - h is for flipping the image
-            }
-        }
+    /*
+     * This should go away elsewhere
+     * */
+    public void saveSceenshotOnFile(int width, int height, int[] data) {
+        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        screenshot.setRGB(0, 0, width, height, data, 0, width);
         File outputfile = new File("texture.png");
 
 
@@ -112,6 +85,42 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public void frameDump(GL3ES3 gl) {
+        // Get Drawable Frame Size
+        int height = drawable.getSurfaceHeight();
+        int width = drawable.getSurfaceWidth();
+
+        // Size of the Frame buffer
+        int size = width * height * 4;
+        IntBuffer buffer = GLBuffers.newDirectIntBuffer(size);
+
+        // Prepare Framebuffer capture
+        gl.glReadBuffer(GL_BACK); // Some say GL_FRONT, some say GL_BACK
+        gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
+        gl.glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
+
+        // Buffer back to 0
+        buffer.rewind();
+
+        // Dump buffer to Array
+        int[] pixelInts = new int[size];
+        buffer.get(pixelInts);
+
+        // Flip vertically (OpenGL origin is bottom-left, BufferedImage is top-left)
+        int[] flipped = new int[size];
+        for (int y = 0; y < height; y++) {
+            int srcPos = y * width;
+            int dstPos = (height - 1 - y) * width;
+            System.arraycopy(pixelInts, srcPos, flipped, dstPos, width);
+        }
+
+        // Maybe we need a listener architecture to send frame (for recording video, aka multiple image /
+
+        //
+        saveSceenshotOnFile(width, height, flipped);
 
     }
 
