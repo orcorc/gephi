@@ -86,6 +86,7 @@ public class VizController implements VisualizationController, Controller<VizMod
         vizEventManager = new StandardVizEventManager();
         screenshotMaker = new ScreenshotControllerImpl();
         canvasManager = new VizEngineGraphCanvasManager(this);
+
     }
 
     @Override
@@ -328,6 +329,12 @@ public class VizController implements VisualizationController, Controller<VizMod
     public void setEdgeLabelColumns(Column[] columns) {
         final VizModel model = getModel();
         model.setEdgeLabelColumns(columns);
+    }
+
+    @Override
+    public void makeScreenshot() {
+        final VizModel model = getModel();
+        model.makeScreenshot();
     }
 
     //    public void refreshWorkspace() {

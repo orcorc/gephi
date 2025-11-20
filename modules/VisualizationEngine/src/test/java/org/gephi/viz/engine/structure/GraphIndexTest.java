@@ -1,5 +1,6 @@
 package org.gephi.viz.engine.structure;
 
+import com.jogamp.opengl.GL3ES3;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.spi.RenderingTarget;
 
@@ -60,6 +61,11 @@ public class GraphIndexTest {
 
         @Override
         public void setup(VizEngine engine) {
+
+        }
+
+        @Override
+        public void frameDump(GL3ES3 gl) {
 
         }
 

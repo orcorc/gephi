@@ -1,5 +1,6 @@
 package org.gephi.viz.engine.spi;
 
+import com.jogamp.opengl.GL3ES3;
 import org.gephi.viz.engine.VizEngine;
 
 /**
@@ -17,6 +18,8 @@ public interface RenderingTarget {
     default void frameEnd() {
         //NOOP
     }
+
+    void frameDump(GL3ES3 gl);
 
     int getFps();
 }

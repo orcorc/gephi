@@ -917,6 +917,13 @@ public class VizModel implements VisualisationModel {
         }
     }
 
+    public void makeScreenshot() {
+       
+        getEngine().ifPresent(vizEngine -> {
+            vizEngine.getRenderingTarget().makeScreenshot();
+        });
+    }
+
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
         //Fast refresh
         // TODO: Fix

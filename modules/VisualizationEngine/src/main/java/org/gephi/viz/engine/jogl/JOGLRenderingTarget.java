@@ -1,6 +1,9 @@
 package org.gephi.viz.engine.jogl;
 
+import static com.jogamp.opengl.GL.GL_BACK;
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static com.jogamp.opengl.GL.GL_RGBA;
+import static com.jogamp.opengl.GL.GL_UNSIGNED_BYTE;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -9,13 +12,22 @@ import com.jogamp.newt.event.awt.AWTKeyAdapter;
 import com.jogamp.newt.event.awt.AWTMouseAdapter;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.GLBuffers;
+import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import javax.imageio.ImageIO;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
@@ -45,6 +57,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     // FPS States
     private long lastFpsTime = 0;
+    private boolean doScreenShot = false;
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
@@ -58,6 +71,48 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         this.engine = engine;
 
         setupEventListeners();
+    }
+
+    @Override
+    public void frameDump(GL3ES3 gl) {
+
+
+        int height = drawable.getSurfaceHeight();
+        int width = drawable.getSurfaceWidth();
+        System.out.println(width + " " + height);
+
+
+        ByteBuffer buffer = GLBuffers.newDirectByteBuffer(width * height * 4);
+
+        gl.glReadBuffer(GL_BACK); // Some say GL_FRONT, some say GL_BACK
+
+        gl.glReadPixels(0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+
+
+        /* It works, but i'm not fan */
+        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = screenshot.getGraphics();
+        for (int h = 0; h < height; h++) {
+            for (int w = 0; w < width; w++) {
+                // The color are the three consecutive bytes, it's like referencing
+                // to the next consecutive array elements, so we got red, green, blue..
+                // red, green, blue, and so on..+ ", "
+                graphics.setColor(new Color((buffer.get() & 0xff), (buffer.get() & 0xff),
+                    (buffer.get() & 0xff)));
+
+                buffer.get();   // consume alpha
+                graphics.drawRect(w, height - h, 1, 1); // height - h is for flipping the image
+            }
+        }
+        File outputfile = new File("texture.png");
+
+
+        try {
+            ImageIO.write(screenshot, "png", outputfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private synchronized void setupEventListeners() {
@@ -133,13 +188,19 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     @Override
     public void display(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL().getGL();
-
+        if (doScreenShot) { // You can't call screenShort when you want as it's picking what's on the frame buffer
+            // so you need to do this when you are sure the Framebuffer has been drawn so you got actual data.
+            // Otherwise, it's during when buffer is empty and you have empty black image.
+            frameDump((GL3ES3) gl);
+            doScreenShot = false;
+        }
         engine.getBackgroundColor(backgroundColor);
         gl.glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
         gl.glClear(GL_COLOR_BUFFER_BIT);
 
         updateFPS();
         engine.display();
+
     }
 
     @Override
@@ -225,5 +286,9 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     public int getFps() {
         return animator != null ? (int) animator.getLastFPS() : 0;
+    }
+
+    public void makeScreenshot() {
+        this.doScreenShot = true;
     }
 }

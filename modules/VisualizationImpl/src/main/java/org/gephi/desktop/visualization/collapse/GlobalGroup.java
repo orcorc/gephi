@@ -58,6 +58,7 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
             public void actionPerformed(ActionEvent e) {
                 // TODO fix
 //                    VizController.getInstance().getScreenshotMaker().takeScreenshot();
+                vizController.makeScreenshot();
             }
         });
     }
