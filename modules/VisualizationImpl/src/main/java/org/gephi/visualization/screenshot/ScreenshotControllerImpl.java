@@ -51,6 +51,8 @@ import org.gephi.viz.engine.jogl.util.Framedata;
 import org.openide.util.Lookup;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -77,11 +79,24 @@ public class ScreenshotControllerImpl implements ScreenshotController {
     public void saveSceenshotOnFile(Framedata framedata) {
         BufferedImage screenshot = new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
         screenshot.setRGB(0, 0, framedata.width(), framedata.height(), framedata.data(), 0, framedata.width());
-        File outputfile = new File("texture.png");
-        try {
-            ImageIO.write(screenshot, "png", outputfile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                "PNG Images", "png");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(null);
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+            String filepath = chooser.getSelectedFile().getAbsolutePath();
+            if (!filepath.endsWith(".png")) {
+                filepath += ".png";
+            }
+            File outputfile = new File(filepath);
+            try {
+                ImageIO.write(screenshot, "png", outputfile);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
