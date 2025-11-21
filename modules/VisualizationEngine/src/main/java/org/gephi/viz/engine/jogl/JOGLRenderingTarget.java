@@ -1,10 +1,5 @@
 package org.gephi.viz.engine.jogl;
 
-import static com.jogamp.opengl.GL.GL_BACK;
-import static com.jogamp.opengl.GL.GL_BGRA;
-import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
-import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
-
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.NEWTEvent;
@@ -20,24 +15,28 @@ import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLBuffers;
-import java.awt.Frame;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.nio.IntBuffer;
-import javax.imageio.ImageIO;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
 import org.gephi.viz.engine.spi.RenderingTarget;
 import org.gephi.viz.engine.util.TimeUtils;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
+
+import static com.jogamp.opengl.GL.*;
+import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
+
 /**
  *
  * @author Eduardo Ramos
  */
 public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, com.jogamp.newt.event.KeyListener,
-    com.jogamp.newt.event.MouseListener {
+        com.jogamp.newt.event.MouseListener {
 
     private final GLAutoDrawable drawable;
 
@@ -55,7 +54,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     // FPS States
     private long lastFpsTime = 0;
-    private boolean doScreenShot = false;
+    private boolean requestScreenshot = false;
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
@@ -87,11 +86,18 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         }
     }
 
-    @Override
-    public void frameDump(GL3ES3 gl) {
+    public void doScreenshot(GL3ES3 gl) {
         // Get Drawable Frame Size
         int height = drawable.getSurfaceHeight();
         int width = drawable.getSurfaceWidth();
+
+        int[] framedata = frameDump(gl, width, height);
+        saveSceenshotOnFile(width, height, framedata);
+    }
+
+    @Override
+    public int[] frameDump(GL3ES3 gl, int width, int height) {
+
 
         // Size of the Frame buffer
         int size = width * height * 4;
@@ -116,11 +122,11 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
             int dstPos = (height - 1 - y) * width;
             System.arraycopy(pixelInts, srcPos, flipped, dstPos, width);
         }
-
+        return flipped;
         // Maybe we need a listener architecture to send frame (for recording video, aka multiple image /
 
         //
-        saveSceenshotOnFile(width, height, flipped);
+
 
     }
 
@@ -197,11 +203,11 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     @Override
     public void display(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL().getGL();
-        if (doScreenShot) { // You can't call screenShort when you want as it's picking what's on the frame buffer
+        if (requestScreenshot) { // You can't call screenShort when you want as it's picking what's on the frame buffer
             // so you need to do this when you are sure the Framebuffer has been drawn so you got actual data.
             // Otherwise, it's during when buffer is empty and you have empty black image.
-            frameDump((GL3ES3) gl);
-            doScreenShot = false;
+            doScreenshot((GL3ES3) gl);
+            requestScreenshot = false;
         }
         engine.getBackgroundColor(backgroundColor);
         gl.glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
@@ -297,7 +303,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         return animator != null ? (int) animator.getLastFPS() : 0;
     }
 
-    public void makeScreenshot() {
-        this.doScreenShot = true;
+    public void requestScreenshot() {
+        this.requestScreenshot = true;
     }
 }
