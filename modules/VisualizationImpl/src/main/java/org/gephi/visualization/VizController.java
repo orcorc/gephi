@@ -327,8 +327,6 @@ public class VizController implements VisualizationController, Controller<VizMod
 
     @Override
     public void makeScreenshot() {
-        canvasManager.getEngine().ifPresent(screenshotMaker::setEngine);
-
         final VizModel model = getModel();
         model.makeScreenshot().ifPresent(screenshotCompletable -> {
             screenshotCompletable.thenAccept(screenshotMaker::saveSceenshotOnFile);

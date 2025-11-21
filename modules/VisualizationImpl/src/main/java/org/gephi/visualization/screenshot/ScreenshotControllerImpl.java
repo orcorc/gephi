@@ -47,6 +47,7 @@ import org.gephi.utils.longtask.api.LongTaskExecutor;
 import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.jogl.util.Framedata;
 import org.openide.util.Lookup;
 
 import javax.imageio.ImageIO;
@@ -73,11 +74,9 @@ public class ScreenshotControllerImpl implements ScreenshotController {
         return new ScreenshotModelImpl(vizController.getModel(workspace));
     }
 
-    public void saveSceenshotOnFile(int[] data) {
-        int width = engine.getWidth();
-        int height = engine.getHeight();
-        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        screenshot.setRGB(0, 0, width, height, data, 0, width);
+    public void saveSceenshotOnFile(Framedata framedata) {
+        BufferedImage screenshot = new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
+        screenshot.setRGB(0, 0, framedata.width(), framedata.height(), framedata.data(), 0, framedata.width());
         File outputfile = new File("texture.png");
         try {
             ImageIO.write(screenshot, "png", outputfile);
@@ -150,7 +149,4 @@ public class ScreenshotControllerImpl implements ScreenshotController {
 //        }
     }
 
-    public void setEngine(VizEngine<?, ?> engine) {
-        this.engine = engine;
-    }
 }

@@ -52,6 +52,7 @@ import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.visualization.screenshot.ScreenshotModelImpl;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
+import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
 import org.joml.Vector2f;
@@ -909,7 +910,7 @@ public class VizModel implements VisualisationModel {
         }
     }
 
-    public Optional<CompletableFuture<int[]>> makeScreenshot() {
+    public Optional<CompletableFuture<Framedata>> makeScreenshot() {
         return getEngine().map(
                 vizEngine ->
                         vizEngine

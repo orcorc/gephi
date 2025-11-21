@@ -16,6 +16,7 @@ import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLBuffers;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
 import org.gephi.viz.engine.spi.RenderingTarget;
@@ -54,7 +55,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     // Screenshot
     private boolean requestScreenshot = false;
-    private CompletableFuture<int[]> screenshotFuture = null;
+    private CompletableFuture<Framedata> screenshotFuture = null;
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
@@ -76,7 +77,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         int width = drawable.getSurfaceWidth();
 
         int[] framedata = frameDump(gl, width, height);
-        screenshotFuture.complete(framedata);
+        screenshotFuture.complete(new Framedata(framedata, width, height));
     }
 
     @Override
@@ -288,7 +289,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         return animator != null ? (int) animator.getLastFPS() : 0;
     }
 
-    public CompletableFuture<int[]> requestScreenshot() {
+    public CompletableFuture<Framedata> requestScreenshot() {
         this.requestScreenshot = true;
         this.screenshotFuture = new CompletableFuture<>();
         return this.screenshotFuture;
