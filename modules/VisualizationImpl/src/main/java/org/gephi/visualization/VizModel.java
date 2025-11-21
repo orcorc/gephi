@@ -65,6 +65,7 @@ import java.awt.*;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Mathieu Bastian
@@ -908,12 +909,15 @@ public class VizModel implements VisualisationModel {
         }
     }
 
-    public void makeScreenshot() {
-
-        getEngine().ifPresent(vizEngine -> {
-            vizEngine.getRenderingTarget().requestScreenshot();
-        });
+    public Optional<CompletableFuture<int[]>> makeScreenshot() {
+        return getEngine().map(
+                vizEngine ->
+                        vizEngine
+                                .getRenderingTarget()
+                                .requestScreenshot()
+        );
     }
+
 
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
         //Fast refresh

@@ -42,13 +42,17 @@
 
 package org.gephi.visualization.screenshot;
 
-import java.io.File;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
 import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.viz.engine.VizEngine;
 import org.openide.util.Lookup;
+
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Mathieu Bastian
@@ -67,6 +71,19 @@ public class ScreenshotControllerImpl implements ScreenshotController {
     public ScreenshotModelImpl newModel(Workspace workspace) {
         VisualizationController vizController = Lookup.getDefault().lookup(VisualizationController.class);
         return new ScreenshotModelImpl(vizController.getModel(workspace));
+    }
+
+    public void saveSceenshotOnFile(int[] data) {
+        int width = engine.getWidth();
+        int height = engine.getHeight();
+        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        screenshot.setRGB(0, 0, width, height, data, 0, width);
+        File outputfile = new File("texture.png");
+        try {
+            ImageIO.write(screenshot, "png", outputfile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -131,5 +148,9 @@ public class ScreenshotControllerImpl implements ScreenshotController {
 //        if (result == NotifyDescriptor.OK_OPTION) {
 //            panel.unsetup(this);
 //        }
+    }
+
+    public void setEngine(VizEngine<?, ?> engine) {
+        this.engine = engine;
     }
 }

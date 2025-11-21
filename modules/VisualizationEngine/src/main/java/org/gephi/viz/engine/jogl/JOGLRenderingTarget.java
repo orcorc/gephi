@@ -21,12 +21,9 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
 import org.gephi.viz.engine.spi.RenderingTarget;
 import org.gephi.viz.engine.util.TimeUtils;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.IntBuffer;
+import java.util.concurrent.CompletableFuture;
 
 import static com.jogamp.opengl.GL.*;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
@@ -54,7 +51,10 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     // FPS States
     private long lastFpsTime = 0;
+
+    // Screenshot
     private boolean requestScreenshot = false;
+    private CompletableFuture<int[]> screenshotFuture = null;
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
@@ -70,29 +70,13 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         setupEventListeners();
     }
 
-    /*
-     * This should go away elsewhere
-     * */
-    public void saveSceenshotOnFile(int width, int height, int[] data) {
-        BufferedImage screenshot = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-        screenshot.setRGB(0, 0, width, height, data, 0, width);
-        File outputfile = new File("texture.png");
-
-
-        try {
-            ImageIO.write(screenshot, "png", outputfile);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void doScreenshot(GL3ES3 gl) {
         // Get Drawable Frame Size
         int height = drawable.getSurfaceHeight();
         int width = drawable.getSurfaceWidth();
 
         int[] framedata = frameDump(gl, width, height);
-        saveSceenshotOnFile(width, height, framedata);
+        screenshotFuture.complete(framedata);
     }
 
     @Override
@@ -122,6 +106,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
             int dstPos = (height - 1 - y) * width;
             System.arraycopy(pixelInts, srcPos, flipped, dstPos, width);
         }
+
         return flipped;
         // Maybe we need a listener architecture to send frame (for recording video, aka multiple image /
 
@@ -303,7 +288,9 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         return animator != null ? (int) animator.getLastFPS() : 0;
     }
 
-    public void requestScreenshot() {
+    public CompletableFuture<int[]> requestScreenshot() {
         this.requestScreenshot = true;
+        this.screenshotFuture = new CompletableFuture<>();
+        return this.screenshotFuture;
     }
 }
