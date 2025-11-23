@@ -186,7 +186,6 @@ public class NodesCallback implements ElementsCallback<Node> {
     protected Node[] ensureNodesArraySize(Node[] array, int size) {
         if (size > array.length) {
             int newSize = getNextPowerOf2(size);
-            System.out.println("Growing node vector from " + array.length + " to " + newSize + " elements");
 
             final Node[] newVector = new Node[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);
@@ -200,7 +199,6 @@ public class NodesCallback implements ElementsCallback<Node> {
     protected String[] ensureNodesLabelsArraySize(String[] array, int size) {
         if (size > array.length) {
             int newSize = getNextPowerOf2(size);
-            System.out.println("Growing node label vector from " + array.length + " to " + newSize + " elements");
 
             final String[] newVector = new String[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);
