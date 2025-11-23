@@ -43,37 +43,30 @@
 package org.gephi.visualization;
 
 import com.jogamp.newt.event.NEWTEvent;
-import java.awt.Color;
-import java.awt.Font;
-import java.beans.PropertyChangeEvent;
-import java.util.Collection;
-import java.util.Optional;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-import org.gephi.graph.api.AttributeUtils;
-import org.gephi.graph.api.Column;
-import org.gephi.graph.api.Estimator;
-import org.gephi.graph.api.GraphController;
-import org.gephi.graph.api.GraphModel;
-import org.gephi.graph.api.Node;
+import org.gephi.graph.api.*;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.EdgeColorMode;
-import org.gephi.visualization.api.LabelColorMode;
-import org.gephi.visualization.api.LabelSizeMode;
-import org.gephi.visualization.api.VisualisationModel;
-import org.gephi.visualization.api.VisualizationPropertyChangeListener;
+import org.gephi.visualization.api.*;
 import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.visualization.screenshot.ScreenshotModelImpl;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
+import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.openide.util.Lookup;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+import java.awt.*;
+import java.beans.PropertyChangeEvent;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author Mathieu Bastian
@@ -182,7 +175,7 @@ public class VizModel implements VisualisationModel {
         this.hideNonSelectedNodeLabels = config.isDefaultHideNonSelectedNodeLabels();
         this.fitNodeLabelsToNodeSize = config.isDefaultFitNodeLabelsToNodeSize();
         this.avoidNodeLabelOverlap = config.isDefaultAvoidNodeLabelOverlap();
-        this.nodeLabelColumns = new Column[] {this.graphModel.defaultColumns().nodeLabel()};
+        this.nodeLabelColumns = new Column[]{this.graphModel.defaultColumns().nodeLabel()};
 
         //Edge Labels
         this.showEdgeLabels = config.isDefaultShowEdgeLabels();
@@ -191,7 +184,7 @@ public class VizModel implements VisualisationModel {
         this.edgeLabelFont = config.getDefaultEdgeLabelFont();
         this.edgeLabelScale = config.getDefaultEdgeLabelScale();
         this.hideNonSelectedEdgeLabels = config.isDefaultHideNonSelectedEdgeLabels();
-        this.edgeLabelColumns = new Column[] {this.graphModel.defaultColumns().edgeLabel()};
+        this.edgeLabelColumns = new Column[]{this.graphModel.defaultColumns().edgeLabel()};
     }
 
     public GraphRenderingOptions toGraphRenderingOptions() {
@@ -307,7 +300,7 @@ public class VizModel implements VisualisationModel {
     @Override
     public int getFps() {
         return getEngine().map(VizEngine::getFps)
-            .orElse(0);
+                .orElse(0);
     }
 
     @Override
@@ -572,7 +565,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != nodeLabelColorMode) {
             this.nodeLabelColorMode = nodeLabelColorMode;
             getRenderingOptions().ifPresent(options -> options.setNodeLabelColorMode(
-                GraphRenderingOptions.LabelColorMode.valueOf(nodeLabelColorMode.name())));
+                    GraphRenderingOptions.LabelColorMode.valueOf(nodeLabelColorMode.name())));
             firePropertyChange("nodeLabelColorMode", oldValue, nodeLabelColorMode);
         }
     }
@@ -587,7 +580,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != nodeLabelSizeMode) {
             this.nodeLabelSizeMode = nodeLabelSizeMode;
             getRenderingOptions().ifPresent(options -> options.setNodeLabelSizeMode(
-                GraphRenderingOptions.LabelSizeMode.valueOf(nodeLabelSizeMode.name()))
+                    GraphRenderingOptions.LabelSizeMode.valueOf(nodeLabelSizeMode.name()))
             );
             firePropertyChange("nodeLabelSizeMode", oldValue, nodeLabelSizeMode);
         }
@@ -631,7 +624,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != edgeLabelColorMode) {
             this.edgeLabelColorMode = edgeLabelColorMode;
             getRenderingOptions().ifPresent(options -> options.setEdgeLabelColorMode(
-                GraphRenderingOptions.LabelColorMode.valueOf(edgeLabelColorMode.name())));
+                    GraphRenderingOptions.LabelColorMode.valueOf(edgeLabelColorMode.name())));
             firePropertyChange("edgeLabelColorMode", oldValue, edgeLabelColorMode);
         }
     }
@@ -646,7 +639,7 @@ public class VizModel implements VisualisationModel {
         if (oldValue != edgeLabelSizeMode) {
             this.edgeLabelSizeMode = edgeLabelSizeMode;
             getRenderingOptions().ifPresent(options -> options.setEdgeLabelSizeMode(
-                GraphRenderingOptions.LabelSizeMode.valueOf(edgeLabelSizeMode.name()))
+                    GraphRenderingOptions.LabelSizeMode.valueOf(edgeLabelSizeMode.name()))
             );
             firePropertyChange("edgeLabelSizeMode", oldValue, edgeLabelSizeMode);
         }
@@ -769,7 +762,7 @@ public class VizModel implements VisualisationModel {
     public void fireSelectionChange() {
         //Copy to avoid possible concurrent modification:
         final VisualizationPropertyChangeListener[] listenersCopy =
-            vizController.listeners.toArray(new VisualizationPropertyChangeListener[0]);
+                vizController.listeners.toArray(new VisualizationPropertyChangeListener[0]);
 
         final PropertyChangeEvent evt = new PropertyChangeEvent(this, "selection", null, null);
         for (VisualizationPropertyChangeListener l : listenersCopy) {
@@ -791,7 +784,7 @@ public class VizModel implements VisualisationModel {
 
         //Copy to avoid possible concurrent modification:
         final VisualizationPropertyChangeListener[] listenersCopy =
-            vizController.listeners.toArray(new VisualizationPropertyChangeListener[0]);
+                vizController.listeners.toArray(new VisualizationPropertyChangeListener[0]);
 
         final PropertyChangeEvent evt = new PropertyChangeEvent(this, propertyName, oldvalue, newValue);
         for (VisualizationPropertyChangeListener l : listenersCopy) {
@@ -879,13 +872,13 @@ public class VizModel implements VisualisationModel {
                         setBackgroundColor(ColorUtils.decode(reader.getAttributeValue(null, "value")));
                     } else if ("edgeInSelectionColor".equalsIgnoreCase(name)) {
                         setEdgeInSelectionColor(
-                            ColorUtils.decode(reader.getAttributeValue(null, "value")));
+                                ColorUtils.decode(reader.getAttributeValue(null, "value")));
                     } else if ("edgeOutSelectionColor".equalsIgnoreCase(name)) {
                         setEdgeOutSelectionColor(
-                            ColorUtils.decode(reader.getAttributeValue(null, "value")));
+                                ColorUtils.decode(reader.getAttributeValue(null, "value")));
                     } else if ("edgeBothSelectionColor".equalsIgnoreCase(name)) {
                         setEdgeBothSelectionColor(
-                            ColorUtils.decode(reader.getAttributeValue(null, "value")));
+                                ColorUtils.decode(reader.getAttributeValue(null, "value")));
 
                     } else if ("edgeScale".equalsIgnoreCase(name)) {
                         setEdgeScale(Float.parseFloat(reader.getAttributeValue(null, "value")));
@@ -916,6 +909,16 @@ public class VizModel implements VisualisationModel {
             }
         }
     }
+
+    public Optional<CompletableFuture<Framedata>> makeScreenshot() {
+        return getEngine().map(
+                vizEngine ->
+                        vizEngine
+                                .getRenderingTarget()
+                                .requestScreenshot()
+        );
+    }
+
 
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
         //Fast refresh
