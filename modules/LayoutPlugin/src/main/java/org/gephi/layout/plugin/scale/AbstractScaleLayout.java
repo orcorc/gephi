@@ -47,7 +47,6 @@ import java.util.List;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.Node;
 import org.gephi.layout.plugin.AbstractLayout;
-import org.gephi.layout.spi.Layout;
 import org.gephi.layout.spi.LayoutBuilder;
 import org.gephi.layout.spi.LayoutProperty;
 import org.openide.util.Exceptions;
@@ -58,12 +57,12 @@ import org.openide.util.NbBundle;
  *
  * @author Helder Suzuki
  */
-public abstract class AbstractScaleLayout extends AbstractLayout implements Layout {
+public abstract class AbstractScaleLayout extends AbstractLayout {
 
-    private double scale;
+    private float scale;
     private Graph graph;
 
-    public AbstractScaleLayout(LayoutBuilder layoutBuilder, double scale) {
+    public AbstractScaleLayout(LayoutBuilder layoutBuilder, float scale) {
         super(layoutBuilder);
         this.scale = scale;
     }
@@ -78,7 +77,7 @@ public abstract class AbstractScaleLayout extends AbstractLayout implements Layo
         graph = graphModel.getGraphVisible();
         graph.readLock();
         try {
-            double xMean = 0, yMean = 0;
+            float xMean = 0, yMean = 0;
             for (Node n : graph.getNodes()) {
                 xMean += n.x();
                 yMean += n.y();
@@ -88,11 +87,10 @@ public abstract class AbstractScaleLayout extends AbstractLayout implements Layo
 
             for (Node n : graph.getNodes()) {
                 if (!n.isFixed()) {
-                    double dx = (n.x() - xMean) * getScale();
-                    double dy = (n.y() - yMean) * getScale();
+                    float dx = (n.x() - xMean) * getScale();
+                    float dy = (n.y() - yMean) * getScale();
 
-                    n.setX((float) (xMean + dx));
-                    n.setY((float) (yMean + dy));
+                    n.setPosition(xMean + dx, yMean + dy);
                 }
             }
             setConverged(true);
@@ -110,7 +108,7 @@ public abstract class AbstractScaleLayout extends AbstractLayout implements Layo
         List<LayoutProperty> properties = new ArrayList<>();
         try {
             properties.add(LayoutProperty.createProperty(
-                this, Double.class,
+                this, Float.class,
                 NbBundle.getMessage(getClass(), "ScaleLayout.scaleFactor.name"),
                 null,
                 "ScaleLayout.scaleFactor.name",
@@ -125,14 +123,14 @@ public abstract class AbstractScaleLayout extends AbstractLayout implements Layo
     /**
      * @return the scale
      */
-    public Double getScale() {
+    public Float getScale() {
         return scale;
     }
 
     /**
      * @param scale the scale to set
      */
-    public void setScale(Double scale) {
+    public void setScale(Float scale) {
         this.scale = scale;
     }
 }

@@ -81,6 +81,12 @@ public interface LayoutController {
     void executeLayout();
 
     /**
+     * Executes a transformation.
+     * TODO: Add optional workspace input
+     */
+    void executeLayout(Layout transformation);
+
+    /**
      * Executes the current layout for <code>numIterations</code> iterations.
      *
      * @param numIterations the number of iterations of the algorithm
