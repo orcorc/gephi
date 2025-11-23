@@ -7,11 +7,13 @@ import org.gephi.graph.api.Column;
 import org.gephi.graph.api.ColumnIndex;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
+import org.gephi.viz.engine.util.text.TextLabelBuilder;
 
 /**
  *
@@ -24,6 +26,11 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private float maxWeight = 1f;
     private Edge[] edgesArray = new Edge[0];
     private float[] edgeWeightsArray = new float[0];
+    private GraphView graphView;
+    private Column[] edgeLabelColumns;
+    private String[] edgeLabelsArray = new String[0];
+    private boolean hasSelection = false;
+    private boolean hasLabels = false;
     private int maxIndex = 0;
     private int edgeCount = 0;
     private boolean directed = false;
@@ -46,6 +53,14 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeWeightsArray = ensureEdgeWeightArraySize(edgeWeightsArray, graph.getModel().getMaxEdgeStoreId() + 1);
         maxIndex = 0;
         edgeCount = 0;
+
+        hasSelection = graphSelection.someNodesOrEdgesSelection();
+        hasLabels = graphRenderingOptions.isShowEdgeLabels() && !(graphRenderingOptions.isHideNonSelectedEdgeLabels() && !hasSelection);
+        if (hasLabels) {
+            edgeLabelsArray = ensureEdgesLabelsArraySize(edgeLabelsArray, graph.getModel().getMaxEdgeStoreId() + 1);
+            graphView = graph.getView();
+            edgeLabelColumns = graphRenderingOptions.getEdgeLabelColumns();
+        }
     }
 
     @Override
@@ -55,6 +70,12 @@ public class EdgesCallback implements ElementsCallback<Edge> {
             maxIndex = storeId;
         }
         edgesArray[storeId] = edge;
+
+        if (hasLabels && edge.getTextProperties().isVisible()) {
+            edgeLabelsArray[storeId] = TextLabelBuilder.buildText(edge, graphView, edgeLabelColumns);
+        } else if (hasLabels) {
+            edgeLabelsArray[storeId] = null;
+        }
     }
 
     @Override
@@ -90,6 +111,10 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeCount = 0;
         directed = false;
         undirected = false;
+        hasSelection = false;
+        edgeLabelColumns = null;
+        edgeLabelsArray = new String[0];
+        hasLabels = false;
     }
 
     public Edge[] getEdgesArray() {
@@ -98,6 +123,10 @@ public class EdgesCallback implements ElementsCallback<Edge> {
 
     public float[] getEdgeWeightsArray() {
         return edgeWeightsArray;
+    }
+
+    public String[] getEdgeLabelsArray() {
+        return edgeLabelsArray;
     }
 
     public int getMaxIndex() {
@@ -143,6 +172,19 @@ public class EdgesCallback implements ElementsCallback<Edge> {
             int newSize = getNextPowerOf2(size);
 
             final float[] newVector = new float[newSize];
+            System.arraycopy(array, 0, newVector, 0, array.length);
+
+            return newVector;
+        } else {
+            return array;
+        }
+    }
+
+    protected String[] ensureEdgesLabelsArraySize(String[] array, int size) {
+        if (size > array.length) {
+            int newSize = getNextPowerOf2(size);
+
+            final String[] newVector = new String[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);
 
             return newVector;

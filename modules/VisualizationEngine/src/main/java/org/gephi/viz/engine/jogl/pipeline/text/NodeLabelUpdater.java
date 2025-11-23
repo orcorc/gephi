@@ -4,40 +4,16 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
-import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
-import org.gephi.viz.engine.spi.ElementsCallback;
-import org.gephi.viz.engine.spi.WorldUpdater;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
-import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
 
-public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node> {
+public class NodeLabelUpdater extends AbstractLabelUpdater<Node> {
 
     private static final int GRID_SIZE = 15;
 
-    private final VizEngine engine;
-    private final NodeLabelData labelData;
-    private boolean vaoSupported = false;
-    private boolean mipMapSupported = false;
-
-    public NodeLabelUpdater(VizEngine engine, NodeLabelData labelData) {
-        this.engine = engine;
-        this.labelData = labelData;
-    }
-
-    @Override
-    public void init(JOGLRenderingTarget target) {
-
-        final OpenGLOptions openGLOptions = engine.getOpenGLOptions();
-        vaoSupported = openGLOptions.isVAOSupported();
-        // Disable mipmap generation in intel GPUs. See https://github.com/gephi/gephi/issues/1494 (Some label characters fade away when zooming out)
-        mipMapSupported = !openGLOptions.isVendorIntel();
-    }
-
-    @Override
-    public void dispose(JOGLRenderingTarget target) {
-        labelData.dispose();
+    public NodeLabelUpdater(VizEngine engine, AbstractLabelData<Node> labelData) {
+        super(engine, labelData);
     }
 
     @Override
@@ -50,7 +26,7 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         }
 
         // Get nodes and their properties
-        final NodesCallback nodesCallback = labelData.getNodesCallback();
+        final NodesCallback nodesCallback = (NodesCallback) labelData.getElementsCallback();
         final boolean someSelection = nodesCallback.hasSelection();
         final String[] texts = nodesCallback.getNodesLabelsArray();
 
@@ -241,18 +217,8 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
     }
 
     @Override
-    public ElementsCallback<Node> getElementsCallback() {
-        return labelData.getNodesCallback();
-    }
-
-    @Override
     public String getCategory() {
         return PipelineCategory.NODE_LABEL;
-    }
-
-    @Override
-    public int getPreferenceInCategory() {
-        return 0;
     }
 
     @Override
@@ -260,8 +226,4 @@ public class NodeLabelUpdater implements WorldUpdater<JOGLRenderingTarget, Node>
         return "Nodes Labels";
     }
 
-    @Override
-    public int getOrder() {
-        return 0;
-    }
 }

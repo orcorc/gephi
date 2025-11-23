@@ -30,6 +30,9 @@ import org.gephi.viz.engine.jogl.pipeline.instanced.renderers.EdgeRendererInstan
 import org.gephi.viz.engine.jogl.pipeline.instanced.renderers.NodeRendererInstanced;
 import org.gephi.viz.engine.jogl.pipeline.instanced.updaters.EdgesUpdaterInstancedRendering;
 import org.gephi.viz.engine.jogl.pipeline.instanced.updaters.NodesUpdaterInstancedRendering;
+import org.gephi.viz.engine.jogl.pipeline.text.EdgeLabelData;
+import org.gephi.viz.engine.jogl.pipeline.text.EdgeLabelRenderer;
+import org.gephi.viz.engine.jogl.pipeline.text.EdgeLabelUpdater;
 import org.gephi.viz.engine.jogl.pipeline.text.NodeLabelData;
 import org.gephi.viz.engine.jogl.pipeline.text.NodeLabelRenderer;
 import org.gephi.viz.engine.jogl.pipeline.text.NodeLabelUpdater;
@@ -130,6 +133,11 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         final NodeLabelData nodeLabelData = new NodeLabelData(nodesCallback);
         engine.addRenderer(new NodeLabelRenderer(engine, nodeLabelData));
         engine.addWorldUpdater(new NodeLabelUpdater(engine, nodeLabelData));
+
+        // Edge Label
+        final EdgeLabelData edgeLabelData = new EdgeLabelData(edgesCallback);
+        engine.addRenderer(new EdgeLabelRenderer(engine, edgeLabelData));
+        engine.addWorldUpdater(new EdgeLabelUpdater(engine, edgeLabelData, nodeLabelData));
 
         //Selection:
         engine.addRenderer(new RectangleSelectionArrayDraw(engine));
