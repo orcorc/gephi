@@ -42,6 +42,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         final GraphRenderingOptions.EdgeColorMode edgeColorMode = options.getEdgeColorMode();
         final float lightenNonSelectedFactor = options.getLightenNonSelectedFactor();
         final float edgeLabelScale = options.getEdgeLabelScale();
+        final float nodeScale = options.getNodeScale();
         final boolean hideNonSelectedLabels = options.isHideNonSelectedEdgeLabels();
         final float zoom = options.getZoom();
 
@@ -118,14 +119,36 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
 
             // Position of the label
             float x, y;
-            if (edge.isDirected()) {
-                x = (edge.getSource().x() + 2 * edge.getTarget().x()) /
-                    3f;
-                y = (edge.getSource().y() + 2 * edge.getTarget().y()) /
-                    3f;
+
+            // Get node sizes (scaled)
+            final float sourceSize = edge.getSource().size() * nodeScale;
+            final float targetSize = edge.getTarget().size() * nodeScale;
+
+            // Calculate edge vector
+            final float dx = edge.getTarget().x() - edge.getSource().x();
+            final float dy = edge.getTarget().y() - edge.getSource().y();
+            final float edgeLength = (float) Math.sqrt(dx * dx + dy * dy);
+
+            if (edgeLength > 0 && !edge.isSelfLoop()) {
+                // Normalize edge vector
+                final float ndx = dx / edgeLength;
+                final float ndy = dy / edgeLength;
+
+                if (edge.isDirected()) {
+                    // Position at 2/3 from source to target, accounting for node sizes
+                    final float offsetFromSource = sourceSize + (edgeLength - sourceSize - targetSize) * 2f / 3f;
+                    x = edge.getSource().x() + ndx * offsetFromSource;
+                    y = edge.getSource().y() + ndy * offsetFromSource;
+                } else {
+                    // Position at midpoint, accounting for node sizes
+                    final float offsetFromSource = sourceSize + (edgeLength - sourceSize - targetSize) * 0.5f;
+                    x = edge.getSource().x() + ndx * offsetFromSource;
+                    y = edge.getSource().y() + ndy * offsetFromSource;
+                }
             } else {
-                x = (edge.getSource().x() + edge.getTarget().x()) / 2f;
-                y = (edge.getSource().y() + edge.getTarget().y()) / 2f;
+                // Fallback for zero-length edges (self-loops or overlapping nodes)
+                x = edge.getSource().x();
+                y = edge.getSource().y();
             }
 
             // Update batch
