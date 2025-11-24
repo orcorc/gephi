@@ -44,7 +44,6 @@ package org.gephi.desktop.visualization.collapse;
 
 import javax.swing.JComponent;
 import org.gephi.visualization.VizModel;
-import org.gephi.visualization.api.VisualisationModel;
 
 /**
  * @author Mathieu Bastian

@@ -1,5 +1,10 @@
 package org.gephi.viz.engine.jogl;
 
+import static com.jogamp.opengl.GL.GL_BACK;
+import static com.jogamp.opengl.GL.GL_BGRA;
+import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
+import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
+
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.NEWTEvent;
@@ -15,6 +20,9 @@ import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.GLBuffers;
+import java.awt.Frame;
+import java.nio.IntBuffer;
+import java.util.concurrent.CompletableFuture;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
@@ -22,19 +30,12 @@ import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
 import org.gephi.viz.engine.spi.RenderingTarget;
 import org.gephi.viz.engine.util.TimeUtils;
 
-import java.awt.*;
-import java.nio.IntBuffer;
-import java.util.concurrent.CompletableFuture;
-
-import static com.jogamp.opengl.GL.*;
-import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
-
 /**
  *
  * @author Eduardo Ramos
  */
 public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, com.jogamp.newt.event.KeyListener,
-        com.jogamp.newt.event.MouseListener {
+    com.jogamp.newt.event.MouseListener {
 
     private final GLAutoDrawable drawable;
 

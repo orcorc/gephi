@@ -55,7 +55,8 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeCount = 0;
 
         hasSelection = graphSelection.someNodesOrEdgesSelection();
-        hasLabels = graphRenderingOptions.isShowEdgeLabels() && !(graphRenderingOptions.isHideNonSelectedEdgeLabels() && !hasSelection);
+        hasLabels = graphRenderingOptions.isShowEdgeLabels() &&
+            !(graphRenderingOptions.isHideNonSelectedEdgeLabels() && !hasSelection);
         if (hasLabels) {
             edgeLabelsArray = ensureEdgesLabelsArraySize(edgeLabelsArray, graph.getModel().getMaxEdgeStoreId() + 1);
             graphView = graph.getView();
