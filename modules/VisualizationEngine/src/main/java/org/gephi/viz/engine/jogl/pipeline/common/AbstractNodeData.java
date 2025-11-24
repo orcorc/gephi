@@ -246,7 +246,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
                     continue;
                 }
 
-                final boolean selected = nodesCallback.isSelected(j);
+                final boolean selected = nodesCallback.isSelected(j, true);
                 if (selected) {
                     continue;
                 }
@@ -282,7 +282,7 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
                     continue;
                 }
 
-                final boolean selected = nodesCallback.isSelected(j);
+                final boolean selected = nodesCallback.isSelected(j, true);
                 if (!selected) {
                     continue;
                 }

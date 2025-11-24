@@ -42,13 +42,23 @@
 
 package org.gephi.visualization;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.util.ArrayList;
+import java.util.List;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Estimator;
 import org.gephi.graph.api.Node;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.spi.Controller;
-import org.gephi.visualization.api.*;
+import org.gephi.visualization.api.EdgeColorMode;
+import org.gephi.visualization.api.LabelColorMode;
+import org.gephi.visualization.api.LabelSizeMode;
+import org.gephi.visualization.api.ScreenshotController;
+import org.gephi.visualization.api.VisualizationController;
+import org.gephi.visualization.api.VisualizationEventListener;
+import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.gephi.visualization.component.VizEngineGraphCanvasManager;
 import org.gephi.visualization.events.StandardVizEventManager;
 import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
@@ -58,16 +68,12 @@ import org.joml.Vector2f;
 import org.openide.util.lookup.ServiceProvider;
 import org.openide.util.lookup.ServiceProviders;
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Mathieu Bastian
  */
 @ServiceProviders({
-        @ServiceProvider(service = VisualizationController.class),
-        @ServiceProvider(service = Controller.class)})
+    @ServiceProvider(service = VisualizationController.class),
+    @ServiceProvider(service = Controller.class)})
 public class VizController implements VisualizationController, Controller<VizModel> {
 
     //Architecture
@@ -163,8 +169,8 @@ public class VizController implements VisualizationController, Controller<VizMod
     }
 
     private static float[] toColorArray(Color color) {
-        return new float[]{color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
-                color.getAlpha() / 255f};
+        return new float[] {color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f,
+            color.getAlpha() / 255f};
     }
 
     @Override
@@ -370,7 +376,7 @@ public class VizController implements VisualizationController, Controller<VizMod
     @Override
     public void centerOnGraph() {
         getModel().getEngine().ifPresent(
-                VizEngine::centerOnGraph
+            VizEngine::centerOnGraph
         );
     }
 
@@ -382,7 +388,7 @@ public class VizController implements VisualizationController, Controller<VizMod
     @Override
     public void centerOn(float x, float y, float width, float height) {
         getModel().getEngine().ifPresent(
-                engine -> engine.centerOn(new Vector2f(x, y), width, height)
+            engine -> engine.centerOn(new Vector2f(x, y), width, height)
         );
     }
 
@@ -392,11 +398,11 @@ public class VizController implements VisualizationController, Controller<VizMod
             return;
         }
         getModel().getEngine().ifPresent(
-                engine -> {
-                    final Vector2f position = new Vector2f(node.x(), node.y());
-                    final float size = node.size() * 10f;
-                    engine.centerOn(position, size, size);
-                }
+            engine -> {
+                final Vector2f position = new Vector2f(node.x(), node.y());
+                final float size = node.size() * 10f;
+                engine.centerOn(position, size, size);
+            }
         );
     }
 
@@ -406,13 +412,13 @@ public class VizController implements VisualizationController, Controller<VizMod
             return;
         }
         getModel().getEngine().ifPresent(
-                engine -> {
-                    Node source = edge.getSource();
-                    Node target = edge.getTarget();
-                    float len = (float) Math.hypot(source.x() - target.x(), source.y() - target.y());
-                    final Vector2f position = new Vector2f((source.x() + target.x()) / 2f, (source.y() + target.y()) / 2f);
-                    engine.centerOn(position, len, len);
-                }
+            engine -> {
+                Node source = edge.getSource();
+                Node target = edge.getTarget();
+                float len = (float) Math.hypot(source.x() - target.x(), source.y() - target.y());
+                final Vector2f position = new Vector2f((source.x() + target.x()) / 2f, (source.y() + target.y()) / 2f);
+                engine.centerOn(position, len, len);
+            }
         );
     }
 
@@ -522,7 +528,7 @@ public class VizController implements VisualizationController, Controller<VizMod
         }
         if (model.getSelectionModel().isCustomSelection()) {
             model.getSelectionModel().currentEngineSelectionModel()
-                    .ifPresent(GraphSelection::clearSelection);
+                .ifPresent(GraphSelection::clearSelection);
             model.getSelectionModel().setCustomSelection(false);
             if (model.getSelectionModel().isRectangleSelection()) {
                 setEngineSelectionMode(GraphSelection.GraphSelectionMode.RECTANGLE_SELECTION);
@@ -552,13 +558,13 @@ public class VizController implements VisualizationController, Controller<VizMod
         }
 
         model.getSelectionModel().currentEngineSelectionModel()
-                .ifPresent(selection -> {
-                    if (nodes == null || nodes.length == 0) {
-                        selection.clearSelectedNodes();
-                    } else {
-                        selection.setSelectedNodes(nodes);
-                    }
-                });
+            .ifPresent(selection -> {
+                if (nodes == null || nodes.length == 0) {
+                    selection.clearSelectedNodes();
+                } else {
+                    selection.setSelectedNodes(nodes);
+                }
+            });
     }
 
     @Override
@@ -572,13 +578,13 @@ public class VizController implements VisualizationController, Controller<VizMod
         }
 
         model.getSelectionModel().currentEngineSelectionModel()
-                .ifPresent(selection -> {
-                    if (edges == null) {
-                        selection.clearSelectedEdges();
-                    } else {
-                        selection.setSelectedEdges(edges);
-                    }
-                });
+            .ifPresent(selection -> {
+                if (edges == null) {
+                    selection.clearSelectedEdges();
+                } else {
+                    selection.setSelectedEdges(edges);
+                }
+            });
     }
 
     private void setEngineSelectionMode(GraphSelection.GraphSelectionMode mode) {

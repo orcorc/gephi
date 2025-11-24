@@ -2,7 +2,6 @@ package org.gephi.viz.engine.jogl.pipeline.common;
 
 import jogamp.text.TextRenderer;
 import org.gephi.viz.engine.jogl.pipeline.text.AbstractLabelData;
-import org.gephi.viz.engine.jogl.pipeline.text.NodeLabelData;
 import org.gephi.viz.engine.spi.WorldData;
 
 public class LabelWorldData implements WorldData {

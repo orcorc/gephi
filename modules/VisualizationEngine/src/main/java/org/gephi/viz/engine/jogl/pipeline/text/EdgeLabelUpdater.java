@@ -6,15 +6,11 @@ import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
-import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
 
-    private final NodesCallback nodesCallback;
-
-    public EdgeLabelUpdater(VizEngine engine, EdgeLabelData edgeLabelData, NodeLabelData nodeLabelData) {
+    public EdgeLabelUpdater(VizEngine engine, EdgeLabelData edgeLabelData) {
         super(engine, edgeLabelData);
-        this.nodesCallback = nodeLabelData.getNodesCallback();
     }
 
     @Override
@@ -26,9 +22,9 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
             return;
         }
 
-        // Get nodes and their properties
+        // Get edges and their properties
         final EdgesCallback edgesCallback = (EdgesCallback) labelData.getElementsCallback();
-        final boolean someSelection = nodesCallback.hasSelection();
+        final boolean someSelection = edgesCallback.hasSelection();
         final String[] texts = edgesCallback.getEdgeLabelsArray();
 
         if (texts == null || texts.length == 0) {
@@ -46,7 +42,8 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         final GraphRenderingOptions.EdgeColorMode edgeColorMode = options.getEdgeColorMode();
         final float lightenNonSelectedFactor = options.getLightenNonSelectedFactor();
         final float edgeLabelScale = options.getEdgeLabelScale();
-        final boolean hideNonSelectedLabels = options.isHideNonSelectedNodeLabels();
+        final float nodeScale = options.getNodeScale();
+        final boolean hideNonSelectedLabels = options.isHideNonSelectedEdgeLabels();
         final float zoom = options.getZoom();
 
         // No labels to show
@@ -64,7 +61,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         // Set the max valid index for this frame (used by renderer to limit iteration)
         labelData.setMaxValidIndex(maxIndex);
 
-        // Update label data for each node
+        // Update label data for each edge
         // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed
         for (int i = 0; i <= maxIndex; i++) {
             final Edge edge = edges[i];
@@ -82,8 +79,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
                 continue;
             }
 
-            boolean selected = someSelection && (nodesCallback.isSelected(edge.getSource().getStoreId()) ||
-                nodesCallback.isSelected(edge.getTarget().getStoreId()));
+            boolean selected = someSelection && edgesCallback.isSelected(i);
 
             if (hideNonSelectedLabels && !selected) {
                 // Mark as invalid (hidden)
@@ -123,14 +119,36 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
 
             // Position of the label
             float x, y;
-            if (edge.isDirected()) {
-                x = (edge.getSource().x() + 2 * edge.getTarget().x()) /
-                    3f;
-                y = (edge.getSource().y() + 2 * edge.getTarget().y()) /
-                    3f;
+
+            // Get node sizes (scaled)
+            final float sourceSize = edge.getSource().size() * nodeScale;
+            final float targetSize = edge.getTarget().size() * nodeScale;
+
+            // Calculate edge vector
+            final float dx = edge.getTarget().x() - edge.getSource().x();
+            final float dy = edge.getTarget().y() - edge.getSource().y();
+            final float edgeLength = (float) Math.sqrt(dx * dx + dy * dy);
+
+            if (edgeLength > 0 && !edge.isSelfLoop()) {
+                // Normalize edge vector
+                final float ndx = dx / edgeLength;
+                final float ndy = dy / edgeLength;
+
+                if (edge.isDirected()) {
+                    // Position at 2/3 from source to target, accounting for node sizes
+                    final float offsetFromSource = sourceSize + (edgeLength - sourceSize - targetSize) * 2f / 3f;
+                    x = edge.getSource().x() + ndx * offsetFromSource;
+                    y = edge.getSource().y() + ndy * offsetFromSource;
+                } else {
+                    // Position at midpoint, accounting for node sizes
+                    final float offsetFromSource = sourceSize + (edgeLength - sourceSize - targetSize) * 0.5f;
+                    x = edge.getSource().x() + ndx * offsetFromSource;
+                    y = edge.getSource().y() + ndy * offsetFromSource;
+                }
             } else {
-                x = (edge.getSource().x() + edge.getTarget().x()) / 2f;
-                y = (edge.getSource().y() + edge.getTarget().y()) / 2f;
+                // Fallback for zero-length edges (self-loops or overlapping nodes)
+                x = edge.getSource().x();
+                y = edge.getSource().y();
             }
 
             // Update batch

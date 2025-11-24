@@ -42,6 +42,12 @@
 
 package org.gephi.visualization.screenshot;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
+import javax.swing.JFileChooser;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import org.gephi.project.api.Workspace;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
 import org.gephi.visualization.api.ScreenshotController;
@@ -49,13 +55,6 @@ import org.gephi.visualization.api.VisualizationController;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.Framedata;
 import org.openide.util.Lookup;
-
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 /**
  * @author Mathieu Bastian
@@ -77,12 +76,13 @@ public class ScreenshotControllerImpl implements ScreenshotController {
     }
 
     public void saveSceenshotOnFile(Framedata framedata) {
-        BufferedImage screenshot = new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage screenshot =
+            new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
         screenshot.setRGB(0, 0, framedata.width(), framedata.height(), framedata.data(), 0, framedata.width());
 
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                "PNG Images", "png");
+            "PNG Images", "png");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(null);
         if (returnVal == JFileChooser.APPROVE_OPTION) {
