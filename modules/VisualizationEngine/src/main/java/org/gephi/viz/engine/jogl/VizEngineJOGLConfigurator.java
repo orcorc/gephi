@@ -111,7 +111,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addWorldUpdater(new NodesUpdaterInstancedRendering(engine, nodeData));
 
         //Edges:
-        final InstancedEdgeData indirectEdgeData = new InstancedEdgeData(edgesCallback);
+        final InstancedEdgeData indirectEdgeData = new InstancedEdgeData(edgesCallback, nodesCallback);
         engine.addRenderer(new EdgeRendererInstanced(engine, indirectEdgeData));
         engine.addWorldUpdater(new EdgesUpdaterInstancedRendering(engine, indirectEdgeData));
     }
@@ -125,7 +125,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addWorldUpdater(new NodesUpdaterArrayDrawRendering(engine, nodeData));
 
         //Edges:
-        final ArrayDrawEdgeData edgeData = new ArrayDrawEdgeData(edgesCallback);
+        final ArrayDrawEdgeData edgeData = new ArrayDrawEdgeData(edgesCallback, nodesCallback);
         engine.addRenderer(new EdgeRendererArrayDraw(engine, edgeData));
         engine.addWorldUpdater(new EdgesUpdaterArrayDrawRendering(engine, edgeData));
 
@@ -137,7 +137,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         // Edge Label
         final EdgeLabelData edgeLabelData = new EdgeLabelData(edgesCallback);
         engine.addRenderer(new EdgeLabelRenderer(engine, edgeLabelData));
-        engine.addWorldUpdater(new EdgeLabelUpdater(engine, edgeLabelData, nodeLabelData));
+        engine.addWorldUpdater(new EdgeLabelUpdater(engine, edgeLabelData));
 
         //Selection:
         engine.addRenderer(new RectangleSelectionArrayDraw(engine));

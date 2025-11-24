@@ -15,6 +15,7 @@ import org.gephi.viz.engine.jogl.util.gl.GLFunctions;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -31,8 +32,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
     private static final int ATTRIBS_BUFFER_DIRECTED = 4;
     private static final int ATTRIBS_BUFFER_DIRECTED_SECONDARY = 5;
 
-    public InstancedEdgeData(final EdgesCallback edgesCallback) {
-        super(edgesCallback, true, true);
+    public InstancedEdgeData(final EdgesCallback edgesCallback, final NodesCallback nodesCallback) {
+        super(edgesCallback, nodesCallback, true, true);
     }
 
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, EdgeWorldData data,
@@ -168,12 +169,10 @@ public class InstancedEdgeData extends AbstractEdgeData {
 
         updateUndirectedData(
             isDirected,
-            selection,
             maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
         );
         updateDirectedData(
             isUndirected,
-            selection,
             maxIndex, visibleEdgesArray, edgeWeightsArray,
             attributesBufferBatch, 0, attribsDirectBuffer
         );

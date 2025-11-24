@@ -6,15 +6,11 @@ import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.pipeline.PipelineCategory;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
-import org.gephi.viz.engine.util.structure.NodesCallback;
 
 public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
 
-    private final NodesCallback nodesCallback;
-
-    public EdgeLabelUpdater(VizEngine engine, EdgeLabelData edgeLabelData, NodeLabelData nodeLabelData) {
+    public EdgeLabelUpdater(VizEngine engine, EdgeLabelData edgeLabelData) {
         super(engine, edgeLabelData);
-        this.nodesCallback = nodeLabelData.getNodesCallback();
     }
 
     @Override
@@ -26,9 +22,9 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
             return;
         }
 
-        // Get nodes and their properties
+        // Get edges and their properties
         final EdgesCallback edgesCallback = (EdgesCallback) labelData.getElementsCallback();
-        final boolean someSelection = nodesCallback.hasSelection();
+        final boolean someSelection = edgesCallback.hasSelection();
         final String[] texts = edgesCallback.getEdgeLabelsArray();
 
         if (texts == null || texts.length == 0) {
@@ -46,7 +42,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         final GraphRenderingOptions.EdgeColorMode edgeColorMode = options.getEdgeColorMode();
         final float lightenNonSelectedFactor = options.getLightenNonSelectedFactor();
         final float edgeLabelScale = options.getEdgeLabelScale();
-        final boolean hideNonSelectedLabels = options.isHideNonSelectedNodeLabels();
+        final boolean hideNonSelectedLabels = options.isHideNonSelectedEdgeLabels();
         final float zoom = options.getZoom();
 
         // No labels to show
@@ -64,7 +60,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         // Set the max valid index for this frame (used by renderer to limit iteration)
         labelData.setMaxValidIndex(maxIndex);
 
-        // Update label data for each node
+        // Update label data for each edge
         // Only recomputes glyphs if text changed, only recomputes bounds if sizeFactor changed
         for (int i = 0; i <= maxIndex; i++) {
             final Edge edge = edges[i];
@@ -82,8 +78,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
                 continue;
             }
 
-            boolean selected = someSelection && (nodesCallback.isSelected(edge.getSource().getStoreId()) ||
-                nodesCallback.isSelected(edge.getTarget().getStoreId()));
+            boolean selected = someSelection && edgesCallback.isSelected(i);
 
             if (hideNonSelectedLabels && !selected) {
                 // Mark as invalid (hidden)

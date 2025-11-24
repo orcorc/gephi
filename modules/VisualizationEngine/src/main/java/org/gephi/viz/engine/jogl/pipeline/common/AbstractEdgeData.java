@@ -34,6 +34,7 @@ import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.EdgesCallback;
+import org.gephi.viz.engine.util.structure.NodesCallback;
 
 /**
  *
@@ -61,6 +62,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected GLBuffer attributesGLBufferUndirectedSecondary;
 
     protected final EdgesCallback edgesCallback;
+    protected final NodesCallback nodesCallback;
 
     protected static final int ATTRIBS_STRIDE = Math.max(
         EdgeLineModelUndirected.TOTAL_ATTRIBUTES_FLOATS,
@@ -88,9 +90,11 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected float edgeInSelectionColor;
     protected GraphRenderingOptions.EdgeColorMode edgeColorMode;
 
-    public AbstractEdgeData(final EdgesCallback edgesCallback, boolean instanced, boolean usesSecondaryBuffer) {
+    public AbstractEdgeData(final EdgesCallback edgesCallback, final NodesCallback nodesCallback, boolean instanced,
+                            boolean usesSecondaryBuffer) {
         this.startedTime = System.currentTimeMillis();
         this.edgesCallback = edgesCallback;
+        this.nodesCallback = nodesCallback;
         this.instanced = instanced;
         this.usesSecondaryBuffer = usesSecondaryBuffer;
     }
@@ -337,19 +341,17 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected int updateDirectedData(
         final boolean isUndirected,
-        final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateDirectedData(isUndirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray,
+        return updateDirectedData(isUndirected, maxIndex, visibleEdgesArray, edgeWeightsArray,
             attribs, index, null);
     }
 
     protected int updateDirectedData(
         final boolean isUndirected,
-        final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] edgeWeightsArray,
@@ -376,7 +378,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    final boolean selected = selection.isEdgeSelected(edge);
+                    final boolean selected = edgesCallback.isSelected(j);
                     if (!selected) {
                         continue;
                     }
@@ -384,7 +386,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     newEdgesCountSelected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, selected, weight, selection);
+                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, selected, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -403,14 +405,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    if (selection.isEdgeSelected(edge)) {
+                    if (edgesCallback.isSelected(j)) {
                         continue;
                     }
 
                     newEdgesCountUnselected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight, selection);
+                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -429,14 +431,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    if (!selection.isEdgeSelected(edge)) {
+                    if (!edgesCallback.isSelected(j)) {
                         continue;
                     }
 
                     newEdgesCountSelected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
+                    fillDirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -483,19 +485,17 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected int updateUndirectedData(
         final boolean isDirected,
-        final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] edgeWeightsArray,
         final float[] attribs, int index
     ) {
-        return updateUndirectedData(isDirected, selection, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs,
+        return updateUndirectedData(isDirected, maxIndex, visibleEdgesArray, edgeWeightsArray, attribs,
             index, null);
     }
 
     protected int updateUndirectedData(
         final boolean isDirected,
-        final GraphSelection selection,
         final int maxIndex,
         final Edge[] visibleEdgesArray,
         final float[] edgeWeightsArray,
@@ -523,14 +523,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    if (!selection.isEdgeSelected(edge)) {
+                    if (!edgesCallback.isSelected(j)) {
                         continue;
                     }
 
                     newEdgesCountSelected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
+                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -549,14 +549,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    if (selection.isEdgeSelected(edge)) {
+                    if (edgesCallback.isSelected(j)) {
                         continue;
                     }
 
                     newEdgesCountUnselected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight, selection);
+                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, false, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -575,14 +575,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         continue;
                     }
 
-                    if (!selection.isEdgeSelected(edge)) {
+                    if (!edgesCallback.isSelected(j)) {
                         continue;
                     }
 
                     newEdgesCountSelected++;
 
                     float weight = edgeWeightEnabled ? edgeWeightsArray[j] : 1f;
-                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight, selection);
+                    fillUndirectedEdgeAttributesDataWithSelection(attribs, edge, index, true, weight);
                     index += ATTRIBS_STRIDE;
 
                     if (directBuffer != null && index == attribs.length) {
@@ -677,8 +677,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     }
 
     protected void fillUndirectedEdgeAttributesDataWithSelection(final float[] buffer, final Edge edge, final int index,
-                                                                 final boolean selected, final float weight,
-                                                                 final GraphSelection selection) {
+                                                                 final boolean selected, final float weight) {
         final Node source = edge.getSource();
         final Node target = edge.getTarget();
 
@@ -687,8 +686,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         //Color:
         if (selected) {
             if (someSelection && edgeSelectionColor) {
-                boolean sourceSelected = selection.isNodeSelected(source);
-                boolean targetSelected = selection.isNodeSelected(target);
+                boolean sourceSelected = nodesCallback.isSelected(source.getStoreId());
+                boolean targetSelected = nodesCallback.isSelected(target.getStoreId());
 
                 if (sourceSelected && targetSelected) {
                     buffer[index + 5] = edgeBothSelectionColor;//Color
@@ -702,9 +701,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             } else {
                 // When a node is selected, color the edge with the opposite node color
                 if (someSelection) {
-                    if (selection.isNodeSelected(source)) {
+                    if (nodesCallback.isSelected(source.getStoreId())) {
                         buffer[index + 5] = Float.intBitsToFloat(target.getRGBA());
-                    } else if (selection.isNodeSelected(target)) {
+                    } else if (nodesCallback.isSelected(target.getStoreId())) {
                         buffer[index + 5] = Float.intBitsToFloat(source.getRGBA());
                     } else {
                         buffer[index + 5] = computeElementColor(edge);//Color
@@ -757,8 +756,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     }
 
     protected void fillDirectedEdgeAttributesDataWithSelection(final float[] buffer, final Edge edge, final int index,
-                                                               final boolean selected, final float weight,
-                                                               GraphSelection selection) {
+                                                               final boolean selected, final float weight) {
         final Node source = edge.getSource();
         final Node target = edge.getTarget();
 
@@ -767,8 +765,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         //Color:
         if (selected) {
             if (someSelection && edgeSelectionColor) {
-                boolean sourceSelected = selection.isNodeSelected(source);
-                boolean targetSelected = selection.isNodeSelected(target);
+                boolean sourceSelected = nodesCallback.isSelected(source.getStoreId());
+                boolean targetSelected = nodesCallback.isSelected(target.getStoreId());
 
                 if (sourceSelected && targetSelected) {
                     buffer[index + 5] = edgeBothSelectionColor;//Color
@@ -782,9 +780,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             } else {
                 // When a node is selected, color the edge with the opposite node color
                 if (someSelection) {
-                    if (selection.isNodeSelected(source)) {
+                    if (nodesCallback.isSelected(source.getStoreId())) {
                         buffer[index + 5] = Float.intBitsToFloat(target.getRGBA());
-                    } else if (selection.isNodeSelected(target)) {
+                    } else if (nodesCallback.isSelected(target.getStoreId())) {
                         buffer[index + 5] = Float.intBitsToFloat(source.getRGBA());
                     } else {
                         buffer[index + 5] = computeElementColor(edge);//Color

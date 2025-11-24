@@ -107,7 +107,7 @@ public class NodeLabelUpdater extends AbstractLabelUpdater<Node> {
                 continue;
             }
 
-            boolean selected = someSelection && nodesCallback.isSelected(i);
+            boolean selected = someSelection && nodesCallback.isSelected(i, true);
 
             if (hideNonSelectedLabels && !selected) {
                 // Mark as invalid (hidden)

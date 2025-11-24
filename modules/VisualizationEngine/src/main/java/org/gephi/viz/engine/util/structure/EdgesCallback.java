@@ -3,6 +3,7 @@ package org.gephi.viz.engine.util.structure;
 import static org.gephi.viz.engine.util.ArrayUtils.getNextPowerOf2;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.ColumnIndex;
 import org.gephi.graph.api.Edge;
@@ -12,6 +13,7 @@ import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.gephi.viz.engine.util.text.TextLabelBuilder;
 
@@ -30,7 +32,9 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private Column[] edgeLabelColumns;
     private String[] edgeLabelsArray = new String[0];
     private boolean hasSelection = false;
+    private BitSet selectedBitSet = new BitSet();
     private boolean hasLabels = false;
+    private boolean hideNonSelectedLabels = false;
     private int maxIndex = 0;
     private int edgeCount = 0;
     private boolean directed = false;
@@ -55,8 +59,14 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeCount = 0;
 
         hasSelection = graphSelection.someNodesOrEdgesSelection();
-        hasLabels = graphRenderingOptions.isShowEdgeLabels() &&
-            !(graphRenderingOptions.isHideNonSelectedEdgeLabels() && !hasSelection);
+        if (hasSelection) {
+            BitSet sourceBitSet = ((GraphSelectionImpl) graphSelection).getEdges();
+            selectedBitSet.clear();
+            selectedBitSet.or(sourceBitSet);
+        }
+
+        hideNonSelectedLabels = graphRenderingOptions.isHideNonSelectedEdgeLabels();
+        hasLabels = graphRenderingOptions.isShowEdgeLabels() && !(hideNonSelectedLabels && !hasSelection);
         if (hasLabels) {
             edgeLabelsArray = ensureEdgesLabelsArraySize(edgeLabelsArray, graph.getModel().getMaxEdgeStoreId() + 1);
             graphView = graph.getView();
@@ -72,7 +82,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         }
         edgesArray[storeId] = edge;
 
-        if (hasLabels && edge.getTextProperties().isVisible()) {
+        if (hasLabels && edge.getTextProperties().isVisible() && (!hideNonSelectedLabels || isSelected(storeId))) {
             edgeLabelsArray[storeId] = TextLabelBuilder.buildText(edge, graphView, edgeLabelColumns);
         } else if (hasLabels) {
             edgeLabelsArray[storeId] = null;
@@ -113,6 +123,8 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         directed = false;
         undirected = false;
         hasSelection = false;
+        hideNonSelectedLabels = false;
+        selectedBitSet = new BitSet();
         edgeLabelColumns = null;
         edgeLabelsArray = new String[0];
         hasLabels = false;
@@ -152,6 +164,14 @@ public class EdgesCallback implements ElementsCallback<Edge> {
 
     public boolean isUndirected() {
         return undirected;
+    }
+
+    public boolean isSelected(int edgeStoreId) {
+        return hasSelection && selectedBitSet.get(edgeStoreId);
+    }
+
+    public boolean hasSelection() {
+        return hasSelection;
     }
 
     protected Edge[] ensureEdgesArraySize(Edge[] array, int size) {

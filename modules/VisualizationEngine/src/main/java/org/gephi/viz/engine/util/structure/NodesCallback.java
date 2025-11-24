@@ -27,6 +27,7 @@ public class NodesCallback implements ElementsCallback<Node> {
     private Column[] nodeLabelColumns;
     private String[] nodesLabelsArray = new String[0];
     private BitSet selectedBitSet = new BitSet();
+    private BitSet selectedWithNeighborsBitSet = new BitSet();
     private boolean hasSelection = false;
     private int maxIndex = 0;
     private float maxNodeSize = 0f;
@@ -60,9 +61,11 @@ public class NodesCallback implements ElementsCallback<Node> {
 
         hasSelection = graphSelection.someNodesOrEdgesSelection();
         if (hasSelection) {
-            BitSet sourceBitSet = ((GraphSelectionImpl) graphSelection).getNodesWithNeighbours();
             selectedBitSet.clear();
-            selectedBitSet.or(sourceBitSet);
+            selectedBitSet.or(((GraphSelectionImpl) graphSelection).getNodes());
+
+            selectedWithNeighborsBitSet.clear();
+            selectedWithNeighborsBitSet.or(((GraphSelectionImpl) graphSelection).getNodesWithNeighbours());
         }
 
         hideNonSelectedLabels = graphRenderingOptions.isHideNonSelectedNodeLabels();
@@ -128,6 +131,7 @@ public class NodesCallback implements ElementsCallback<Node> {
         maxNodeSize = 0f;
         nodeCount = 0;
         selectedBitSet = new BitSet();
+        selectedWithNeighborsBitSet = new BitSet();
         hasSelection = false;
         nodeLabelColumns = null;
         nodesLabelsArray = new String[0];
@@ -156,7 +160,12 @@ public class NodesCallback implements ElementsCallback<Node> {
     }
 
     public boolean isSelected(int nodeStoreId) {
-        return hasSelection && selectedBitSet.get(nodeStoreId);
+        return isSelected(nodeStoreId, false);
+    }
+
+    public boolean isSelected(int nodeStoreId, boolean withNeighbours) {
+        return hasSelection && withNeighbours ? selectedWithNeighborsBitSet.get(nodeStoreId) :
+            selectedBitSet.get(nodeStoreId);
     }
 
     public boolean hasSelection() {
