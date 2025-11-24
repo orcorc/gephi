@@ -14,6 +14,7 @@ import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
@@ -353,6 +354,55 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     ) {
         return updateDirectedData(isUndirected, maxIndex, visibleEdgesArray, edgeWeightsArray,
             attribs, index, null);
+    }
+
+    protected int updateSelfLoop(final int maxIndex,
+                                 final Edge[] visibleEdgesArray,
+                                 final float[] edgeWeightsArray,
+                                 final float[] attribs, int index, final FloatBuffer directBuffer) {
+        // Get Index of self loop edges
+        ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
+        for (int i = 0; i < maxIndex; i++) {
+            Edge e = visibleEdgesArray[i];
+            if (e == null || e.getSource() != e.getTarget()) {
+                continue;
+            }
+            selfLoopEdgeIndex.add(e);
+
+        }
+        selfLoopEdgeIndex.forEach(e -> {
+            System.out.println(e.getSource().getId());
+        });
+        // For the moment let's do same redering for all selection states
+        // if (someSelection)
+
+        for (Edge selfLoopEdge : selfLoopEdgeIndex) {
+
+            if (selfLoopEdge == null) {
+                continue;
+            }
+
+            float weight = edgeWeightEnabled ? (float) selfLoopEdge.getWeight() : 1f;
+
+
+            fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, selfLoopEdge, index, weight);
+            index += ATTRIBS_STRIDE;
+
+            if (directBuffer != null && index == attribs.length) {
+                directBuffer.put(attribs, 0, attribs.length);
+                index = 0;
+            }
+        }
+
+        //Remaining:
+        if (directBuffer != null && index > 0) {
+            directBuffer.put(attribs, 0, index);
+            index = 0;
+        }
+
+        directedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();
+
+        return index;
     }
 
     protected int updateDirectedData(
@@ -746,6 +796,35 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         //Size (weight or constant):
         buffer[index + 4] = weight;
+    }
+
+    protected void fillSelfLoopEdgeAttributesDataWithoutSelection(final float[] buffer, final Edge edge,
+                                                                  final int index, final float weight) {
+        final Node source = edge.getSource();
+        final Node target = edge.getTarget();
+
+        final float sourceX = source.x();
+        final float sourceY = source.y();
+        final float targetX = target.x();
+        final float targetY = target.y();
+
+        //Position:
+        buffer[index] = sourceX;
+        buffer[index + 1] = sourceY;
+
+        //Target position:
+        buffer[index + 2] = targetX;
+        buffer[index + 3] = targetY;
+
+        //Size (weight or constant):
+        buffer[index + 4] = weight;
+
+        //Color:
+        buffer[index + 5] = computeElementColor(edge);//Color
+
+        //Source and target size:
+        buffer[index + 6] = edge.getSource().size();
+        buffer[index + 7] = edge.getTarget().size();
     }
 
     protected void fillDirectedEdgeAttributesDataWithoutSelection(final float[] buffer, final Edge edge,

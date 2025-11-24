@@ -10,6 +10,7 @@ public class InstanceCounter {
     public int selectedCount = 0;
     public int unselectedCountToDraw = 0;
     public int selectedCountToDraw = 0;
+    public int selfLoopCount = 0;
 
     public void promoteCountToDraw() {
         unselectedCountToDraw = unselectedCount;

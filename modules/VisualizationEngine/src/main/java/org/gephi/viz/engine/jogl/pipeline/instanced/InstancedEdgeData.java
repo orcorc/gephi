@@ -193,6 +193,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final boolean isDirected = edgesCallback.isDirected();
         final boolean isUndirected = edgesCallback.isUndirected();
 
+        updateSelfLoop(maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer);
         updateUndirectedData(
             isDirected,
             maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
