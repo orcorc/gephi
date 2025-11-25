@@ -63,6 +63,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected GLBuffer attributesGLBufferUndirected;
     protected GLBuffer attributesGLBufferUndirectedSecondary;
 
+
+    final public static int ATTRIBS_STRIDE_SELFNODE = 5;
     protected GLBuffer vertexGLBufferSelfLoop;
     protected GLBuffer attributesGLBufferSelfLoop;
     protected GLBuffer attributesGLBufferSelfLoopSecondary;
@@ -363,7 +365,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                  int index,
                                  final FloatBuffer directBuffer) {
         // Get Index of self loop edges
-        ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
+        final ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
         for (int i = 0; i <= maxIndex; i++) {
             Edge e = visibleEdgesArray[i];
 
@@ -375,23 +377,22 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             selfLoopEdgeIndex.add(e);
 
         }
-        selfLoopEdgeIndex.forEach(e -> {
-            System.out.println(e.getSource().getId());
-        });
-        // For the moment let's do same redering for all selection states
+
+        // For the moment let's do same rendering for all selection states
         // if (someSelection)
+
+        // Attributes 5
+        // Index	0	    1	    2	        3	    4
+        // Value	posX	posY    color	    size	nodeSize
+        //
 
         for (Edge selfLoopEdge : selfLoopEdgeIndex) {
 
-            if (selfLoopEdge == null) {
-                continue;
-            }
-
-            float weight = edgeWeightEnabled ? (float) selfLoopEdge.getWeight() : 1f;
+            final float weight = edgeWeightEnabled ? (float) selfLoopEdge.getWeight() : 1f;
 
 
             fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, selfLoopEdge, index, weight);
-            index += ATTRIBS_STRIDE;
+            index += ATTRIBS_STRIDE_SELFNODE;
 
             if (directBuffer != null && index == attribs.length) {
                 directBuffer.put(attribs, 0, attribs.length);
@@ -405,7 +406,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             index = 0;
         }
 
-        directedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();
+        // For the moment let's concider everything as undirected
+        undirectedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();
 
         return index;
     }
@@ -806,30 +808,26 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected void fillSelfLoopEdgeAttributesDataWithoutSelection(final float[] buffer, final Edge edge,
                                                                   final int index, final float weight) {
         final Node source = edge.getSource();
-        final Node target = edge.getTarget();
+
+        // Self loop for the moment are just circle like nodes so let's try to have same buffer
+        //
 
         final float sourceX = source.x();
         final float sourceY = source.y();
-        final float targetX = target.x();
-        final float targetY = target.y();
 
         //Position:
         buffer[index] = sourceX;
         buffer[index + 1] = sourceY;
-
-        //Target position:
-        buffer[index + 2] = targetX;
-        buffer[index + 3] = targetY;
+        //Color:
+        buffer[index + 3] = computeElementColor(edge);//Color
 
         //Size (weight or constant):
-        buffer[index + 4] = weight;
+        buffer[index + 2] = weight;
 
-        //Color:
-        buffer[index + 5] = computeElementColor(edge);//Color
 
-        //Source and target size:
-        buffer[index + 6] = edge.getSource().size();
-        buffer[index + 7] = edge.getTarget().size();
+        //Source and target size , here it's use for an offest to be applied to the circle :
+        // so that it's not right under the node.
+        buffer[index + 4] = source.size();
     }
 
     protected void fillDirectedEdgeAttributesDataWithoutSelection(final float[] buffer, final Edge edge,

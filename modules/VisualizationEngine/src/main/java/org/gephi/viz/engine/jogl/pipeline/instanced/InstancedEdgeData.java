@@ -135,7 +135,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoopSecondary =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELF_LOOP_SECONDARY], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoopSecondary.bind(gl);
-        attributesGLBufferSelfLoopSecondary.init(gl, (long) ATTRIBS_STRIDE * Float.BYTES * BATCH_EDGES_SIZE,
+        attributesGLBufferSelfLoopSecondary.init(gl, (long) ATTRIBS_STRIDE_SELFNODE * Float.BYTES * BATCH_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoopSecondary.unbind(gl);
 
