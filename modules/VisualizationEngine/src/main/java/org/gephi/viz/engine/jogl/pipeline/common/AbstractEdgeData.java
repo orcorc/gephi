@@ -364,11 +364,14 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                  final FloatBuffer directBuffer) {
         // Get Index of self loop edges
         ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
-        for (int i = 0; i < maxIndex; i++) {
+        for (int i = 0; i <= maxIndex; i++) {
             Edge e = visibleEdgesArray[i];
+
+            // Discard if source and target node are not the same
             if (e == null || e.getSource() != e.getTarget()) {
                 continue;
             }
+
             selfLoopEdgeIndex.add(e);
 
         }
