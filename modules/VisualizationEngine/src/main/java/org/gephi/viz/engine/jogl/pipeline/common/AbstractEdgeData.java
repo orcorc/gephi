@@ -359,7 +359,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected int updateSelfLoop(final int maxIndex,
                                  final Edge[] visibleEdgesArray,
                                  final float[] edgeWeightsArray,
-                                 final float[] attribs, int index, final FloatBuffer directBuffer) {
+                                 final float[] attribs,
+                                 int index,
+                                 final FloatBuffer directBuffer) {
         // Get Index of self loop edges
         ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
         for (int i = 0; i < maxIndex; i++) {
