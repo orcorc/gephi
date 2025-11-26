@@ -53,7 +53,6 @@ import org.gephi.utils.longtask.api.LongTaskExecutor;
 import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.viz.engine.VizEngine;
-import org.gephi.viz.engine.jogl.util.Framedata;
 import org.openide.util.Lookup;
 
 /**
@@ -75,11 +74,7 @@ public class ScreenshotControllerImpl implements ScreenshotController {
         return new ScreenshotModelImpl(vizController.getModel(workspace));
     }
 
-    public void saveSceenshotOnFile(Framedata framedata) {
-        BufferedImage screenshot =
-            new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
-        screenshot.setRGB(0, 0, framedata.width(), framedata.height(), framedata.data(), 0, framedata.width());
-
+    public void saveSceenshotOnFile(BufferedImage screenshot) {
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
             "PNG Images", "png");

@@ -19,12 +19,11 @@ import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.util.AnimatorBase;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.GLBuffers;
 import java.awt.Frame;
+import java.awt.image.BufferedImage;
 import java.nio.IntBuffer;
 import java.util.concurrent.CompletableFuture;
 import org.gephi.viz.engine.VizEngine;
-import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.Profile;
 import org.gephi.viz.engine.spi.RenderingTarget;
@@ -55,8 +54,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     private long lastFpsTime = 0;
 
     // Screenshot
-    private boolean requestScreenshot = false;
-    private CompletableFuture<Framedata> screenshotFuture = null;
+    private CompletableFuture<BufferedImage> screenshotFuture = null;
 
     public JOGLRenderingTarget(GLAutoDrawable drawable) {
         this.drawable = drawable;
@@ -73,48 +71,53 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     }
 
     public void doScreenshot(GL3ES3 gl) {
+        CompletableFuture<BufferedImage> future = screenshotFuture;
+        screenshotFuture = null; // Reset future to avoid multiple screenshots
+
         // Get Drawable Frame Size
         int height = drawable.getSurfaceHeight();
         int width = drawable.getSurfaceWidth();
 
-        int[] framedata = frameDump(gl, width, height);
-        screenshotFuture.complete(new Framedata(framedata, width, height));
+        try {
+            int[] frameData = frameDump(gl, width, height);
+
+            BufferedImage screenshot =
+                new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            screenshot.setRGB(0, 0, width, height, frameData, 0, width);
+
+            future.complete(screenshot);
+        } catch (Throwable t) {
+            future.completeExceptionally(t);
+        }
     }
 
     @Override
     public int[] frameDump(GL3ES3 gl, int width, int height) {
+        // Create array to hold pixel data
+        int[] pixelData = new int[width * height];
 
-
-        // Size of the Frame buffer
-        int size = width * height * 4;
-        IntBuffer buffer = GLBuffers.newDirectIntBuffer(size);
+        // Wrap the array in an IntBuffer for OpenGL
+        IntBuffer buffer = IntBuffer.wrap(pixelData);
 
         // Prepare Framebuffer capture
         gl.glReadBuffer(GL_BACK); // Some say GL_FRONT, some say GL_BACK
         gl.glPixelStorei(GL.GL_PACK_ALIGNMENT, 1);
         gl.glReadPixels(0, 0, width, height, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, buffer);
 
-        // Buffer back to 0
-        buffer.rewind();
+        // Flip vertically in-place (OpenGL origin is bottom-left, BufferedImage is top-left)
+        for (int y = 0; y < height / 2; y++) {
+            int topRowStart = y * width;
+            int bottomRowStart = (height - 1 - y) * width;
 
-        // Dump buffer to Array
-        int[] pixelInts = new int[size];
-        buffer.get(pixelInts);
-
-        // Flip vertically (OpenGL origin is bottom-left, BufferedImage is top-left)
-        int[] flipped = new int[size];
-        for (int y = 0; y < height; y++) {
-            int srcPos = y * width;
-            int dstPos = (height - 1 - y) * width;
-            System.arraycopy(pixelInts, srcPos, flipped, dstPos, width);
+            // Swap rows
+            for (int x = 0; x < width; x++) {
+                int temp = pixelData[topRowStart + x];
+                pixelData[topRowStart + x] = pixelData[bottomRowStart + x];
+                pixelData[bottomRowStart + x] = temp;
+            }
         }
 
-        return flipped;
-        // Maybe we need a listener architecture to send frame (for recording video, aka multiple image /
-
-        //
-
-
+        return pixelData;
     }
 
     private synchronized void setupEventListeners() {
@@ -190,11 +193,11 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     @Override
     public void display(GLAutoDrawable drawable) {
         final GL gl = drawable.getGL().getGL();
-        if (requestScreenshot) { // You can't call screenShort when you want as it's picking what's on the frame buffer
+        if (screenshotFuture !=
+            null) { // You can't call screenShort when you want as it's picking what's on the frame buffer
             // so you need to do this when you are sure the Framebuffer has been drawn so you got actual data.
             // Otherwise, it's during when buffer is empty and you have empty black image.
             doScreenshot((GL3ES3) gl);
-            requestScreenshot = false;
         }
         engine.getBackgroundColor(backgroundColor);
         gl.glClearColor(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3]);
@@ -202,7 +205,6 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
         updateFPS();
         engine.display();
-
     }
 
     @Override
@@ -290,8 +292,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         return animator != null ? (int) animator.getLastFPS() : 0;
     }
 
-    public CompletableFuture<Framedata> requestScreenshot() {
-        this.requestScreenshot = true;
+    public CompletableFuture<BufferedImage> requestScreenshot() {
         this.screenshotFuture = new CompletableFuture<>();
         return this.screenshotFuture;
     }

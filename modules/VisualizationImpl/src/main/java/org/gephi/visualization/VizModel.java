@@ -45,6 +45,7 @@ package org.gephi.visualization;
 import com.jogamp.newt.event.NEWTEvent;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Optional;
@@ -70,7 +71,6 @@ import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.visualization.screenshot.ScreenshotModelImpl;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
 import org.joml.Vector2f;
@@ -924,7 +924,7 @@ public class VizModel implements VisualisationModel {
         }
     }
 
-    public Optional<CompletableFuture<Framedata>> makeScreenshot() {
+    public Optional<CompletableFuture<BufferedImage>> makeScreenshot() {
         return getEngine().map(
             vizEngine ->
                 vizEngine

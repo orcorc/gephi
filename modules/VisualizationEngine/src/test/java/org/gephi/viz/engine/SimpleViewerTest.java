@@ -12,11 +12,15 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.GraphModel;
@@ -155,7 +159,15 @@ public class SimpleViewerTest {
                     final boolean showLabels = engine.getRenderingOptions().isShowNodeLabels();
                     engine.getRenderingOptions().setShowNodeLabels(!showLabels);
                     break;
-
+                case KeyEvent.VK_S:
+                    try {
+                        BufferedImage image = engine.getRenderingTarget().requestScreenshot().get();
+                        File outputFile = new File("screenshot_" + System.currentTimeMillis() + ".png");
+                        ImageIO.write(image, "png", outputFile);
+                    } catch (InterruptedException | ExecutionException | IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    break;
             }
         }
 
