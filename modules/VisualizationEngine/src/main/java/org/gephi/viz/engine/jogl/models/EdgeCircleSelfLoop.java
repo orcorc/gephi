@@ -1,0 +1,50 @@
+package org.gephi.viz.engine.jogl.models;
+
+import com.jogamp.opengl.GL2ES2;
+import org.gephi.viz.engine.jogl.util.gl.GLShaderProgram;
+import org.gephi.viz.engine.util.gl.Constants;
+
+import static org.gephi.viz.engine.util.gl.Constants.*;
+
+public class EdgeCircleSelfLoop {
+    // Attributes 5
+    // Index	0	    1	    2	        3	    4
+    // Value	posX	posY    color	    size	nodeSize
+    //
+    public static final int VERTEX_FLOATS = 2;
+    public static final int POSITION_FLOATS = 2;
+    public static final int COLOR_FLOATS = 1;
+    public static final int SIZE_FLOATS = 1;
+    public static final int NODE_SIZE_FLOATS = 1;
+
+    public static final int TOTAL_ATTRIBUTES_FLOATS
+            = POSITION_FLOATS
+            + COLOR_FLOATS
+            + SIZE_FLOATS
+            + NODE_SIZE_FLOATS;
+    private GLShaderProgram program;
+
+    private static final String SHADERS_ROOT = Constants.SHADERS_ROOT + "edge";
+    private static final String SHADERS_NODE_CIRCLE_SOURCE = "selfloop";
+
+    public void initGLPrograms(GL2ES2 gl) {
+        program = new GLShaderProgram(SHADERS_ROOT, SHADERS_NODE_CIRCLE_SOURCE, SHADERS_NODE_CIRCLE_SOURCE)
+                .addUniformName(UNIFORM_NAME_MODEL_VIEW_PROJECTION)
+                .addAttribLocation(ATTRIB_NAME_VERT, SHADER_VERT_LOCATION)
+                .addAttribLocation(ATTRIB_NAME_POSITION, SHADER_POSITION_LOCATION)
+                .addAttribLocation(ATTRIB_NAME_COLOR, SHADER_COLOR_LOCATION)
+                .addAttribLocation(ATTRIB_NAME_SIZE, SHADER_SIZE_LOCATION)
+                .addAttribLocation(ATTRIB_NAME_SELFLOOP_NODE_SIZE, SHADER_SELFLOOP_NODE_SIZE_LOCATION)
+                .init(gl);
+    }
+
+    public void useProgram(GL2ES2 gl, float[] mvpFloats) {
+        //Circle:
+        program.use(gl);
+
+        gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_BORDER_SIZE),
+                Constants.getNodeBorderSize());
+
+    }
+}
