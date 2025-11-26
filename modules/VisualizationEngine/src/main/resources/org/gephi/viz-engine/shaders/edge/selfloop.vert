@@ -1,13 +1,13 @@
-//#include "../common.vert.glsl"
+in vec2 vert;
+in vec2 position;
+in vec4 elementColor;
+in float size;
+in float nodeSize;
 
-//#include "common.node.vert.glsl"
-
-//#include "common.node.vert.uniform.glsl"
-
-//#include "common.node.vert.in.glsl"
-
-//#include "common.node.struct.glsl"
-
+uniform mat4 mvp;
+struct VertexData {
+    vec4 color;
+};
 flat out VertexData vertexData;
 out vec2 vLocal;
 

@@ -46,6 +46,18 @@ public class InstancedEdgeData extends AbstractEdgeData {
 
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
+        drawSelfLoop(gl, data, layer, mvpFloats);
+    }
+
+    private void drawSelfLoop(GL3ES3 gl, EdgeWorldData data,
+                              RenderingLayer layer,
+                              float[] mvpFloats) {
+        final int instanceCount = setupShaderProgramForRenderingLayerSelfLoop(gl, layer, data, mvpFloats);
+        final int VERTEX_COUNT_SELFLOOP = 2;
+        GLFunctions.drawInstanced(gl, 0, VERTEX_COUNT_SELFLOOP, instanceCount);
+        GLFunctions.stopUsingProgram(gl);
+        unsetupSelfLoopVertexArrayAttributes(gl);
+
     }
 
     private void drawUndirected(GL3ES3 gl, EdgeWorldData data,
@@ -93,7 +105,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         vertexGLBufferSelfLoop =
             new GLBufferMutable(bufferName[VERT_BUFFER_SELF_LOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         vertexGLBufferSelfLoop.bind(gl);
-        vertexGLBufferSelfLoop.init(gl, undirectedVertexData, GLBufferMutable.GL_BUFFER_USAGE_STATIC_DRAW);
+        vertexGLBufferSelfLoop.init(gl, selfLoopVertexData, GLBufferMutable.GL_BUFFER_USAGE_STATIC_DRAW);
         vertexGLBufferSelfLoop.unbind(gl);
 
         //Initialize for batch edges size:
@@ -128,7 +140,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoop =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELF_LOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoop.bind(gl);
-        attributesGLBufferSelfLoop.init(gl, (long) ATTRIBS_STRIDE * Float.BYTES * BATCH_EDGES_SIZE,
+        attributesGLBufferSelfLoop.init(gl, (long) ATTRIBS_STRIDE_SELFNODE * Float.BYTES * BATCH_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoop.unbind(gl);
 
@@ -193,7 +205,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final boolean isDirected = edgesCallback.isDirected();
         final boolean isUndirected = edgesCallback.isUndirected();
 
-        updateSelfLoop(maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer);
+        updateSelfLoop(maxIndex, visibleEdgesArray, edgeWeightsArray, selfLoopAttributesBufferBatch, 0,
+            attribsDirectBuffer);
         updateUndirectedData(
             isDirected,
             maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
