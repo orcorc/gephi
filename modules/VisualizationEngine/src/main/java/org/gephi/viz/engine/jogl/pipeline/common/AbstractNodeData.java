@@ -18,6 +18,7 @@ import org.gephi.viz.engine.jogl.util.gl.GLVertexArrayObject;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 import org.gephi.viz.engine.pipeline.common.InstanceCounter;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
+import org.gephi.viz.engine.util.ColorUtils;
 import org.gephi.viz.engine.util.gl.Constants;
 import org.gephi.viz.engine.util.gl.OpenGLOptions;
 import org.gephi.viz.engine.util.structure.NodesCallback;
@@ -153,10 +154,8 @@ public abstract class AbstractNodeData extends AbstractSelectionData {
         final float[] backgroundColorFloats = data.getBackgroundColor();
 
         final int instanceCount;
-        // Compute background Luma to detect if the background is light or dark.
-        double backgroundLuma = backgroundColorFloats[0] * .2126 + backgroundColorFloats[1] * .7152 + backgroundColorFloats[2] * .0722;
         // if the background is dark (luma <.5) the node border with lighten (color * (factor > 1)) otherwise it's darken (color * (factor < 1))
-        float nodeBorderColorFactor = backgroundLuma < .5f ? 1f + Constants.getNodeBorderDarkenFactor() : Constants.getNodeBorderDarkenFactor();
+        float nodeBorderColorFactor = ColorUtils.isColorDark(backgroundColorFloats) ? 1f + Constants.getNodeBorderDarkenFactor() : Constants.getNodeBorderDarkenFactor();
 
         if (renderingUnselectedNodes) {
             instanceCount = instanceCounter.unselectedCountToDraw;

@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.gephi.graph.api.Configuration;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
@@ -52,6 +53,7 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public static final int DEFAULT_MAX_WORLD_UPDATES_PER_SECOND = 60;
     public static final int DEFAULT_FPS = 60;
+    public static final boolean DEFAULT_DARK_LAF = false;
     private static final RenderingLayer[] ALL_LAYERS = RenderingLayer.values();
 
     //Rendering target
@@ -102,10 +104,11 @@ public class VizEngine<R extends RenderingTarget, I> {
     private List<? extends WorldData> currentWorldData = Collections.emptyList();
 
     //Settings:
+    private boolean darkLaf = DEFAULT_DARK_LAF;
     private int maxWorldUpdatesPerSecond = DEFAULT_MAX_WORLD_UPDATES_PER_SECOND;
 
     public VizEngine(R renderingTarget) {
-        this.engineModel = VizEngineModel.createEmptyModel();
+        this.engineModel = createEmptyModel();
         this.openGLOptions = new OpenGLOptions();
         this.renderingTarget = Objects.requireNonNull(renderingTarget, "renderingTarget mandatory");
         this.worldUpdaterManagerThread = Executors.newSingleThreadExecutor(
@@ -339,7 +342,7 @@ public class VizEngine<R extends RenderingTarget, I> {
     public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
         if (this.engineModel.getGraphModel() != graphModel) {
             this.engineModel = new VizEngineModel(graphModel,
-                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl());
+                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl(darkLaf));
         }
 
         // Sync local translate from new model's pan
@@ -349,10 +352,16 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public synchronized void unsetGraphModel(GraphModel graphModel) {
         if (engineModel.getGraphModel() == graphModel) {
-            this.engineModel = VizEngineModel.createEmptyModel();
+            this.engineModel = createEmptyModel();
             this.translate.set(0, 0);
             loadModelViewProjection();
         }
+    }
+
+    private VizEngineModel createEmptyModel() {
+        Configuration config = Configuration.builder().enableSpatialIndex(true).build();
+        GraphModel emptyModel = GraphModel.Factory.newInstance(config);
+        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl(darkLaf));
     }
 
     public synchronized void initPipeline() {
@@ -694,6 +703,17 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         engineModel.getRenderingOptions().setBackgroundColor(Arrays.copyOf(backgroundColor, backgroundColor.length));
+    }
+
+    public void setDarkLaf(boolean darkLaf) {
+        this.darkLaf = darkLaf;
+        if (darkLaf && Arrays.equals(engineModel.getRenderingOptions().getBackgroundColor(),
+            GraphRenderingOptions.DEFAULT_BACKGROUND_COLOR)) {
+            engineModel.getRenderingOptions().setBackgroundColor(GraphRenderingOptions.DEFAULT_DARK_BACKGROUND_COLOR);
+        } else if (!darkLaf && Arrays.equals(engineModel.getRenderingOptions().getBackgroundColor(),
+            GraphRenderingOptions.DEFAULT_DARK_BACKGROUND_COLOR)) {
+            engineModel.getRenderingOptions().setBackgroundColor(GraphRenderingOptions.DEFAULT_BACKGROUND_COLOR);
+        }
     }
 
     public int getMaxWorldUpdatesPerSecond() {

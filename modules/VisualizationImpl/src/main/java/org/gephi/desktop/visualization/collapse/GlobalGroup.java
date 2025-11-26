@@ -1,6 +1,5 @@
 package org.gephi.desktop.visualization.collapse;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
@@ -10,10 +9,12 @@ import javax.swing.JPopupMenu;
 import org.gephi.ui.components.JColorBlackWhiteSwitcher;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
+import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.VisualisationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
+import org.gephi.visualization.apiimpl.VizConfig;
 import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
@@ -29,7 +30,10 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
 
     public GlobalGroup() {
         vizController = Lookup.getDefault().lookup(VisualizationController.class);
-        backgroundColorButton = new JColorBlackWhiteSwitcher(Color.WHITE);
+        backgroundColorButton = new JColorBlackWhiteSwitcher(
+            UIUtils.isDarkLookAndFeel() ? VizConfig.DEFAULT_DARK_BACKGROUND_COLOR : VizConfig.DEFAULT_BACKGROUND_COLOR);
+        backgroundColorButton.setLightColor(VizConfig.DEFAULT_BACKGROUND_COLOR);
+        backgroundColorButton.setDarkColor(VizConfig.DEFAULT_DARK_BACKGROUND_COLOR);
         backgroundColorButton
             .setToolTipText(NbBundle.getMessage(GlobalGroup.class, "VizToolbar.Global.background"));
         backgroundColorButton.addPropertyChangeListener(JColorButton.EVENT_COLOR, evt -> {
@@ -76,8 +80,6 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
             component.setEnabled(true);
         }
         backgroundColorButton.setColor(vizModel.getBackgroundColor());
-        backgroundColorButton.setDarkColor(vizModel.getConfig().getDefaultDarkBackgroundColor());
-        backgroundColorButton.setLightColor(vizModel.getConfig().getDefaultBackgroundColor());
         globalSettingsPanel.setup(vizModel);
         vizController.addPropertyChangeListener(this);
     }

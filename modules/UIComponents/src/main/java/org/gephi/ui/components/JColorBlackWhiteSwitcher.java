@@ -155,8 +155,9 @@ public class JColorBlackWhiteSwitcher extends JButton {
     }
 
     public void setLightColor(Color lightColor) {
-        if (lightColor != null) {
+        if (lightColor != null && !lightColor.equals(this.lightColor)) {
             this.lightColor = lightColor;
+            refreshIcon();
         }
     }
 
@@ -165,8 +166,9 @@ public class JColorBlackWhiteSwitcher extends JButton {
     }
 
     public void setDarkColor(Color darkColor) {
-        if (darkColor != null) {
+        if (darkColor != null && !darkColor.equals(this.darkColor)) {
             this.darkColor = darkColor;
+            refreshIcon();
         }
     }
 

@@ -36,6 +36,7 @@ public interface GraphRenderingOptions {
 
     //Global
     float[] DEFAULT_BACKGROUND_COLOR = new float[] {1, 1, 1, 1};
+    float[] DEFAULT_DARK_BACKGROUND_COLOR = new float[] {52 / 255f, 55 / 255f, 57 / 255f, 1f};
     float DEFAULT_ZOOM = 0.3f;
     float DEFAULT_PAN_X = 0f;
     float DEFAULT_PAN_Y = 0f;
@@ -71,6 +72,8 @@ public interface GraphRenderingOptions {
     float[] getBackgroundColor();
 
     void setBackgroundColor(float[] backgroundColor);
+
+    boolean isBackgroundColorDark();
 
     float getZoom();
 

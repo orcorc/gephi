@@ -106,7 +106,7 @@ public class VizConfig {
     public static final String MOUSE_SELECTION_ZOOM_PROPORTIONAL = "VizConfig.mouseSelectionZoomProportionnal";
     //Default values
     public static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
-    public static final Color DEFAULT_DARK_BACKGROUND_COLOR = Color.DARK_GRAY;
+    public static final Color DEFAULT_DARK_BACKGROUND_COLOR = new Color(52, 55, 57, 255);
     public static final boolean DEFAULT_NODE_LABELS = false;
     public static final boolean DEFAULT_EDGE_LABELS = false;
     public static final boolean DEFAULT_SHOW_EDGES = true;

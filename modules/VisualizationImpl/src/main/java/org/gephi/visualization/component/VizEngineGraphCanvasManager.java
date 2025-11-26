@@ -18,6 +18,7 @@ import java.util.Optional;
 import javax.swing.JComponent;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.project.api.Workspace;
+import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.events.StandardVizEventManager;
@@ -92,6 +93,7 @@ public class VizEngineGraphCanvasManager {
                 new VizEngineJOGLConfigurator()
             )
         );
+        this.engine.setDarkLaf(UIUtils.isDarkLookAndFeel());
 
         final OpenGLOptions glOptions = engine.getOpenGLOptions();
         glOptions.setDisableIndirectDrawing(DISABLE_INDIRECT_RENDERING);

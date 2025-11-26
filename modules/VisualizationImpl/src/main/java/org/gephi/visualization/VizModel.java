@@ -331,6 +331,11 @@ public class VizModel implements VisualisationModel {
         return backgroundColor;
     }
 
+    @Override
+    public boolean isBackgroundColorDark() {
+        return org.gephi.viz.engine.util.ColorUtils.isColorDark(backgroundColor.getRGBComponents(null));
+    }
+
     private void setBackgroundColor(float[] bgColor) {
         Color color = new Color(bgColor[0], bgColor[1], bgColor[2], bgColor[3]);
         setBackgroundColor(color);

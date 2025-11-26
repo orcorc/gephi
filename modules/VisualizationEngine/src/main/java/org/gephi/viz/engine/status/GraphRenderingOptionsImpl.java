@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Objects;
 import org.gephi.graph.api.Column;
+import org.gephi.viz.engine.util.ColorUtils;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 
@@ -58,6 +59,13 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private float lightenNonSelectedFactor = DEFAULT_LIGHTEN_NON_SELECTED_FACTOR;
 
     public GraphRenderingOptionsImpl() {
+        this(false);
+    }
+
+    public GraphRenderingOptionsImpl(boolean darkLaf) {
+        if (darkLaf) {
+            this.backgroundColor = DEFAULT_DARK_BACKGROUND_COLOR;
+        }
     }
 
     public GraphRenderingOptionsImpl(GraphRenderingOptions other) {
@@ -129,6 +137,11 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     public void setBackgroundColor(float[] backgroundColor) {
         Objects.requireNonNull(backgroundColor, "backgroundColor can't be null");
         this.backgroundColor = backgroundColor;
+    }
+
+    @Override
+    public boolean isBackgroundColorDark() {
+        return ColorUtils.isColorDark(backgroundColor);
     }
 
     @Override

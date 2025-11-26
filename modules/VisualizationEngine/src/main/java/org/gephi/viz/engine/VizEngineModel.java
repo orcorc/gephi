@@ -1,6 +1,5 @@
 package org.gephi.viz.engine;
 
-import org.gephi.graph.api.Configuration;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
@@ -42,11 +41,5 @@ public class VizEngineModel {
 
     public GraphSelectionImpl getGraphSelection() {
         return graphSelection;
-    }
-
-    public static VizEngineModel createEmptyModel() {
-        Configuration config = Configuration.builder().enableSpatialIndex(true).build();
-        GraphModel emptyModel = GraphModel.Factory.newInstance(config);
-        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl());
     }
 }
