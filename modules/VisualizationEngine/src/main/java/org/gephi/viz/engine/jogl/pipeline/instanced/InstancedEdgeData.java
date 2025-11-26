@@ -196,9 +196,10 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final int totalEdges = edgesCallback.getCount();
 
         attributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE);
+        selfLoopAttributesBuffer.ensureCapacity(totalEdges * ATTRIBS_BUFFER_SELF_LOOP);
 
         final FloatBuffer attribsDirectBuffer = attributesBuffer.floatBuffer();
-
+        final FloatBuffer attribsSelfLoopBuffer = selfLoopAttributesBuffer.floatBuffer();
         final Edge[] visibleEdgesArray = edgesCallback.getEdgesArray();
         final float[] edgeWeightsArray = edgesCallback.getEdgeWeightsArray();
         final int maxIndex = edgesCallback.getMaxIndex();
@@ -206,7 +207,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final boolean isUndirected = edgesCallback.isUndirected();
 
         updateSelfLoop(maxIndex, visibleEdgesArray, edgeWeightsArray, selfLoopAttributesBufferBatch, 0,
-            attribsDirectBuffer);
+            attribsSelfLoopBuffer);
         updateUndirectedData(
             isDirected,
             maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
