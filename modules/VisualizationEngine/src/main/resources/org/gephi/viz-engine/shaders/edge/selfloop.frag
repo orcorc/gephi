@@ -10,5 +10,5 @@ out vec4 fragColor;
 
 void main(void) {
     vec4 color = vertexData.color;
-    fragColor = color;
+    fragColor = vec4(1.0, 0., 0., 1.);// color;
 }
