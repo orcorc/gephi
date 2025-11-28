@@ -28,12 +28,15 @@ import org.gephi.viz.engine.util.structure.NodesCallback;
  */
 public class ArrayDrawEdgeData extends AbstractEdgeData {
 
-    private final int[] bufferName = new int[4];
+    private final int[] bufferName = new int[6];
 
     private static final int VERT_BUFFER_UNDIRECTED = 0;
     private static final int VERT_BUFFER_DIRECTED = 1;
     private static final int ATTRIBS_BUFFER_DIRECTED = 2;
     private static final int ATTRIBS_BUFFER_UNDIRECTED = 3;
+    private static final int VERT_BUFFER_SELFLOOP = 4;
+    private static final int ATTRIBS_BUFFER_SELFLOOP = 5;
+
 
     public ArrayDrawEdgeData(final EdgesCallback edgesCallback, final NodesCallback nodesCallback) {
         super(edgesCallback, nodesCallback, false, false);
@@ -194,6 +197,22 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             vertexGLBufferDirected.unbind(gl);
         }
 
+        {
+
+            float[] selfLoopVertexDataArray = new float[selfLoopMesh.vertexData.length * BATCH_EDGES_SIZE];
+            System.arraycopy(directedEdgeMesh.vertexData, 0, selfLoopVertexDataArray, 0,
+                selfLoopMesh.vertexData.length);
+            ArrayUtils.repeat(selfLoopVertexDataArray, 0, directedEdgeMesh.vertexData.length, BATCH_EDGES_SIZE);
+
+            final FloatBuffer selfLoopVertexData = GLBuffers.newDirectFloatBuffer(selfLoopVertexDataArray);
+
+            vertexGLBufferDirected =
+                new GLBufferMutable(bufferName[VERT_BUFFER_SELFLOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
+            vertexGLBufferDirected.bind(gl);
+            vertexGLBufferDirected.init(gl, selfLoopVertexData, GLBufferMutable.GL_BUFFER_USAGE_STATIC_DRAW);
+            vertexGLBufferDirected.unbind(gl);
+        }
+
         //Initialize for batch edges size:
         attributesGLBufferDirected =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_DIRECTED], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
@@ -208,6 +227,13 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         attributesGLBufferUndirected.init(gl, (long) VERTEX_COUNT_MAX * ATTRIBS_STRIDE * Float.BYTES * BATCH_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferUndirected.unbind(gl);
+
+        attributesGLBufferSelfLoop =
+            new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELFLOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
+        attributesGLBufferSelfLoop.bind(gl);
+        attributesGLBufferSelfLoop.init(gl, (long) 24 * ATTRIBS_STRIDE * Float.BYTES * BATCH_EDGES_SIZE,
+            GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
+        attributesGLBufferSelfLoop.unbind(gl);
 
         attributesBuffer = new float[ATTRIBS_STRIDE * BATCH_EDGES_SIZE];
     }
