@@ -43,9 +43,10 @@ public class InstancedEdgeData extends AbstractEdgeData {
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, EdgeWorldData data,
                               float[] mvpFloats) {
         refreshTime();
-        drawSelfLoop(gl, data, layer, mvpFloats);
+
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
+        drawSelfLoop(gl, data, layer, mvpFloats);
 
     }
 
@@ -53,8 +54,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
                               RenderingLayer layer,
                               float[] mvpFloats) {
         final int instanceCount = setupShaderProgramForRenderingLayerSelfLoop(gl, layer, data, mvpFloats);
-        final int VERTEX_COUNT_SELFLOOP = selfLoopMesh.vertexCount;
-        GLFunctions.drawInstanced(gl, 0, VERTEX_COUNT_SELFLOOP, instanceCount);
+        
+        GLFunctions.drawInstanced(gl, 0, selfLoopMesh.vertexCount, instanceCount);
         GLFunctions.stopUsingProgram(gl);
         unsetupSelfLoopVertexArrayAttributes(gl);
 
@@ -240,10 +241,14 @@ public class InstancedEdgeData extends AbstractEdgeData {
     public void dispose(GL gl) {
         super.dispose(gl);
         attributesBufferBatch = null;
-
+        selfLoopAttributesBufferBatch = null;
         if (attributesBuffer != null) {
             attributesBuffer.destroy();
             attributesBuffer = null;
+        }
+        if (selfLoopAttributesBuffer != null) {
+            selfLoopAttributesBuffer.destroy();
+            selfLoopAttributesBuffer = null;
         }
     }
 }

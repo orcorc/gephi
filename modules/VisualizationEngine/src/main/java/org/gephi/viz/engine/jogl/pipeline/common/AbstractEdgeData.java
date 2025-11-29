@@ -136,9 +136,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         final float[] mvpFloats
     ) {
         final boolean renderingUnselectedEdges = layer.isBack();
-        if (!someSelection && renderingUnselectedEdges) {
+        /*if (!someSelection && renderingUnselectedEdges) {
             return 0;
-        }
+        }*/
         final boolean someSelection = data.hasSomeSelection();
 
         final float[] backgroundColorFloats = data.getBackgroundColor();
@@ -431,17 +431,17 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, selfLoopEdge, index, weight);
             index += ATTRIBS_STRIDE_SELFLOOP;
 
-            if (directBuffer != null && index == attribs.length) {
+            /*if (directBuffer != null && index == attribs.length) {
                 directBuffer.put(attribs, 0, attribs.length);
                 index = 0;
-            }
+            }*/
         }
 
         //Remaining:
-        if (directBuffer != null && index > 0) {
+        /*if (directBuffer != null && index > 0) {
             directBuffer.put(attribs, 0, index);
             index = 0;
-        }
+        }*/
 
         // For the moment let's concider everything as undirected
         undirectedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();
@@ -927,6 +927,10 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     private float computeElementColor(final Edge edge) {
         final int colorInt;
         switch (edgeColorMode) {
+            case SELF: {
+                colorInt = 0xFF00FFFF;
+                break;
+            }
             case SOURCE: {
                 colorInt = edge.getSource().getRGBA();
                 break;
@@ -949,7 +953,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 colorInt = ((b3 >>> 1) << 24) | ((b2 >>> 1) << 16) | ((b1 >>> 1) << 8) | (b0 >>> 1);
                 break;
             }
-            case SELF:
+
             default: {
                 colorInt = edge.getRGBA();
                 break;
@@ -1161,7 +1165,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             }
             vertexGLBufferSelfLoop.unbind(gl);
 
-            attributesBuffer.bind(gl);
+            this.attributesBuffer.bind(gl);
             {
                 int stride = ATTRIBS_STRIDE_SELFLOOP * Float.BYTES;
                 int offset = 0;
@@ -1183,7 +1187,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
 
             }
-            attributesBuffer.unbind(gl);
+            this.attributesBuffer.unbind(gl);
         }
 
         @Override
@@ -1235,7 +1239,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
             attributesBuffer.bind(gl);
             {
-                int stride = ATTRIBS_STRIDE * Float.BYTES;
+                final int stride = ATTRIBS_STRIDE * Float.BYTES;
                 int offset = 0;
                 gl.glVertexAttribPointer(SHADER_POSITION_LOCATION, EdgeLineModelUndirected.POSITION_SOURCE_FLOATS,
                     GL_FLOAT, false, stride, offset);

@@ -231,7 +231,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoop =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELFLOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoop.bind(gl);
-        attributesGLBufferSelfLoop.init(gl, (long) 24 * ATTRIBS_STRIDE * Float.BYTES * BATCH_EDGES_SIZE,
+        attributesGLBufferSelfLoop.init(gl,
+            (long) selfLoopMesh.vertexData.length * ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoop.unbind(gl);
 
