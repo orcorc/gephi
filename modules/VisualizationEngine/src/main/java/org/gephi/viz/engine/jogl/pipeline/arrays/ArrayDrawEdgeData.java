@@ -47,6 +47,54 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
 
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
+        drawSelfLoop(gl, data, layer, mvpFloats);
+    }
+
+    private void drawSelfLoop(GL2ES2 gl, EdgeWorldData data,
+                              RenderingLayer layer, float[] mvpFloats) {
+        final int instanceCount = setupShaderProgramForRenderingLayerSelfLoop(gl, layer, data, mvpFloats);
+
+        final boolean renderingUnselectedEdges = layer == BACK1;
+        final int instancesOffset = renderingUnselectedEdges ? 0 : undirectedInstanceCounter.selfLoopCountToDraw;
+
+        final FloatBuffer batchUpdateBuffer =
+            attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer.floatBuffer();
+
+        final int maxIndex = (instancesOffset + instanceCount);
+        for (int edgeBase = instancesOffset; edgeBase < maxIndex; edgeBase += BATCH_EDGES_SIZE) {
+            final int drawBatchCount = Math.min(maxIndex - edgeBase, BATCH_EDGES_SIZE);
+
+            //Need to copy attributes as many times as vertex per model:
+            for (int edgeIndex = 0; edgeIndex < drawBatchCount; edgeIndex++) {
+                System.arraycopy(
+                    attributesBuffer, (edgeBase + edgeIndex) * ATTRIBS_STRIDE_SELFLOOP,
+                    attributesDrawBufferBatchOneCopyPerVertex,
+                    edgeIndex * ATTRIBS_STRIDE_SELFLOOP * selfLoopMesh.vertexCount,
+                    ATTRIBS_STRIDE_SELFLOOP
+                );
+
+                ArrayUtils.repeat(
+                    attributesDrawBufferBatchOneCopyPerVertex,
+                    edgeIndex * ATTRIBS_STRIDE_SELFLOOP * selfLoopMesh.vertexCount,
+                    ATTRIBS_STRIDE_SELFLOOP,
+                    selfLoopMesh.vertexCount
+                );
+            }
+
+            batchUpdateBuffer.clear();
+            batchUpdateBuffer.put(attributesDrawBufferBatchOneCopyPerVertex, 0,
+                drawBatchCount * ATTRIBS_STRIDE_SELFLOOP * selfLoopMesh.vertexCount);
+            batchUpdateBuffer.flip();
+
+            attributesGLBufferSelfLoop.bind(gl);
+            attributesGLBufferSelfLoop.updateWithOrphaning(gl, batchUpdateBuffer);
+            attributesGLBufferSelfLoop.unbind(gl);
+
+            GLFunctions.drawInstanced((GL3ES3) gl, 0, drawBatchCount, selfLoopMesh.vertexCount * drawBatchCount);
+        }
+
+        GLFunctions.stopUsingProgram(gl);
+        unsetupSelfLoopVertexArrayAttributes(gl);
     }
 
     private void drawUndirected(GL2ES2 gl, EdgeWorldData data,
