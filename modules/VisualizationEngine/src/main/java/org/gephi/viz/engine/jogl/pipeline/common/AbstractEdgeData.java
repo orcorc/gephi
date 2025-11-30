@@ -474,6 +474,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     if (edge == null) {
                         continue;
                     }
+                    if (edge.getSource() == edge.getTarget()) {
+                        continue;
+                    }
                     if (!edge.isDirected()) {
                         continue;
                     }
@@ -499,6 +502,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
                     if (edge == null) {
+                        continue;
+                    }
+                    if (edge.getSource() == edge.getTarget()) {
                         continue;
                     }
                     if (!edge.isDirected()) {
@@ -527,6 +533,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     if (edge == null) {
                         continue;
                     }
+                    if (edge.getSource() == edge.getTarget()) {
+                        continue;
+                    }
                     if (!edge.isDirected()) {
                         continue;
                     }
@@ -552,6 +561,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             for (int j = 0; j <= maxIndex; j++) {
                 final Edge edge = visibleEdgesArray[j];
                 if (edge == null) {
+                    continue;
+                }
+                if (edge.getSource() == edge.getTarget()) {
                     continue;
                 }
                 if (!edge.isDirected()) {
@@ -619,6 +631,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     if (edge == null) {
                         continue;
                     }
+                    if (edge.getSource() == edge.getTarget()) {
+                        continue;
+                    }
                     if (edge.isDirected()) {
                         continue;
                     }
@@ -643,6 +658,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 for (int j = 0; j <= maxIndex; j++) {
                     final Edge edge = visibleEdgesArray[j];
                     if (edge == null) {
+                        continue;
+                    }
+                    if (edge.getSource() == edge.getTarget()) {
                         continue;
                     }
                     if (edge.isDirected()) {
@@ -671,6 +689,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     if (edge == null) {
                         continue;
                     }
+                    if (edge.getSource() == edge.getTarget()) {
+                        continue;
+                    }
                     if (edge.isDirected()) {
                         continue;
                     }
@@ -696,6 +717,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             for (int j = 0; j <= maxIndex; j++) {
                 final Edge edge = visibleEdgesArray[j];
                 if (edge == null) {
+                    continue;
+                }
+                if (edge.getSource() == edge.getTarget()) {
                     continue;
                 }
                 if (edge.isDirected()) {

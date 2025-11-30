@@ -44,10 +44,10 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, EdgeWorldData data, float[] mvpFloats) {
         refreshTime();
-
+        drawSelfLoop(gl, data, layer, mvpFloats);
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
-        drawSelfLoop(gl, data, layer, mvpFloats);
+
     }
 
     private void drawSelfLoop(GL2ES2 gl, EdgeWorldData data,

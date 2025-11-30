@@ -43,10 +43,10 @@ public class InstancedEdgeData extends AbstractEdgeData {
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, EdgeWorldData data,
                               float[] mvpFloats) {
         refreshTime();
-
+        drawSelfLoop(gl, data, layer, mvpFloats);
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
-        drawSelfLoop(gl, data, layer, mvpFloats);
+
 
     }
 
