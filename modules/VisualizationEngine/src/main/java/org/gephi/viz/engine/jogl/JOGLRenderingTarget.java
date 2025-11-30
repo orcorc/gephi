@@ -1,9 +1,6 @@
 package org.gephi.viz.engine.jogl;
 
-import static com.jogamp.opengl.GL.GL_BACK;
-import static com.jogamp.opengl.GL.GL_BGRA;
 import static com.jogamp.opengl.GL.GL_COLOR_BUFFER_BIT;
-import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.MouseEvent;
@@ -12,9 +9,7 @@ import com.jogamp.newt.event.awt.AWTKeyAdapter;
 import com.jogamp.newt.event.awt.AWTMouseAdapter;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLES3;
 import com.jogamp.opengl.GLEventListener;
 import com.jogamp.opengl.awt.GLCanvas;
 import com.jogamp.opengl.awt.GLJPanel;
@@ -23,7 +18,6 @@ import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.TileRendererBase;
 import java.awt.Frame;
 import java.awt.image.BufferedImage;
-import java.nio.IntBuffer;
 import java.util.concurrent.CompletableFuture;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.ScreenshotTaker;
@@ -140,6 +134,9 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
         // Dispose pipeline
         engine.disposePipeline();
+
+        // Clear screenshot request
+        screenshotRequest = null;
     }
 
 
@@ -154,17 +151,22 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
         updateFPS();
         engine.display();
 
+        // Screenshot handling
         ScreenshotRequest request = screenshotRequest;
         if (request != null && request.scaleFactor == 1) {
             // You can't call screenShort when you want as it's picking what's on the frame buffer
             // so you need to do this when you are sure the Framebuffer has been drawn so you got actual data.
             // Otherwise, it's during when buffer is empty and you have empty black image.
             CompletableFuture<BufferedImage> future = request.future;
-            future.complete(ScreenshotTaker.takeSimpleScreenshot(drawable.getGL(), engine.getWidth(), engine.getHeight(), request.transparentBackground));
+            future.complete(
+                ScreenshotTaker.takeSimpleScreenshot(drawable.getGL(), engine.getWidth(), engine.getHeight(),
+                    request.transparentBackground));
 
-            float[] bgColor = engine.getBackgroundColor();
-            bgColor[3] = 1f;
-            engine.setBackgroundColor(bgColor);
+            if (request.transparentBackground) {
+                float[] bgColor = engine.getBackgroundColor();
+                bgColor[3] = 1f;
+                engine.setBackgroundColor(bgColor);
+            }
 
             screenshotRequest = null; // Resets
         }
@@ -286,14 +288,17 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
     }
 
     /**
-     * Captures a high-resolution screenshot using tile-based rendering.
+     * Captures a screenshot.
      * <p>
-     * This method pauses the animator, renders the scene in tiles at the specified
-     * resolution, and then restores normal rendering.
+     * This method has two modes, one "simple"  (mode scaleFactor=1) and one "tiled" (mode scaleFactor>1).
+     * <p>
+     * In simple mode (scaleFactor=1) the screenshot is taken directly from the current framebuffer. This is fast but limited to the current drawable size.
+     * <p>
+     * In tiled mode (scaleFactor>1) the screenshot is taken by rendering the scene multiple times in tiles, each of the size of the current drawable.
      *
-     * @param scaleFactor The factor by which to scale the current drawable size for the screenshot, must be 2 or greater
+     * @param scaleFactor           The factor by which to scale the current drawable size for the screenshot, must be 1 or greater
      * @param transparentBackground Whether the screenshot should have a transparent background
-     * @return BufferedImage containing the high-resolution screenshot
+     * @return A CompletableFuture that will be completed with the screenshot image
      */
     public CompletableFuture<BufferedImage> requestScreenshot(int scaleFactor, boolean transparentBackground) {
         if (scaleFactor < 1) {
@@ -333,6 +338,7 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
                 bgColor[3] = 0f;
                 engine.setBackgroundColor(bgColor);
 
+                // Wait a bit to ensure background color is set before screenshot
                 try {
                     Thread.sleep(50);
                 } catch (InterruptedException e) {
@@ -373,9 +379,10 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
 
     }
 
-    public record ScreenshotRequest(
+    private record ScreenshotRequest(
         int scaleFactor,
         boolean transparentBackground,
         CompletableFuture<BufferedImage> future
-    ) {}
+    ) {
+    }
 }

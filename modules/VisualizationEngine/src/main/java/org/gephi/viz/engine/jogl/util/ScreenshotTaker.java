@@ -4,12 +4,13 @@ import static com.jogamp.opengl.GL.GL_BACK;
 import static com.jogamp.opengl.GL.GL_BGRA;
 import static com.jogamp.opengl.GL2GL3.GL_UNSIGNED_INT_8_8_8_8_REV;
 
+import com.jogamp.nativewindow.util.PixelFormat;
 import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.opengl.GL;
-import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.GLAutoDrawable;
-import com.jogamp.opengl.GLES3;
 import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.util.GLPixelBuffer;
+import com.jogamp.opengl.util.GLPixelBuffer.GLPixelAttributes;
 import com.jogamp.opengl.util.TileRenderer;
 import com.jogamp.opengl.util.awt.ImageUtil;
 import com.jogamp.opengl.util.texture.TextureData;
@@ -19,14 +20,20 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import com.jogamp.nativewindow.util.PixelFormat;
-import com.jogamp.opengl.util.GLPixelBuffer;
-import com.jogamp.opengl.util.GLPixelBuffer.GLPixelAttributes;
 import org.joml.Vector2fc;
 
 
 public class ScreenshotTaker {
 
+    /**
+     * Takes a simple screenshot of the current framebuffer.
+     *
+     * @param gl                    The GL context to read from.
+     * @param width                 The width of the screenshot.
+     * @param height                The height of the screenshot.
+     * @param transparentBackground Whether the screenshot should have a transparent background (if supported).
+     * @return A BufferedImage containing the screenshot.
+     */
     public static BufferedImage takeSimpleScreenshot(GL gl, int width, int height, boolean transparentBackground) {
         // Create array to hold pixel data
         int[] pixelData = new int[width * height];
@@ -53,12 +60,22 @@ public class ScreenshotTaker {
         }
 
         BufferedImage screenshot =
-            new BufferedImage(width, height, transparentBackground ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
+            new BufferedImage(width, height,
+                transparentBackground ? BufferedImage.TYPE_INT_ARGB : BufferedImage.TYPE_INT_RGB);
         screenshot.setRGB(0, 0, width, height, pixelData, 0, width);
         return screenshot;
     }
 
-    public static BufferedImage takeTiledScreenshot(VizEngine<JOGLRenderingTarget, NEWTEvent> engine, int scaleFactor, boolean transparentBackground) {
+    /**
+     * Takes a tiled screenshot of the entire scene rendered by the given VizEngine.
+     *
+     * @param engine                The VizEngine to take the screenshot from.
+     * @param scaleFactor           The scale factor for the screenshot (e.g., 2 for double size).
+     * @param transparentBackground Whether the screenshot should have a transparent background (if supported).
+     * @return A BufferedImage containing the tiled screenshot.
+     */
+    public static BufferedImage takeTiledScreenshot(VizEngine<JOGLRenderingTarget, NEWTEvent> engine, int scaleFactor,
+                                                    boolean transparentBackground) {
 
         float originalZoom = engine.getZoom();
         Vector2fc originalPan = engine.getRenderingOptions().getPan();
@@ -83,7 +100,8 @@ public class ScreenshotTaker {
                 final GL gl = drawable.getGL();
                 final PixelFormat.Composition hostPixelComp =
                     pixelBufferProvider.getHostPixelComp(gl.getGLProfile(), transparentBackground ? 4 : 3);
-                final GLPixelAttributes pixelAttribs = pixelBufferProvider.getAttributes(gl, transparentBackground ? 4 : 3, true);
+                final GLPixelAttributes pixelAttribs =
+                    pixelBufferProvider.getAttributes(gl, transparentBackground ? 4 : 3, true);
                 final GLPixelBuffer pixelBuffer =
                     pixelBufferProvider.allocate(gl, hostPixelComp, pixelAttribs, true, imageWidth, imageHeight, 1, 0);
                 renderer.setImageBuffer(pixelBuffer);
@@ -139,14 +157,12 @@ public class ScreenshotTaker {
             imageBuffer.buffer,
             null /* Flusher */);
 
-        // Destroy?
-
         return toImage(textureData);
     }
 
     private static BufferedImage toImage(TextureData data) {
         final int pixelFormat = data.getPixelFormat();
-        final int pixelType   = data.getPixelType();
+        final int pixelType = data.getPixelType();
         if ((pixelFormat == GL.GL_RGB ||
             pixelFormat == GL.GL_RGBA) &&
             (pixelType == GL.GL_BYTE ||
