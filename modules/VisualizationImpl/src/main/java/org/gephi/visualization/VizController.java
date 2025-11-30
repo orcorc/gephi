@@ -80,11 +80,11 @@ public class VizController implements VisualizationController, Controller<VizMod
     protected final List<VisualizationPropertyChangeListener> listeners = new ArrayList<>();
     private final VizEngineGraphCanvasManager canvasManager;
     private final StandardVizEventManager vizEventManager;
-    private final ScreenshotControllerImpl screenshotMaker;
+    private final ScreenshotControllerImpl screenshotController;
 
     public VizController() {
         vizEventManager = new StandardVizEventManager();
-        screenshotMaker = new ScreenshotControllerImpl();
+        screenshotController = new ScreenshotControllerImpl(this);
         canvasManager = new VizEngineGraphCanvasManager(this);
 
     }
@@ -111,7 +111,7 @@ public class VizController implements VisualizationController, Controller<VizMod
 
     @Override
     public ScreenshotController getScreenshotController() {
-        return null;
+        return screenshotController;
     }
 
     public VizEngineGraphCanvasManager getCanvasManager() {
@@ -331,15 +331,6 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setEdgeLabelColumns(columns);
     }
 
-    @Override
-    public void makeScreenshot() {
-        final VizModel model = getModel();
-        model.makeScreenshot().ifPresent(screenshotCompletable -> {
-            screenshotCompletable.thenAccept(screenshotMaker::saveSceenshotOnFile);
-        });
-    }
-
-
     //    public void refreshWorkspace() {
 //        final ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
 //        final Workspace currentWorkspace = pc.getCurrentWorkspace();
@@ -367,10 +358,6 @@ public class VizController implements VisualizationController, Controller<VizMod
 
     public StandardVizEventManager getVizEventManager() {
         return vizEventManager;
-    }
-
-    public ScreenshotControllerImpl getScreenshotMaker() {
-        return screenshotMaker;
     }
 
     @Override

@@ -132,8 +132,9 @@ public class VizModel implements VisualisationModel {
     private boolean hideNonSelectedEdgeLabels;
     private Column[] edgeLabelColumns = new Column[0];
 
-    // Selection
+    // Selection & Screenshot Models
     private final SelectionModelImpl selectionModel;
+    private final ScreenshotModelImpl screenshotModel;
 
     public VizModel(VizController controller, Workspace workspace) {
         this.vizController = controller;
@@ -141,6 +142,7 @@ public class VizModel implements VisualisationModel {
         this.config = new VizConfig();
         this.graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel(workspace);
         this.selectionModel = new SelectionModelImpl(this, config);
+        this.screenshotModel = new ScreenshotModelImpl(this, config);
 
         // Initialize default values
         defaultValues();
@@ -250,7 +252,7 @@ public class VizModel implements VisualisationModel {
     }
 
     public ScreenshotModelImpl getScreenshotModel() {
-        return null;
+        return screenshotModel;
     }
 
     @Override

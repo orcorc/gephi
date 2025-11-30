@@ -47,8 +47,7 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
         configureScreenshotItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO fix
-//                    VizController.getInstance().getScreenshotMaker().configure();
+                // TODO
             }
         });
         screenshotPopup.add(configureScreenshotItem);
@@ -60,9 +59,7 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
         screenshotButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO fix
-//                    VizController.getInstance().getScreenshotMaker().takeScreenshot();
-                vizController.makeScreenshot();
+                vizController.getScreenshotController().takeScreenshot();
             }
         });
     }

@@ -425,6 +425,4 @@ public interface VisualizationController {
      * @param columns the edge label columns
      */
     void setEdgeLabelColumns(Column[] columns);
-
-    void makeScreenshot();
 }
