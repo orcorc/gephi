@@ -1117,6 +1117,11 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             attributesBuffer = null;
         }
 
+        if (selfLoopAttributesBuffer != null) {
+            selfLoopAttributesBuffer.destroy();
+            selfLoopAttributesBuffer = null;
+        }
+
         // Destroy and reset VAOs to prevent reuse after re-init
         if (undirectedEdgesVAO != null) {
             undirectedEdgesVAO.destroy(gl.getGL2ES2());

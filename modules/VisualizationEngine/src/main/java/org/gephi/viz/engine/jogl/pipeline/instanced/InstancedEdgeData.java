@@ -46,7 +46,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
 
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
-        //drawSelfLoop(gl, data, layer, mvpFloats);
+        drawSelfLoop(gl, data, layer, mvpFloats);
 
     }
 
@@ -224,16 +224,29 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final boolean isDirected = edgesCallback.isDirected();
         final boolean isUndirected = edgesCallback.isUndirected();
 
-        updateSelfLoop(maxIndex, visibleEdgesArray, edgeWeightsArray, selfLoopAttributesBufferBatch, 0,
+        updateSelfLoop(maxIndex,
+            visibleEdgesArray,
+            edgeWeightsArray,
+            selfLoopAttributesBufferBatch,
+            0,
             attribsSelfLoopBuffer);
         updateUndirectedData(
             isDirected,
-            maxIndex, visibleEdgesArray, edgeWeightsArray, attributesBufferBatch, 0, attribsDirectBuffer
+            maxIndex,
+            visibleEdgesArray,
+            edgeWeightsArray,
+            attributesBufferBatch,
+            0,
+            attribsDirectBuffer
         );
         updateDirectedData(
             isUndirected,
-            maxIndex, visibleEdgesArray, edgeWeightsArray,
-            attributesBufferBatch, 0, attribsDirectBuffer
+            maxIndex,
+            visibleEdgesArray,
+            edgeWeightsArray,
+            attributesBufferBatch,
+            0,
+            attribsDirectBuffer
         );
     }
 
