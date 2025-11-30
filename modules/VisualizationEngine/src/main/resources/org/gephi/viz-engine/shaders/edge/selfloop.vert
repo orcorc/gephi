@@ -16,7 +16,7 @@ out vec2 vLocal;
 void main() {
     vLocal = vert;
 
-    vec2 instancePosition = nodeSize * vert + position +size;
+    vec2 instancePosition = nodeSize *10 * vert + position +size;
     //vec2 instancePosition = 100.f * vert + position;
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 

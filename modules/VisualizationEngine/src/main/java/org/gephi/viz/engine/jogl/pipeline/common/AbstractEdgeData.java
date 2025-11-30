@@ -401,6 +401,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                  final float[] attribs,
                                  int index,
                                  final FloatBuffer directBuffer) {
+
         // Get Index of self loop edges
         final ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
         for (int i = 0; i <= maxIndex; i++) {
@@ -856,7 +857,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         buffer[index] = sourceX;
         buffer[index + 1] = sourceY;
         //Color:
-        buffer[index + 2] = computeElementColor(edge);//Color
+        buffer[index + 2] = computeElementColor(edge);
+        //Color
 
         //Size (weight or constant):
         buffer[index + 3] = weight;
@@ -927,10 +929,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     private float computeElementColor(final Edge edge) {
         final int colorInt;
         switch (edgeColorMode) {
-            case SELF: {
-                colorInt = 0xFF00FFFF;
-                break;
-            }
+            case SELF:
             case SOURCE: {
                 colorInt = edge.getSource().getRGBA();
                 break;
@@ -1183,7 +1182,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 offset += EdgeCircleSelfLoop.SIZE_FLOATS * Float.BYTES;
 
                 gl.glVertexAttribPointer(SHADER_SELFLOOP_NODE_SIZE_LOCATION,
-                    EdgeCircleSelfLoop.NODE_SIZE_FLOATS, GL_UNSIGNED_BYTE, false, stride, offset);
+                    EdgeCircleSelfLoop.NODE_SIZE_FLOATS, GL_FLOAT, false, stride, offset);
 
 
             }

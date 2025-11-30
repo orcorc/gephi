@@ -46,7 +46,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
 
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
-        drawSelfLoop(gl, data, layer, mvpFloats);
+        //drawSelfLoop(gl, data, layer, mvpFloats);
 
     }
 
@@ -54,7 +54,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
                               RenderingLayer layer,
                               float[] mvpFloats) {
         final int instanceCount = setupShaderProgramForRenderingLayerSelfLoop(gl, layer, data, mvpFloats);
-        
+
         GLFunctions.drawInstanced(gl, 0, selfLoopMesh.vertexCount, instanceCount);
         GLFunctions.stopUsingProgram(gl);
         unsetupSelfLoopVertexArrayAttributes(gl);
@@ -193,10 +193,10 @@ public class InstancedEdgeData extends AbstractEdgeData {
         selfLoopBuf.limit(undirectedInstanceCounter.selfLoopCount * ATTRIBS_STRIDE_SELFLOOP);
         selfLoopBuf.position(0);
 
-        attributesGLBufferSelfLoopSecondary.bind(gl);
-        attributesGLBufferSelfLoopSecondary.updateWithOrphaning(gl, selfLoopBuf);
-        attributesGLBufferSelfLoopSecondary.unbind(gl);
-
+        attributesGLBufferSelfLoop.bind(gl);
+        attributesGLBufferSelfLoop.updateWithOrphaning(gl, selfLoopBuf);
+        attributesGLBufferSelfLoop.unbind(gl);
+/*
         offset = selfLoopBuf.limit();
         selfLoopBuf.limit(offset + undirectedInstanceCounter.selfLoopCount * ATTRIBS_STRIDE_SELFLOOP);
         selfLoopBuf.position(offset);
@@ -204,7 +204,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoop.bind(gl);
         attributesGLBufferSelfLoop.updateWithOrphaning(gl, selfLoopBuf);
         attributesGLBufferSelfLoop.unbind(gl);
-
+*/
         undirectedInstanceCounter.promoteCountToDraw();
         directedInstanceCounter.promoteCountToDraw();
     }
