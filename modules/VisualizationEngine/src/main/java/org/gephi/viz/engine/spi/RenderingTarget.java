@@ -19,7 +19,5 @@ public interface RenderingTarget {
         //NOOP
     }
 
-    int[] frameDump(GL3ES3 gl, int width, int height);
-
     int getFps();
 }

@@ -929,7 +929,7 @@ public class VizModel implements VisualisationModel {
             vizEngine ->
                 vizEngine
                     .getRenderingTarget()
-                    .requestScreenshot()
+                    .requestScreenshot(1, false)
         );
     }
 

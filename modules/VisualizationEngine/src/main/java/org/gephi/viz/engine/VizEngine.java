@@ -60,6 +60,7 @@ public class VizEngine<R extends RenderingTarget, I> {
     private final R renderingTarget;
     private boolean isSetUp = false;
     private boolean isDestroyed = false;
+    private boolean updating = true;
 
     //State
     private int width = 0;
@@ -285,6 +286,72 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         loadModelViewProjection();
+    }
+
+    /**
+     * Centers the view on a specific tile of a larger image by adjusting the zoom and translation.
+     *
+     * @param tileX the X coordinate of the tile in the larger image
+     * @param tileY the Y coordinate of the tile in the larger image
+     * @param imageWidth the width of the full image
+     * @param imageHeight the height of the full image
+     */
+    public void centerOnTile(float tileX, float tileY, float imageWidth, float imageHeight) {
+        // Calculate scale factor from the full image dimensions
+        float scaleFactor = imageWidth / width;
+
+        // Calculate the offset of this tile from the top-left corner of the full image
+        float tileOffsetX = (tileX + width / 2f - imageWidth / 2f) / width;
+        float tileOffsetY = (tileY + height / 2f - imageHeight / 2f) / height;
+
+        // Apply zoom scaling
+        float newZoom = getZoom() * scaleFactor;
+        engineModel.getRenderingOptions().setZoom(newZoom);
+
+        // Adjust translate based on tile offset and original translate
+        // The tile offset needs to be in world coordinates, so we divide by the new zoom
+        float translateOffsetX = -tileOffsetX * width / newZoom;
+        float translateOffsetY = -tileOffsetY * height / newZoom;
+
+        Vector2fc pan = engineModel.getRenderingOptions().getPan();
+        translate.set(
+            pan.x() + translateOffsetX,
+            pan.y() + translateOffsetY
+        );
+
+        loadModelViewProjection();
+    }
+
+    /**
+     * Converts screen coordinates to world coordinates using float precision.
+     *
+     * @param x X position in screen pixels (0 = left edge of viewport)
+     * @param y Y position in screen pixels (0 = top edge of viewport)
+     * @return World coordinates corresponding to the screen position
+     */
+    public Vector2f screenCoordinatesToWorldCoordinates(float x, float y) {
+        return screenCoordinatesToWorldCoordinates(x, y, new Vector2f());
+    }
+
+    /**
+     * Converts screen coordinates to world coordinates using float precision.
+     *
+     * @param x    X position in screen pixels (0 = left edge of viewport)
+     * @param y    Y position in screen pixels (0 = top edge of viewport)
+     * @param dest Vector to store the result
+     * @return The dest vector with world coordinates
+     */
+    public Vector2f screenCoordinatesToWorldCoordinates(float x, float y, Vector2f dest) {
+        final float halfWidth = width / 2.0f;
+        final float halfHeight = height / 2.0f;
+
+        float xScreenNormalized = (-halfWidth + x) / halfWidth;
+        float yScreenNormalized = (halfHeight - y) / halfHeight;
+
+        final Vector3f worldCoordinates = new Vector3f();
+        modelViewProjectionMatrixInverted.transformProject(xScreenNormalized, yScreenNormalized, 0, worldCoordinates);
+
+        return dest.set(worldCoordinates.x, worldCoordinates.y);
     }
 
     private void loadModelViewProjection() {
@@ -513,7 +580,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         List<? extends WorldData> worldData =
             worldUpdatersExecutionMode.isConcurrent() ? checkConcurrentWorldUpdateIsDone()
                 : runWorldUpdatersSynchronous(this.engineModel);
-        if (worldData.isEmpty()) {
+        if (worldData.isEmpty() || !updating) {
             // No world update was done this frame, use last one
             worldData = currentWorldData;
         }
@@ -534,7 +601,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         //Schedule next concurrent world update:
-        if (worldUpdatersExecutionMode.isConcurrent()) {
+        if (worldUpdatersExecutionMode.isConcurrent() && updating) {
             scheduleNextConcurrentWorldUpdateIfDone(this.engineModel);
         }
 
@@ -547,6 +614,10 @@ public class VizEngine<R extends RenderingTarget, I> {
     private long lastWorldUpdateMillis = 0;
 
     private List<? extends WorldData> runWorldUpdatersSynchronous(VizEngineModel model) {
+        if (!updating) {
+            return Collections.emptyList();
+        }
+
         //Control max world updates per second
         if (maxWorldUpdatesPerSecond >= 1) {
             if (TimeUtils.getTimeMillis() < lastWorldUpdateMillis + 1000 / maxWorldUpdatesPerSecond) {
@@ -730,6 +801,14 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public float[] getModelViewProjectionMatrixFloats() {
         return Arrays.copyOf(modelViewProjectionMatrixFloats, modelViewProjectionMatrixFloats.length);
+    }
+
+    public void pauseUpdating() {
+        updating = false;
+    }
+
+    public void resumeUpdating() {
+        updating = true;
     }
 
     public Vector2f screenCoordinatesToWorldCoordinates(int x, int y) {
