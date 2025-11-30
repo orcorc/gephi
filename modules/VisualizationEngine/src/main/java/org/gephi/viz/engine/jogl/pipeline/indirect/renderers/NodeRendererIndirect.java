@@ -40,7 +40,7 @@ public class NodeRendererIndirect extends AbstractNodeRenderer {
     @Override
     public void render(NodeWorldData data, JOGLRenderingTarget target, RenderingLayer layer) {
         engine.getModelViewProjectionMatrixFloats(mvpFloats);
-        //nodeData.drawIndirect(target.getDrawable().getGL().getGL4(), layer, data, mvpFloats);
+        nodeData.drawIndirect(target.getDrawable().getGL().getGL4(), layer, data, mvpFloats);
     }
 
     @Override

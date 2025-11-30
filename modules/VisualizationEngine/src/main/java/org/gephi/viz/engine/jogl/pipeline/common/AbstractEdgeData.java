@@ -55,7 +55,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected final Mesh undirectedEdgeMesh = EdgeLineMeshGenerator.undirectedMeshGenerator();
     protected final Mesh directedEdgeMesh = EdgeLineMeshGenerator.directedMeshGenerator();
-    protected final Mesh selfLoopMesh = NodeDiskVertexMeshGenerator.generateFilledCircle(8);
+    protected final Mesh selfLoopMesh = NodeDiskVertexMeshGenerator.generateFilledCircle(16);
     // NOTE: Why secondary buffers and VAOs?
     // Sadly, we cannot use glDrawArraysInstancedBaseInstance in MacOS and it will be never available
 
@@ -432,17 +432,17 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, selfLoopEdge, index, weight);
             index += ATTRIBS_STRIDE_SELFLOOP;
 
-            /*if (directBuffer != null && index == attribs.length) {
+            if (directBuffer != null && index == attribs.length) {
                 directBuffer.put(attribs, 0, attribs.length);
                 index = 0;
-            }*/
+            }
         }
 
         //Remaining:
-        /*if (directBuffer != null && index > 0) {
+        if (directBuffer != null && index > 0) {
             directBuffer.put(attribs, 0, index);
             index = 0;
-        }*/
+        }
 
         // For the moment let's concider everything as undirected
         undirectedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();

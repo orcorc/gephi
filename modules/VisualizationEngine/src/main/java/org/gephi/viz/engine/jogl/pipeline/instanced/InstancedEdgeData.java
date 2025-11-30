@@ -214,7 +214,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final int totalEdges = edgesCallback.getCount();
 
         attributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE);
-        selfLoopAttributesBuffer.ensureCapacity(totalEdges * ATTRIBS_BUFFER_SELF_LOOP);
+        selfLoopAttributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE_SELFLOOP);
 
         final FloatBuffer attribsDirectBuffer = attributesBuffer.floatBuffer();
         final FloatBuffer attribsSelfLoopBuffer = selfLoopAttributesBuffer.floatBuffer();

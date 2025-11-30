@@ -9,6 +9,7 @@ in float nodeSize;
 uniform mat4 mvp;
 struct VertexData {
     vec4 color;
+    float size;
 };
 flat out VertexData vertexData;
 out vec2 vLocal;
@@ -16,7 +17,7 @@ out vec2 vLocal;
 void main() {
     vLocal = vert;
 
-    vec2 instancePosition = nodeSize *10 * vert + position +size*0;
+    vec2 instancePosition = nodeSize*.66 * vert + position + vec2(nodeSize*.66);
     //vec2 instancePosition = 100.f * vert + position;
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 
@@ -26,4 +27,5 @@ void main() {
     color.rgb = color.rgb;
 
     vertexData.color = color;
+    vertexData.size = size;
 }

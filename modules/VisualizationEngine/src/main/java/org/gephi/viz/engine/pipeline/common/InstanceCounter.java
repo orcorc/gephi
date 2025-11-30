@@ -26,20 +26,20 @@ public class InstanceCounter {
     }
 
     public int total() {
-        return unselectedCount + selectedCount + selfLoopCount;
+        return unselectedCount + selectedCount;
     }
 
     public int totalToDraw() {
-        return unselectedCountToDraw + selectedCountToDraw + selfLoopCountToDraw;
+        return unselectedCountToDraw + selectedCountToDraw;
     }
 
     @Override
     public String toString() {
         return "InstanceCounter{" + "unselectedCount=" + unselectedCount
-                + ", selectedCount=" + selectedCount
-                + ", selfLoopCount=" + selfLoopCount
-                + ", unselectedCountToDraw=" + unselectedCountToDraw
-                + ", selectedCountToDraw=" + selectedCountToDraw
-                + ", selfLoopCountToDraw=" + selfLoopCountToDraw + '}';
+            + ", selectedCount=" + selectedCount
+            + ", selfLoopCount=" + selfLoopCount
+            + ", unselectedCountToDraw=" + unselectedCountToDraw
+            + ", selectedCountToDraw=" + selectedCountToDraw
+            + ", selfLoopCountToDraw=" + selfLoopCountToDraw + '}';
     }
 }
