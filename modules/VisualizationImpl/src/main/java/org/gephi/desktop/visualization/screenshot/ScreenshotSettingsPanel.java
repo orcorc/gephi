@@ -50,6 +50,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.ScreenshotModel;
+import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
 import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
@@ -83,8 +84,8 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
     /**
      * Creates new form ScreenshotSettingsPanel
      */
-    public ScreenshotSettingsPanel() {
-        controller = Lookup.getDefault().lookup(ScreenshotController.class);
+    public ScreenshotSettingsPanel(ScreenshotControllerImpl screenshotController) {
+        controller = screenshotController;
         initComponents();
 
         autoSaveCheckBox.addChangeListener(new ChangeListener() {

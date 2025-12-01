@@ -104,7 +104,7 @@ public class ScreenshotControllerImpl implements ScreenshotController {
     }
 
     public void configure() {
-        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel();
+        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel(this);
         panel.setup(getModel());
         DialogDescriptor dd = new DialogDescriptor(panel,
             NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.configure.title"));
