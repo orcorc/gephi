@@ -436,4 +436,18 @@ public interface VisualisationModel extends Model {
      */
     Column[] getEdgeLabelColumns();
 
+    /**
+     * Returns the width of the visualization surface in pixels, or zero if not available.
+     *
+     * @return the surface width
+     */
+    int getSurfaceWidth();
+
+    /**
+     * Returns the height of the visualization surface in pixels, or zero if not available.
+     *
+     * @return the surface height
+     */
+    int getSurfaceHeight();
+
 }

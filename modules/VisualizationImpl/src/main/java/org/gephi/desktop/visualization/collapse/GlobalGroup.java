@@ -10,6 +10,7 @@ import org.gephi.ui.components.JColorBlackWhiteSwitcher;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.ui.components.JDropDownButton;
 import org.gephi.ui.utils.UIUtils;
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.VisualisationModel;
 import org.gephi.visualization.api.VisualizationController;
@@ -26,10 +27,10 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
 
     private final GlobalSettingsPanel globalSettingsPanel = new GlobalSettingsPanel();
 
-    private final VisualizationController vizController;
+    private final VizController vizController;
 
-    public GlobalGroup() {
-        vizController = Lookup.getDefault().lookup(VisualizationController.class);
+    public GlobalGroup(VizController vizController) {
+        this.vizController = vizController;
         backgroundColorButton = new JColorBlackWhiteSwitcher(
             UIUtils.isDarkLookAndFeel() ? VizConfig.DEFAULT_DARK_BACKGROUND_COLOR : VizConfig.DEFAULT_BACKGROUND_COLOR);
         backgroundColorButton.setLightColor(VizConfig.DEFAULT_BACKGROUND_COLOR);
@@ -47,7 +48,7 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
         configureScreenshotItem.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                vizController.getScreenshotController().configure();
             }
         });
         screenshotPopup.add(configureScreenshotItem);

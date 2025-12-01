@@ -43,10 +43,14 @@
 package org.gephi.visualization.screenshot;
 
 import java.io.File;
+import org.gephi.desktop.visualization.screenshot.ScreenshotSettingsPanel;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.viz.engine.VizEngine;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
 import org.openide.util.NbBundle;
 
 /**
@@ -100,19 +104,14 @@ public class ScreenshotControllerImpl implements ScreenshotController {
     }
 
     public void configure() {
-        // TODO fix
-//        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel();
-//        panel.setup(this);
-//        ValidationPanel validationPanel = ScreenshotSettingsPanel.createValidationPanel(panel);
-//        if (validationPanel
-//            .showOkCancelDialog(NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.configure.title"))) {
-//            panel.unsetup(this);
-//        }
-//        DialogDescriptor dd = new DialogDescriptor(validationPanel, NbBundle.getMessage(ScreenshotMaker.class, "ScreenshotMaker.configure.title"));
-//        Object result = DialogDisplayer.getDefault().notify(dd);
-//        if (result == NotifyDescriptor.OK_OPTION) {
-//            panel.unsetup(this);
-//        }
+        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel();
+        panel.setup(getModel());
+        DialogDescriptor dd = new DialogDescriptor(panel,
+            NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.configure.title"));
+        Object result = DialogDisplayer.getDefault().notify(dd);
+        if (result == NotifyDescriptor.OK_OPTION) {
+            panel.unsetup();
+        }
     }
 
 }

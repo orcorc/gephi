@@ -55,7 +55,6 @@ import org.gephi.project.spi.Controller;
 import org.gephi.visualization.api.EdgeColorMode;
 import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
-import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationEventListener;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
@@ -110,7 +109,7 @@ public class VizController implements VisualizationController, Controller<VizMod
     }
 
     @Override
-    public ScreenshotController getScreenshotController() {
+    public ScreenshotControllerImpl getScreenshotController() {
         return screenshotController;
     }
 

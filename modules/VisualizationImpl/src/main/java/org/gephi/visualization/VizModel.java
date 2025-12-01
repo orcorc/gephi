@@ -773,6 +773,18 @@ public class VizModel implements VisualisationModel {
         }
     }
 
+    @Override
+    public int getSurfaceWidth() {
+        return getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceWidth())
+            .orElse(0);
+    }
+
+    @Override
+    public int getSurfaceHeight() {
+        return getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceHeight())
+            .orElse(0);
+    }
+
     //EVENTS
 
     public void fireSelectionChange() {
