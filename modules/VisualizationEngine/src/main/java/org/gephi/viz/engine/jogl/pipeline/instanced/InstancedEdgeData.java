@@ -190,7 +190,7 @@ public class InstancedEdgeData extends AbstractEdgeData {
         attributesGLBufferDirected.unbind(gl);
 
         final FloatBuffer selfLoopBuf = selfLoopAttributesBuffer.floatBuffer();
-        selfLoopBuf.limit(undirectedInstanceCounter.selfLoopCount * ATTRIBS_STRIDE_SELFLOOP);
+        selfLoopBuf.limit(selfLoopCounter.selectedCount * ATTRIBS_STRIDE_SELFLOOP);
         selfLoopBuf.position(0);
 
         attributesGLBufferSelfLoop.bind(gl);

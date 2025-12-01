@@ -52,6 +52,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected final InstanceCounter undirectedInstanceCounter = new InstanceCounter();
     protected final InstanceCounter directedInstanceCounter = new InstanceCounter();
+    protected final InstanceCounter selfLoopCounter = new InstanceCounter();
 
     protected final Mesh undirectedEdgeMesh = EdgeLineMeshGenerator.undirectedMeshGenerator();
     protected final Mesh directedEdgeMesh = EdgeLineMeshGenerator.directedMeshGenerator();
@@ -148,7 +149,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         final float minWeight = data.getMinWeight();
         final float maxWeight = data.getMaxWeight();
 
-        final int instanceCount = undirectedInstanceCounter.selfLoopCount;
+        final int instanceCount = selfLoopCounter.selectedCount;
         edgeCircleSelfLoop.useProgram(gl,
             mvpFloats);
         setupSelfLoopVertexArrayAttributes(gl, data);
@@ -445,7 +446,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         }
 
         // For the moment let's concider everything as undirected
-        undirectedInstanceCounter.selfLoopCount = selfLoopEdgeIndex.size();
+        selfLoopCounter.selectedCount = selfLoopEdgeIndex.size();
 
         return selfLoopEdgeIndex.size();
     }
@@ -462,6 +463,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         if (isUndirected) {
             directedInstanceCounter.unselectedCount = 0;
             directedInstanceCounter.selectedCount = 0;
+            selfLoopCounter.selectedCount = 0;
             return index;
         }
 

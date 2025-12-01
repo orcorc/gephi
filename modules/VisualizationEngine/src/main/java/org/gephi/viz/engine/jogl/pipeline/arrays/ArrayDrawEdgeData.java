@@ -55,7 +55,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         final int instanceCount = setupShaderProgramForRenderingLayerSelfLoop(gl, layer, data, mvpFloats);
 
         final boolean renderingUnselectedEdges = layer == BACK1;
-        final int instancesOffset = renderingUnselectedEdges ? 0 : undirectedInstanceCounter.selfLoopCountToDraw;
+        final int instancesOffset =
+            renderingUnselectedEdges ? 0 : selfLoopCounter.selectedCountToDraw;
 
         final FloatBuffer batchUpdateBuffer =
             attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer.floatBuffer();
