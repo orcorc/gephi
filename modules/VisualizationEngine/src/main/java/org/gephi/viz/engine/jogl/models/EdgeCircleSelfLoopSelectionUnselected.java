@@ -10,13 +10,17 @@ import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_SELFLOOP_NODE_SIZE_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_SIZE_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_VERT_LOCATION;
+import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_BACKGROUND_COLOR;
+import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_COLOR_LIGHTEN_FACTOR;
+import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_GLOBAL_TIME;
 import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_MODEL_VIEW_PROJECTION;
+import static org.gephi.viz.engine.util.gl.Constants.UNIFORM_NAME_SELECTION_TIME;
 
 import com.jogamp.opengl.GL2ES2;
 import org.gephi.viz.engine.jogl.util.gl.GLShaderProgram;
 import org.gephi.viz.engine.util.gl.Constants;
 
-public class EdgeCircleSelfLoop {
+public class EdgeCircleSelfLoopSelectionUnselected {
     // Attributes 5
     // Index	0	    1	    2	        3	    4
     // Value	posX	posY    color	    size	nodeSize
@@ -35,11 +39,15 @@ public class EdgeCircleSelfLoop {
     private GLShaderProgram program;
 
     private static final String SHADERS_ROOT = Constants.SHADERS_ROOT + "edge";
-    private static final String SHADERS_NODE_CIRCLE_SOURCE = "selfloop";
+    private static final String SHADERS_NODE_CIRCLE_SOURCE = "selfloop_unselected";
 
     public void initGLPrograms(GL2ES2 gl) {
         program = new GLShaderProgram(SHADERS_ROOT, SHADERS_NODE_CIRCLE_SOURCE, SHADERS_NODE_CIRCLE_SOURCE)
+            .addUniformName(UNIFORM_NAME_BACKGROUND_COLOR)
             .addUniformName(UNIFORM_NAME_MODEL_VIEW_PROJECTION)
+            .addUniformName(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR)
+            .addUniformName(UNIFORM_NAME_GLOBAL_TIME)
+            .addUniformName(UNIFORM_NAME_SELECTION_TIME)
             .addAttribLocation(ATTRIB_NAME_VERT, SHADER_VERT_LOCATION)
             .addAttribLocation(ATTRIB_NAME_POSITION, SHADER_POSITION_LOCATION)
             .addAttribLocation(ATTRIB_NAME_COLOR, SHADER_COLOR_LOCATION)
@@ -48,11 +56,18 @@ public class EdgeCircleSelfLoop {
             .init(gl);
     }
 
-    public void useProgram(GL2ES2 gl, float[] mvpFloats) {
+    public void useProgram(GL2ES2 gl, float[] mvpFloats, float[] backgroundColorFloats, float colorLightenFactor,
+                           float globalTime,
+                           float selectionTime) {
         //Circle:
         program.use(gl);
-
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR),
+            colorLightenFactor);
+        gl.glUniform4fv(program.getUniformLocation(UNIFORM_NAME_BACKGROUND_COLOR), 1,
+            backgroundColorFloats, 0);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_GLOBAL_TIME), globalTime);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_SELECTION_TIME), selectionTime);
 
 
     }

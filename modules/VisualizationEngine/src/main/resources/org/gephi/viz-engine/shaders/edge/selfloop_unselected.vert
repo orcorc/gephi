@@ -1,0 +1,35 @@
+//#include "../common.vert.glsl"
+
+in vec2 vert;
+in vec2 position;
+in vec4 elementColor;
+in float size;
+in float nodeSize;
+
+//#include "../common.animation.glsl"
+
+uniform mat4 mvp;
+uniform vec4 backgroundColor;
+uniform float colorLightenFactor;
+
+struct VertexData {
+    vec4 color;
+    float size;
+};
+flat out VertexData vertexData;
+out vec2 vLocal;
+
+void main() {
+    vLocal = vert;
+
+    vec2 instancePosition = nodeSize*.66 * vert + position + vec2(nodeSize*.66);
+    //vec2 instancePosition = 100.f * vert + position;
+    gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
+
+    //bgra -> rgba because Java color is argb big-endian
+    vec4 color = elementColor.bgra / 255.0;
+
+    color.rgb = mix(color.rgb, backgroundColor.rgb, colorLightenFactor*animationCurve);
+    vertexData.color = color;
+    vertexData.size = size;
+}

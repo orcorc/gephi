@@ -15,14 +15,15 @@ import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Node;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineModel;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.models.EdgeCircleSelfLoop;
+import org.gephi.viz.engine.jogl.models.EdgeCircleSelfLoopNoSelection;
+import org.gephi.viz.engine.jogl.models.EdgeCircleSelfLoopSelectionSelected;
+import org.gephi.viz.engine.jogl.models.EdgeCircleSelfLoopSelectionUnselected;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelDirected;
 import org.gephi.viz.engine.jogl.models.EdgeLineModelUndirected;
 import org.gephi.viz.engine.jogl.models.mesh.EdgeLineMeshGenerator;
@@ -48,7 +49,11 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected final EdgeLineModelUndirected lineModelUndirected = new EdgeLineModelUndirected();
     protected final EdgeLineModelDirected lineModelDirected = new EdgeLineModelDirected();
-    protected final EdgeCircleSelfLoop edgeCircleSelfLoop = new EdgeCircleSelfLoop();
+    protected final EdgeCircleSelfLoopNoSelection edgeCircleSelfLoopNoSelection = new EdgeCircleSelfLoopNoSelection();
+    protected final EdgeCircleSelfLoopSelectionSelected edgeCircleSelfLoopSelectionSelected =
+        new EdgeCircleSelfLoopSelectionSelected();
+    protected final EdgeCircleSelfLoopSelectionUnselected edgeCircleSelfLoopSelectionUnselected =
+        new EdgeCircleSelfLoopSelectionUnselected();
 
     protected final InstanceCounter undirectedInstanceCounter = new InstanceCounter();
     protected final InstanceCounter directedInstanceCounter = new InstanceCounter();
@@ -68,7 +73,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     protected GLBuffer attributesGLBufferUndirectedSecondary;
 
 
-    final public static int ATTRIBS_STRIDE_SELFLOOP = EdgeCircleSelfLoop.TOTAL_ATTRIBUTES_FLOATS;
+    final public static int ATTRIBS_STRIDE_SELFLOOP = EdgeCircleSelfLoopNoSelection.TOTAL_ATTRIBUTES_FLOATS;
     protected GLBuffer vertexGLBufferSelfLoop;
     protected GLBuffer attributesGLBufferSelfLoop;
     protected GLBuffer attributesGLBufferSelfLoopSecondary;
@@ -115,7 +120,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     }
 
     public void init(GL2ES2 gl) {
-        edgeCircleSelfLoop.initGLPrograms(gl);
+        edgeCircleSelfLoopNoSelection.initGLPrograms(gl);
+        edgeCircleSelfLoopSelectionUnselected.initGLPrograms(gl);
+        edgeCircleSelfLoopSelectionSelected.initGLPrograms(gl);
         lineModelDirected.initGLPrograms(gl);
         lineModelUndirected.initGLPrograms(gl);
 
@@ -137,9 +144,9 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         final float[] mvpFloats
     ) {
         final boolean renderingUnselectedEdges = layer.isBack();
-        /*if (!someSelection && renderingUnselectedEdges) {
+        if (!someSelection && renderingUnselectedEdges) {
             return 0;
-        }*/
+        }
         final boolean someSelection = data.hasSomeSelection();
 
         final float[] backgroundColorFloats = data.getBackgroundColor();
@@ -148,11 +155,46 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
         final float minWeight = data.getMinWeight();
         final float maxWeight = data.getMaxWeight();
+        final int instanceCount;
+        if (renderingUnselectedEdges) {
+            instanceCount = selfLoopCounter.unselectedCountToDraw;
 
-        final int instanceCount = selfLoopCounter.selectedCount;
-        edgeCircleSelfLoop.useProgram(gl,
-            mvpFloats);
-        setupSelfLoopVertexArrayAttributes(gl, data);
+            edgeCircleSelfLoopSelectionUnselected.useProgram(
+                gl,
+                mvpFloats,
+                backgroundColorFloats,
+                lightenNonSelectedFactor,
+                globalTime,
+                selectedTime
+            );
+
+            if (usesSecondaryBuffer) {
+                setupSelfLoopVertexArrayAttributesSecondary(gl, data);
+            } else {
+                setupSelfLoopVertexArrayAttributes(gl, data);
+            }
+        } else {
+            instanceCount = selfLoopCounter.selectedCountToDraw;
+            edgeCircleSelfLoopNoSelection.useProgram(gl,
+                mvpFloats);
+
+            if (someSelection) {
+                if (edgeSelectionColor) {
+                    edgeCircleSelfLoopNoSelection.useProgram(gl,
+                        mvpFloats);
+                } else {
+                    edgeCircleSelfLoopSelectionSelected.useProgram(gl,
+                        mvpFloats, backgroundColorFloats, lightenNonSelectedFactor, globalTime,
+                        selectedTime);
+                }
+            } else {
+                edgeCircleSelfLoopNoSelection.useProgram(
+                    gl,
+                    mvpFloats
+                );
+            }
+            setupSelfLoopVertexArrayAttributes(gl, data);
+        }
         return instanceCount;
     }
 
@@ -403,52 +445,111 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                                  int index,
                                  final FloatBuffer directBuffer) {
 
-        // Get Index of self loop edges
-        final ArrayList<Edge> selfLoopEdgeIndex = new ArrayList<>();
-        for (int i = 0; i <= maxIndex; i++) {
-            Edge e = visibleEdgesArray[i];
+        int selfLoopEdgeIndex = 0;
+        int unselectedSelfLoopEdgeIndex = 0;
+        //Undirected edges:
+        if (someSelection) {
 
-            // Discard if source and target node are not the same
-            if (e == null || e.getSource() != e.getTarget()) {
-                continue;
+            if (hideNonSelected) {
+                for (int i = 0; i <= maxIndex; i++) {
+                    Edge e = visibleEdgesArray[i];
+
+                    // Discard if source and target node are not the same
+                    if (e == null  // If edge is null
+                        || e.getSource() != e.getTarget() // or is not self loop
+                        || !edgesCallback.isSelected(i) // or is not selected
+                    ) {
+                        continue; // Filter out
+                    }
+
+                    selfLoopEdgeIndex++;
+                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+
+
+                    fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
+                    index += ATTRIBS_STRIDE_SELFLOOP;
+
+                    if (directBuffer != null && index == attribs.length) {
+                        directBuffer.put(attribs, 0, attribs.length);
+                        index = 0;
+                    }
+                }
+
+
+            } else {
+                for (int i = 0; i <= maxIndex; i++) {
+                    Edge e = visibleEdgesArray[i];
+
+                    // Discard if source and target node are not the same
+                    if (e == null  // If edge is null
+                        || e.getSource() != e.getTarget() // or is not self loop
+                        || edgesCallback.isSelected(i) // or is selected
+                    ) {
+                        continue; // Filter out
+                    }
+
+                    unselectedSelfLoopEdgeIndex++;
+                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+
+
+                    fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
+                    index += ATTRIBS_STRIDE_SELFLOOP;
+
+                    if (directBuffer != null && index == attribs.length) {
+                        directBuffer.put(attribs, 0, attribs.length);
+                        index = 0;
+                    }
+
+                }
+            }
+        } else {
+            //Just all edges, no selection active:
+            // Get Index of self loop edges
+
+            for (int i = 0; i <= maxIndex; i++) {
+                Edge e = visibleEdgesArray[i];
+
+                // Discard if source and target node are not the same
+                if (e == null || e.getSource() != e.getTarget()) {
+                    continue;
+                }
+
+                selfLoopEdgeIndex++;
+                final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+
+
+                fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, e, index, weight);
+                index += ATTRIBS_STRIDE_SELFLOOP;
+
+                if (directBuffer != null && index == attribs.length) {
+                    directBuffer.put(attribs, 0, attribs.length);
+                    index = 0;
+                }
+
             }
 
-            selfLoopEdgeIndex.add(e);
+            // For the moment let's do same rendering for all selection states
+            // if (someSelection)
 
-        }
-
-        // For the moment let's do same rendering for all selection states
-        // if (someSelection)
-
-        // Attributes 5
-        // Index	0	    1	    2	        3	    4
-        // Value	posX	posY    color	    size	nodeSize
-        //
-
-        for (Edge selfLoopEdge : selfLoopEdgeIndex) {
-
-            final float weight = edgeWeightEnabled ? (float) selfLoopEdge.getWeight() : 1f;
+            // Attributes 5
+            // Index	0	    1	    2	        3	    4
+            // Value	posX	posY    color	    size	nodeSize
+            //
 
 
-            fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, selfLoopEdge, index, weight);
-            index += ATTRIBS_STRIDE_SELFLOOP;
-
-            if (directBuffer != null && index == attribs.length) {
-                directBuffer.put(attribs, 0, attribs.length);
+            //Remaining:
+            if (directBuffer != null && index > 0) {
+                directBuffer.put(attribs, 0, index);
                 index = 0;
             }
+
+            // For the moment let's concider everything as undirected
+
         }
 
-        //Remaining:
-        if (directBuffer != null && index > 0) {
-            directBuffer.put(attribs, 0, index);
-            index = 0;
-        }
-
-        // For the moment let's concider everything as undirected
-        selfLoopCounter.selectedCount = selfLoopEdgeIndex.size();
-
-        return selfLoopEdgeIndex.size();
+        selfLoopCounter.selectedCount = selfLoopEdgeIndex;
+        selfLoopCounter.unselectedCount = unselectedSelfLoopEdgeIndex;
+        return index;
     }
 
     protected int updateDirectedData(
@@ -869,6 +970,32 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         buffer[index + 4] = weight;
     }
 
+    protected void fillSelfLoopEdgeAttributesDataWithSelection(final float[] buffer, final Edge edge,
+                                                               final int index, final float weight) {
+        final Node source = edge.getSource();
+
+        // Self loop for the moment are just circle like nodes so let's try to have same buffer
+        //
+
+        final float sourceX = source.x();
+        final float sourceY = source.y();
+
+        //Position:
+        buffer[index] = sourceX;
+        buffer[index + 1] = sourceY;
+        //Color:
+        buffer[index + 2] = computeElementColor(edge);
+        //Color
+
+        //Size (weight or constant):
+        buffer[index + 3] = weight;
+
+
+        //Source and target size , here it's use for an offest to be applied to the circle :
+        // so that it's not right under the node.
+        buffer[index + 4] = source.size();
+    }
+
     protected void fillSelfLoopEdgeAttributesDataWithoutSelection(final float[] buffer, final Edge edge,
                                                                   final int index, final float weight) {
         final Node source = edge.getSource();
@@ -1190,7 +1317,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         protected void configure(GL2ES2 gl) {
             vertexGLBufferSelfLoop.bind(gl);
             {
-                gl.glVertexAttribPointer(SHADER_VERT_LOCATION, EdgeCircleSelfLoop.VERTEX_FLOATS, GL_FLOAT, false,
+                gl.glVertexAttribPointer(SHADER_VERT_LOCATION, EdgeCircleSelfLoopNoSelection.VERTEX_FLOATS, GL_FLOAT,
+                    false,
                     0, 0);
             }
             vertexGLBufferSelfLoop.unbind(gl);
@@ -1199,21 +1327,24 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             {
                 int stride = ATTRIBS_STRIDE_SELFLOOP * Float.BYTES;
                 int offset = 0;
-                gl.glVertexAttribPointer(SHADER_POSITION_LOCATION, EdgeCircleSelfLoop.POSITION_FLOATS, GL_FLOAT, false,
+                gl.glVertexAttribPointer(SHADER_POSITION_LOCATION, EdgeCircleSelfLoopNoSelection.POSITION_FLOATS,
+                    GL_FLOAT, false,
                     stride, offset);
-                offset += EdgeCircleSelfLoop.POSITION_FLOATS * Float.BYTES;
+                offset += EdgeCircleSelfLoopNoSelection.POSITION_FLOATS * Float.BYTES;
 
-                gl.glVertexAttribPointer(SHADER_COLOR_LOCATION, EdgeCircleSelfLoop.COLOR_FLOATS * Float.BYTES,
+                gl.glVertexAttribPointer(SHADER_COLOR_LOCATION,
+                    EdgeCircleSelfLoopNoSelection.COLOR_FLOATS * Float.BYTES,
                     GL_UNSIGNED_BYTE,
                     false, stride, offset);
-                offset += EdgeCircleSelfLoop.COLOR_FLOATS * Float.BYTES;
+                offset += EdgeCircleSelfLoopNoSelection.COLOR_FLOATS * Float.BYTES;
 
-                gl.glVertexAttribPointer(SHADER_SIZE_LOCATION, EdgeCircleSelfLoop.SIZE_FLOATS, GL_FLOAT, false, stride,
+                gl.glVertexAttribPointer(SHADER_SIZE_LOCATION, EdgeCircleSelfLoopNoSelection.SIZE_FLOATS, GL_FLOAT,
+                    false, stride,
                     offset);
-                offset += EdgeCircleSelfLoop.SIZE_FLOATS * Float.BYTES;
+                offset += EdgeCircleSelfLoopNoSelection.SIZE_FLOATS * Float.BYTES;
 
                 gl.glVertexAttribPointer(SHADER_SELFLOOP_NODE_SIZE_LOCATION,
-                    EdgeCircleSelfLoop.NODE_SIZE_FLOATS, GL_FLOAT, false, stride, offset);
+                    EdgeCircleSelfLoopNoSelection.NODE_SIZE_FLOATS, GL_FLOAT, false, stride, offset);
 
 
             }

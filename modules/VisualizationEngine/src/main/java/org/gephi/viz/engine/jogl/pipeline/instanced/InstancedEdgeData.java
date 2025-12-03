@@ -155,58 +155,64 @@ public class InstancedEdgeData extends AbstractEdgeData {
     }
 
     public void updateBuffers(GL gl) {
-        final FloatBuffer buf = attributesBuffer.floatBuffer();
+        {
+            final FloatBuffer buf = attributesBuffer.floatBuffer();
 
 
-        buf.limit(undirectedInstanceCounter.unselectedCount * ATTRIBS_STRIDE);
-        buf.position(0);
+            buf.limit(undirectedInstanceCounter.unselectedCount * ATTRIBS_STRIDE);
+            buf.position(0);
 
-        attributesGLBufferUndirectedSecondary.bind(gl);
-        attributesGLBufferUndirectedSecondary.updateWithOrphaning(gl, buf);
-        attributesGLBufferUndirectedSecondary.unbind(gl);
+            attributesGLBufferUndirectedSecondary.bind(gl);
+            attributesGLBufferUndirectedSecondary.updateWithOrphaning(gl, buf);
+            attributesGLBufferUndirectedSecondary.unbind(gl);
 
-        int offset = buf.limit();
-        buf.limit(offset + undirectedInstanceCounter.selectedCount * ATTRIBS_STRIDE);
-        buf.position(offset);
+            int offset = buf.limit();
+            buf.limit(offset + undirectedInstanceCounter.selectedCount * ATTRIBS_STRIDE);
+            buf.position(offset);
 
-        attributesGLBufferUndirected.bind(gl);
-        attributesGLBufferUndirected.updateWithOrphaning(gl, buf);
-        attributesGLBufferUndirected.unbind(gl);
+            attributesGLBufferUndirected.bind(gl);
+            attributesGLBufferUndirected.updateWithOrphaning(gl, buf);
+            attributesGLBufferUndirected.unbind(gl);
 
-        offset = buf.limit();
-        buf.limit(offset + directedInstanceCounter.unselectedCount * ATTRIBS_STRIDE);
-        buf.position(offset);
+            offset = buf.limit();
+            buf.limit(offset + directedInstanceCounter.unselectedCount * ATTRIBS_STRIDE);
+            buf.position(offset);
 
-        attributesGLBufferDirectedSecondary.bind(gl);
-        attributesGLBufferDirectedSecondary.updateWithOrphaning(gl, buf);
-        attributesGLBufferDirectedSecondary.unbind(gl);
+            attributesGLBufferDirectedSecondary.bind(gl);
+            attributesGLBufferDirectedSecondary.updateWithOrphaning(gl, buf);
+            attributesGLBufferDirectedSecondary.unbind(gl);
 
-        offset = buf.limit();
-        buf.limit(offset + directedInstanceCounter.selectedCount * ATTRIBS_STRIDE);
-        buf.position(offset);
+            offset = buf.limit();
+            buf.limit(offset + directedInstanceCounter.selectedCount * ATTRIBS_STRIDE);
+            buf.position(offset);
 
-        attributesGLBufferDirected.bind(gl);
-        attributesGLBufferDirected.updateWithOrphaning(gl, buf);
-        attributesGLBufferDirected.unbind(gl);
+            attributesGLBufferDirected.bind(gl);
+            attributesGLBufferDirected.updateWithOrphaning(gl, buf);
+            attributesGLBufferDirected.unbind(gl);
+        }
 
-        final FloatBuffer selfLoopBuf = selfLoopAttributesBuffer.floatBuffer();
-        selfLoopBuf.limit(selfLoopCounter.selectedCount * ATTRIBS_STRIDE_SELFLOOP);
-        selfLoopBuf.position(0);
+        {
+            final FloatBuffer selfLoopBuf = selfLoopAttributesBuffer.floatBuffer();
 
-        attributesGLBufferSelfLoop.bind(gl);
-        attributesGLBufferSelfLoop.updateWithOrphaning(gl, selfLoopBuf);
-        attributesGLBufferSelfLoop.unbind(gl);
-/*
-        offset = selfLoopBuf.limit();
-        selfLoopBuf.limit(offset + undirectedInstanceCounter.selfLoopCount * ATTRIBS_STRIDE_SELFLOOP);
-        selfLoopBuf.position(offset);
 
-        attributesGLBufferSelfLoop.bind(gl);
-        attributesGLBufferSelfLoop.updateWithOrphaning(gl, selfLoopBuf);
-        attributesGLBufferSelfLoop.unbind(gl);
-*/
+            selfLoopBuf.limit(selfLoopCounter.unselectedCount * ATTRIBS_STRIDE_SELFLOOP);
+            selfLoopBuf.position(0);
+
+            attributesGLBufferSelfLoopSecondary.bind(gl);
+            attributesGLBufferSelfLoopSecondary.updateWithOrphaning(gl, selfLoopBuf);
+            attributesGLBufferSelfLoopSecondary.unbind(gl);
+
+            int offset = selfLoopBuf.limit();
+            selfLoopBuf.limit(offset + selfLoopCounter.selectedCount * ATTRIBS_STRIDE_SELFLOOP);
+            selfLoopBuf.position(offset);
+
+            attributesGLBufferSelfLoop.bind(gl);
+            attributesGLBufferSelfLoop.updateWithOrphaning(gl, selfLoopBuf);
+            attributesGLBufferSelfLoop.unbind(gl);
+        }
         undirectedInstanceCounter.promoteCountToDraw();
         directedInstanceCounter.promoteCountToDraw();
+        selfLoopCounter.promoteCountToDraw();
     }
 
     @Override
