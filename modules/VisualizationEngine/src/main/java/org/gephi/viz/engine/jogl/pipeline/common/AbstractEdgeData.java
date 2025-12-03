@@ -491,7 +491,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     unselectedSelfLoopEdgeIndex++;
                     final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
 
-
                     fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
                     index += ATTRIBS_STRIDE_SELFLOOP;
 
@@ -500,6 +499,30 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         index = 0;
                     }
 
+                }
+
+                for (int i = 0; i <= maxIndex; i++) {
+                    Edge e = visibleEdgesArray[i];
+
+                    // Discard if source and target node are not the same
+                    if (e == null  // If edge is null
+                        || e.getSource() != e.getTarget() // or is not self loop
+                        || !edgesCallback.isSelected(i) // or is not selected
+                    ) {
+                        continue; // Filter out
+                    }
+
+                    selfLoopEdgeIndex++;
+                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+
+
+                    fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
+                    index += ATTRIBS_STRIDE_SELFLOOP;
+
+                    if (directBuffer != null && index == attribs.length) {
+                        directBuffer.put(attribs, 0, attribs.length);
+                        index = 0;
+                    }
                 }
             }
         } else {
@@ -549,6 +572,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         selfLoopCounter.selectedCount = selfLoopEdgeIndex;
         selfLoopCounter.unselectedCount = unselectedSelfLoopEdgeIndex;
+
         return index;
     }
 
