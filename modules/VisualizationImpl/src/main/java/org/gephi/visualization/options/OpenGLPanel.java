@@ -51,7 +51,11 @@ import javax.swing.text.NumberFormatter;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
+import org.openide.LifecycleManager;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.util.ImageUtilities;
 import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
 final class OpenGLPanel extends javax.swing.JPanel {
@@ -224,6 +228,13 @@ final class OpenGLPanel extends javax.swing.JPanel {
     void store() {
         NbPreferences.forModule(VizConfig.class).putInt(VizConfig.ANTIALIASING, antiAliasing);
         NbPreferences.forModule(VizConfig.class).putBoolean(VizConfig.SHOW_FPS, fpsCheckbox.isSelected());
+
+        NotificationDisplayer.getDefault().notify(NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.restart.title"),
+            ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/restart.png", false),
+            NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.restart.message"), e -> {
+                LifecycleManager.getDefault().markForRestart();
+                LifecycleManager.getDefault().exit();
+            }, NotificationDisplayer.Priority.HIGH, NotificationDisplayer.Category.INFO);
     }
 
     boolean valid() {
