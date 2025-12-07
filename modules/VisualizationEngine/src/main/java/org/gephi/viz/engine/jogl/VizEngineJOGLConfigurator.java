@@ -61,7 +61,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
     public static final String[] GL_PROFILE_LIST_MAX_PROGSHADER_CORE_OR_GL2 =
         new String[] {GL4, GL3, GLES3, GL2, GLES2};
 
-    public static GLCapabilities createCapabilities() {
+    public static GLCapabilities createCapabilities(int antialiasing) {
         GLProfile.getDefaultDevice();
 
         GLProfile glProfile = GLProfile.get(GL_PROFILE_LIST_MAX_PROGSHADER_CORE_OR_GL2, true);
@@ -74,8 +74,10 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         caps.setDoubleBuffered(true);
         caps.setHardwareAccelerated(true);
 
-        caps.setSampleBuffers(true);
-        caps.setNumSamples(4);
+        caps.setSampleBuffers(antialiasing > 0);
+        if (antialiasing > 0) {
+            caps.setNumSamples(antialiasing);
+        }
 
         return caps;
     }
