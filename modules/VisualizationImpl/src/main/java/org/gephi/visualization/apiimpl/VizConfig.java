@@ -58,6 +58,10 @@ import org.openide.util.NbPreferences;
  */
 public class VizConfig {
 
+    private VizConfig() {
+        // Only static methods and fields
+    }
+
     //Const Default Config
     public static final String BACKGROUND_COLOR = "VizConfig.defaultBackgroundColor";
     public static final String BACKGROUND_COLOR_DARK = "VizConfig.defaultDarkBackgroundColor";
@@ -131,215 +135,215 @@ public class VizConfig {
     public static final boolean DEFAULT_EDGE_WEIGHTED = true;
 
     //Default config - loaded in the VizModel
-    protected Color defaultBackgroundColor = ColorUtils.decode(
+    protected static Color defaultBackgroundColor = ColorUtils.decode(
         NbPreferences.forModule(VizConfig.class).get(BACKGROUND_COLOR, ColorUtils.encode(DEFAULT_BACKGROUND_COLOR)));
-    protected Color defaultDarkBackgroundColor = ColorUtils.decode(
+    protected static Color defaultDarkBackgroundColor = ColorUtils.decode(
         NbPreferences.forModule(VizConfig.class)
             .get(BACKGROUND_COLOR_DARK, ColorUtils.encode(DEFAULT_DARK_BACKGROUND_COLOR)));
-    protected boolean defaultShowNodeLabels =
+    protected static boolean defaultShowNodeLabels =
         NbPreferences.forModule(VizConfig.class).getBoolean(NODE_LABELS, DEFAULT_NODE_LABELS);
-    protected boolean defaultShowEdgeLabels =
+    protected static boolean defaultShowEdgeLabels =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_LABELS, DEFAULT_EDGE_LABELS);
-    protected boolean defaultShowEdges =
+    protected static boolean defaultShowEdges =
         NbPreferences.forModule(VizConfig.class).getBoolean(SHOW_EDGES, DEFAULT_SHOW_EDGES);
-    protected EdgeColorMode defaultEdgeColorMode =
+    protected static EdgeColorMode defaultEdgeColorMode =
         EdgeColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_COLOR_MODE, DEFAULT_EDGE_COLOR_MODE.name()));
-    protected boolean defaultLightenNonSelectedAuto =
+    protected static boolean defaultLightenNonSelectedAuto =
         NbPreferences.forModule(VizConfig.class).getBoolean(HIGHLIGHT, DEFAULT_HIGHLIGHT);
-    protected float defaultLightenNonSelectedFactor =
+    protected static float defaultLightenNonSelectedFactor =
         NbPreferences.forModule(VizConfig.class).getFloat(HIGHLIGHT_FACTOR, DEFAULT_HIGHLIGHT_FACTOR);
-    protected boolean defaultAutoSelectNeighbor =
+    protected static boolean defaultAutoSelectNeighbor =
         NbPreferences.forModule(VizConfig.class).getBoolean(NEIGHBOUR_SELECT, DEFAULT_NEIGHBOUR_SELECT);
-    protected boolean defaultHideNonSelectedEdges =
+    protected static boolean defaultHideNonSelectedEdges =
         NbPreferences.forModule(VizConfig.class).getBoolean(HIDE_NONSELECTED_EDGES, DEFAULT_HIDE_NONSELECTED_EDGES);
-    protected Font defaultNodeLabelFont = Font.decode(
+    protected static Font defaultNodeLabelFont = Font.decode(
         NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_FONT, FontUtils.encode(DEFAULT_NODE_LABEL_FONT)));
-    protected Font defaultEdgeLabelFont = Font.decode(
+    protected static Font defaultEdgeLabelFont = Font.decode(
         NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_FONT, FontUtils.encode(DEFAULT_EDGE_LABEL_FONT)));
-    protected boolean defaultHideNonSelectedNodeLabels =
+    protected static boolean defaultHideNonSelectedNodeLabels =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(HIDE_NONSELECTED_NODE_LABELS, DEFAULT_HIDE_NONSELECTED_NODE_LABELS);
-    protected boolean defaultHideNonSelectedEdgeLabels =
+    protected static boolean defaultHideNonSelectedEdgeLabels =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(HIDE_NONSELECTED_EDGE_LABELS, DEFAULT_HIDE_NONSELECTED_EDGE_LABELS);
-    protected boolean defaultFitNodeLabelsToNodeSize =
+    protected static boolean defaultFitNodeLabelsToNodeSize =
         NbPreferences.forModule(VizConfig.class).getBoolean(FIT_NODE_LABELS_TO_NODE_SIZE,
             DEFAULT_FIT_NODE_LABELS_TO_NODE_SIZE);
-    protected boolean defaultAvoidNodeLabelOverlap =
+    protected static boolean defaultAvoidNodeLabelOverlap =
         NbPreferences.forModule(VizConfig.class).getBoolean(AVOID_NODE_LABEL_OVERLAP,
             DEFAULT_AVOID_NODE_LABEL_OVERLAP);
-    protected boolean defaultEdgeSelectionColor =
+    protected static boolean defaultEdgeSelectionColor =
         NbPreferences.forModule(VizConfig.class).getBoolean(SELECTEDEDGE_HAS_COLOR, DEFAULT_SELECTEDEDGE_HAS_COLOR);
-    protected Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+    protected static Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
         .get(SELECTEDEDGE_IN_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_IN_COLOR)));
-    protected Color defaultEdgeOutSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+    protected static Color defaultEdgeOutSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
         .get(SELECTEDEDGE_OUT_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_OUT_COLOR)));
-    protected Color defaultEdgeBothSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+    protected static Color defaultEdgeBothSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
         .get(SELECTEDEDGE_BOTH_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_BOTH_COLOR)));
-    protected float defaultEdgeScale =
+    protected static float defaultEdgeScale =
         NbPreferences.forModule(VizConfig.class).getFloat(EDGE_SCALE, DEFAULT_EDGE_SCALE);
-    protected float defaultNodeScale =
+    protected static float defaultNodeScale =
         NbPreferences.forModule(VizConfig.class).getFloat(NODE_SCALE, DEFAULT_NODE_SCALE);
-    protected LabelSizeMode defaultNodeLabelSizeMode =
+    protected static LabelSizeMode defaultNodeLabelSizeMode =
         LabelSizeMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_SIZE_MODE, DEFAULT_NODE_LABEL_SIZE_MODE));
-    protected LabelColorMode defaultNodeLabelColorMode =
+    protected static LabelColorMode defaultNodeLabelColorMode =
         LabelColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_COLOR_MODE, DEFAULT_NODE_LABEL_COLOR_MODE));
-    protected boolean defaultUseEdgeWeight =
+    protected static boolean defaultUseEdgeWeight =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_WEIGHTED, DEFAULT_EDGE_WEIGHTED);
-    protected float defaultNodeLabelScale =
+    protected static float defaultNodeLabelScale =
         NbPreferences.forModule(VizConfig.class).getFloat(NODE_LABEL_SCALE, DEFAULT_NODE_LABEL_SCALE);
-    protected float defaultEdgeLabelScale =
+    protected static float defaultEdgeLabelScale =
         NbPreferences.forModule(VizConfig.class).getFloat(EDGE_LABEL_SCALE, DEFAULT_EDGE_LABEL_SCALE);
-    protected LabelSizeMode defaultEdgeLabelSizeMode =
+    protected static LabelSizeMode defaultEdgeLabelSizeMode =
         LabelSizeMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_SIZE_MODE, DEFAULT_EDGE_LABEL_SIZE_MODE));
-    protected LabelColorMode defaultEdgeLabelColorMode =
+    protected static LabelColorMode defaultEdgeLabelColorMode =
         LabelColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_COLOR_MODE, DEFAULT_EDGE_LABEL_COLOR_MODE));
-    protected float defaultZoom = NbPreferences.forModule(VizConfig.class).getFloat(ZOOM, DEFAULT_ZOOM);
-    protected int defaultMouseSelectionDiameter =
+    protected static float defaultZoom = NbPreferences.forModule(VizConfig.class).getFloat(ZOOM, DEFAULT_ZOOM);
+    protected static int defaultMouseSelectionDiameter =
         NbPreferences.forModule(VizConfig.class).getInt(MOUSE_SELECTION_DIAMETER, DEFAULT_MOUSE_SELECTION_DIAMETER);
     //Preferences
-    protected int antialiasing = NbPreferences.forModule(VizConfig.class).getInt(ANTIALIASING, DEFAULT_ANTIALIASING);
-    protected boolean enableContextMenu =
+    protected static int antialiasing = NbPreferences.forModule(VizConfig.class).getInt(ANTIALIASING, DEFAULT_ANTIALIASING);
+    protected static boolean enableContextMenu =
         NbPreferences.forModule(VizConfig.class).getBoolean(CONTEXT_MENU, DEFAULT_CONTEXT_MENU);
 
-    public int getAntialiasing() {
+    public static int getAntialiasing() {
         return antialiasing;
     }
 
-    public boolean isEnableContextMenu() {
+    public static boolean isEnableContextMenu() {
         return enableContextMenu;
     }
 
-    public float getDefaultZoom() {
+    public static float getDefaultZoom() {
         return defaultZoom;
     }
 
-    public Vector2fc getDefaultPan() {
+    public static Vector2fc getDefaultPan() {
         return new Vector2f(0.0f, 0.0f);
     }
 
-    public boolean isDefaultAutoSelectNeighbor() {
+    public static boolean isDefaultAutoSelectNeighbor() {
         return defaultAutoSelectNeighbor;
     }
 
-    public Color getDefaultBackgroundColor() {
+    public static Color getDefaultBackgroundColor() {
         return defaultBackgroundColor;
     }
 
-    public Color getDefaultDarkBackgroundColor() {
+    public static Color getDefaultDarkBackgroundColor() {
         return defaultDarkBackgroundColor;
     }
 
-    public Font getDefaultEdgeLabelFont() {
+    public static Font getDefaultEdgeLabelFont() {
         return defaultEdgeLabelFont;
     }
 
-    public boolean isDefaultHideNonSelectedEdges() {
+    public static boolean isDefaultHideNonSelectedEdges() {
         return defaultHideNonSelectedEdges;
     }
 
-    public boolean isDefaultLightenNonSelectedAuto() {
+    public static boolean isDefaultLightenNonSelectedAuto() {
         return defaultLightenNonSelectedAuto;
     }
 
-    public float getDefaultLightenNonSelectedFactor() {
+    public static float getDefaultLightenNonSelectedFactor() {
         return defaultLightenNonSelectedFactor;
     }
 
-    public Font getDefaultNodeLabelFont() {
+    public static Font getDefaultNodeLabelFont() {
         return defaultNodeLabelFont;
     }
 
-    public boolean isDefaultShowEdgeLabels() {
+    public static boolean isDefaultShowEdgeLabels() {
         return defaultShowEdgeLabels;
     }
 
-    public boolean isDefaultHideNonSelectedNodeLabels() {
+    public static boolean isDefaultHideNonSelectedNodeLabels() {
         return defaultHideNonSelectedNodeLabels;
     }
 
-    public boolean isDefaultHideNonSelectedEdgeLabels() {
+    public static boolean isDefaultHideNonSelectedEdgeLabels() {
         return defaultHideNonSelectedEdgeLabels;
     }
 
-    public boolean isDefaultFitNodeLabelsToNodeSize() {
+    public static boolean isDefaultFitNodeLabelsToNodeSize() {
         return defaultFitNodeLabelsToNodeSize;
     }
 
-    public boolean isDefaultAvoidNodeLabelOverlap() {
+    public static boolean isDefaultAvoidNodeLabelOverlap() {
         return defaultAvoidNodeLabelOverlap;
     }
 
-    public boolean isDefaultShowNodeLabels() {
+    public static boolean isDefaultShowNodeLabels() {
         return defaultShowNodeLabels;
     }
 
-    public boolean isDefaultShowEdges() {
+    public static boolean isDefaultShowEdges() {
         return defaultShowEdges;
     }
 
-    public boolean isDefaultEdgeSelectionColor() {
+    public static boolean isDefaultEdgeSelectionColor() {
         return defaultEdgeSelectionColor;
     }
 
-    public Color getDefaultEdgeBothSelectedColor() {
+    public static Color getDefaultEdgeBothSelectedColor() {
         return defaultEdgeBothSelectedColor;
     }
 
-    public Color getDefaultEdgeInSelectedColor() {
+    public static Color getDefaultEdgeInSelectedColor() {
         return defaultEdgeInSelectedColor;
     }
 
-    public Color getDefaultEdgeOutSelectedColor() {
+    public static Color getDefaultEdgeOutSelectedColor() {
         return defaultEdgeOutSelectedColor;
     }
 
-    public LabelSizeMode getDefaultNodeLabelSizeMode() {
+    public static LabelSizeMode getDefaultNodeLabelSizeMode() {
         return defaultNodeLabelSizeMode;
     }
 
-    public LabelColorMode getDefaultNodeLabelColorMode() {
+    public static LabelColorMode getDefaultNodeLabelColorMode() {
         return defaultNodeLabelColorMode;
     }
 
-    public boolean isDefaultUseEdgeWeight() {
+    public static boolean isDefaultUseEdgeWeight() {
         return defaultUseEdgeWeight;
     }
 
-    public float getDefaultNodeLabelScale() {
+    public static float getDefaultNodeLabelScale() {
         return defaultNodeLabelScale;
     }
 
-    public float getDefaultEdgeLabelScale() {
+    public static float getDefaultEdgeLabelScale() {
         return defaultEdgeLabelScale;
     }
 
-    public LabelSizeMode getDefaultEdgeLabelSizeMode() {
+    public static LabelSizeMode getDefaultEdgeLabelSizeMode() {
         return defaultEdgeLabelSizeMode;
     }
 
-    public LabelColorMode getDefaultEdgeLabelColorMode() {
+    public static LabelColorMode getDefaultEdgeLabelColorMode() {
         return defaultEdgeLabelColorMode;
     }
 
-    public int getDefaultMouseSelectionDiameter() {
+    public static int getDefaultMouseSelectionDiameter() {
         return defaultMouseSelectionDiameter;
     }
 
-    public float getDefaultEdgeScale() {
+    public static float getDefaultEdgeScale() {
         return defaultEdgeScale;
     }
 
-    public float getDefaultNodeScale() {
+    public static float getDefaultNodeScale() {
         return defaultNodeScale;
     }
 
-    public EdgeColorMode getDefaultEdgeColorMode() {
+    public static EdgeColorMode getDefaultEdgeColorMode() {
         return defaultEdgeColorMode;
     }
 }

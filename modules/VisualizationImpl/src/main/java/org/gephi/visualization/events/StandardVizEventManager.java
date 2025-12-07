@@ -56,6 +56,7 @@ import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.VisualizationEvent;
 import org.gephi.visualization.api.VisualizationEventListener;
 import org.gephi.visualization.apiimpl.GraphContextMenu;
+import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.visualization.apiimpl.VizEvent;
 import org.gephi.visualization.component.VizEngineGraphCanvasManager;
 import org.gephi.viz.engine.VizEngine;
@@ -328,7 +329,7 @@ public class StandardVizEventManager {
     public boolean mouseRightClick(Component parentComponent, VizEngineGraphCanvasManager canvasManager,
                                    VizEngine engine) {
         VizController controller = Lookup.getDefault().lookup(VizController.class);
-        if (controller != null && controller.getModel() != null && controller.getModel().getConfig().isEnableContextMenu()) {
+        if (controller != null && controller.getModel() != null && VizConfig.isEnableContextMenu()) {
             GraphContextMenu popupMenu = new GraphContextMenu();
             float globalScale = canvasManager.getSurfaceScale().orElse(1.0f);
             int x = (int) (mouseScreenPosition.x / globalScale);

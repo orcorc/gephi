@@ -22,11 +22,11 @@ public class SelectionModelImpl {
     private boolean singleNodeSelection = false;
     private boolean nodeSelection = false;
 
-    public SelectionModelImpl(VizModel visualisationModel, VizConfig config) {
+    public SelectionModelImpl(VizModel visualisationModel) {
         this.visualisationModel = visualisationModel;
 
         // Settings
-        this.mouseSelectionDiameter = config.getDefaultMouseSelectionDiameter();
+        this.mouseSelectionDiameter = VizConfig.getDefaultMouseSelectionDiameter();
     }
 
     protected Optional<GraphSelection> currentEngineSelectionModel() {
