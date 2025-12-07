@@ -52,6 +52,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.VisualizationEvent;
 import org.gephi.visualization.api.VisualizationEventListener;
 import org.gephi.visualization.apiimpl.GraphContextMenu;
@@ -62,6 +63,7 @@ import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.openide.util.Lookup;
 
 /**
  * @author Mathieu Bastian
@@ -325,11 +327,14 @@ public class StandardVizEventManager {
 
     public boolean mouseRightClick(Component parentComponent, VizEngineGraphCanvasManager canvasManager,
                                    VizEngine engine) {
-        GraphContextMenu popupMenu = new GraphContextMenu();
-        float globalScale = canvasManager.getSurfaceScale().orElse(1.0f);
-        int x = (int) (mouseScreenPosition.x / globalScale);
-        int y = (int) (mouseScreenPosition.y / globalScale);
-        popupMenu.getMenu(engine).show(parentComponent, x, y);
+        VizController controller = Lookup.getDefault().lookup(VizController.class);
+        if (controller != null && controller.getModel() != null && controller.getModel().getConfig().isEnableContextMenu()) {
+            GraphContextMenu popupMenu = new GraphContextMenu();
+            float globalScale = canvasManager.getSurfaceScale().orElse(1.0f);
+            int x = (int) (mouseScreenPosition.x / globalScale);
+            int y = (int) (mouseScreenPosition.y / globalScale);
+            popupMenu.getMenu(engine).show(parentComponent, x, y);
+        }
 
         return handlers[VisualizationEvent.Type.MOUSE_RIGHT_CLICK.ordinal()].dispatch();
     }

@@ -26,7 +26,7 @@ public class SelectionModelImpl {
         this.visualisationModel = visualisationModel;
 
         // Settings
-        this.mouseSelectionDiameter = config.getMouseSelectionDiameter();
+        this.mouseSelectionDiameter = config.getDefaultMouseSelectionDiameter();
     }
 
     protected Optional<GraphSelection> currentEngineSelectionModel() {
