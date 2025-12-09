@@ -48,10 +48,8 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.ScreenshotModel;
 import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
 
@@ -76,7 +74,7 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     // Controller
-    private final ScreenshotController controller;
+    private final ScreenshotControllerImpl controller;
     //
     private int surfaceWidth;
     private int surfaceHeight;
@@ -135,8 +133,8 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
     }
 
     public void setup(final ScreenshotModel model) {
-        this.surfaceHeight = model.getVisualisationModel().getSurfaceHeight();
-        this.surfaceWidth = model.getVisualisationModel().getSurfaceWidth();
+        this.surfaceHeight = controller.getSurfaceHeight();
+        this.surfaceWidth = controller.getSurfaceWidth();
         autoSaveCheckBox.setSelected(model.isAutoSave());
         selectDirectoryButton.setEnabled(autoSaveCheckBox.isSelected());
         customScaleFactorSpinner.setValue(model.getScaleFactor());

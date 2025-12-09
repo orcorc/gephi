@@ -50,31 +50,17 @@ public class Constants {
     public static final int RENDERING_ORDER_NODES = 100;
     public static final int RENDERING_ORDER_EDGES = 50;
 
-
-    public static final float EDGE_SCALE_MIN = 0.4f;
-    public static final float EDGE_SCALE_MAX = 8.0f;
-
     public static final String SHADERS_ROOT = "/org/gephi/viz-engine/shaders/";
 
     // Customizable Constants : Might worth considering having a proper static class
-    private static float NODE_BORDER_SIZE = 0.16f;
-    private static float NODE_BORDER_DARKEN_FACTOR = 0.498f;
+    private static final float NODE_BORDER_SIZE = 0.16f;
+    private static final float NODE_BORDER_DARKEN_FACTOR = 0.498f;
 
     public static float getNodeBorderSize() {
         return NODE_BORDER_SIZE;
     }
 
-    public static void setNodeBorderSize(float nodeBorderSize) {
-        NODE_BORDER_SIZE = nodeBorderSize;
-    }
-
     public static float getNodeBorderDarkenFactor() {
         return NODE_BORDER_DARKEN_FACTOR;
     }
-
-    public static void setNodeBorderDarkenFactor(float nodeBorderDarkenFactor) {
-        NODE_BORDER_DARKEN_FACTOR = nodeBorderDarkenFactor;
-    }
-
-
 }

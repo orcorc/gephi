@@ -213,6 +213,15 @@ public interface VisualisationModel extends Model {
     boolean isUseEdgeWeight();
 
     /**
+     * Returns whether edge weight rescaling is enabled.
+     * <p>
+     * Default value is <code>true</code>.
+     *
+     * @return <code>true</code> if edge weight rescaling is enabled, <code>false</code> otherwise
+     */
+    boolean isRescaleEdgeWeight();
+
+    /**
      * Returns the estimator used for dynamic edge weights.
      *
      * @return the edge weight estimator or <code>null</code> if not applicable
@@ -435,19 +444,4 @@ public interface VisualisationModel extends Model {
      * @return the edge label columns
      */
     Column[] getEdgeLabelColumns();
-
-    /**
-     * Returns the width of the visualization surface in pixels, or zero if not available.
-     *
-     * @return the surface width
-     */
-    int getSurfaceWidth();
-
-    /**
-     * Returns the height of the visualization surface in pixels, or zero if not available.
-     *
-     * @return the surface height
-     */
-    int getSurfaceHeight();
-
 }

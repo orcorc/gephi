@@ -704,4 +704,20 @@ public final class GLCapabilitiesSummary {
     public boolean isVendorIntel() {
         return version.VENDOR != null && version.VENDOR.toLowerCase().contains("intel");
     }
+
+    public String getVendor() {
+        return version.VENDOR;
+    }
+
+    public String getRenderer() {
+        return version.RENDERER;
+    }
+
+    public String getVersionString() {
+        return version.VERSION;
+    }
+
+    public String getShadingLanguageVersion() {
+        return version.SHADING_LANGUAGE_VERSION;
+    }
 }

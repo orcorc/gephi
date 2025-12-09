@@ -19,7 +19,7 @@ public class ScreenshotModelImpl implements ScreenshotModel {
     private boolean autoSave = false;
     private String defaultDirectory;
 
-    public ScreenshotModelImpl(VizModel vizModel, VizConfig config) {
+    public ScreenshotModelImpl(VizModel vizModel) {
         this.vizModel = vizModel;
         String lastPathDefault = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH_DEFAULT, null);
         defaultDirectory = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH, lastPathDefault);
@@ -31,7 +31,6 @@ public class ScreenshotModelImpl implements ScreenshotModel {
     public VisualisationModel getVisualisationModel() {
         return vizModel;
     }
-
 
     @Override
     public int getScaleFactor() {

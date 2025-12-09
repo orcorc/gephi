@@ -92,6 +92,7 @@ public class ScreenshotControllerImpl implements ScreenshotController {
         getModel().setScaleFactor(scaleFactor);
     }
 
+    @Override
     public void takeScreenshot() {
         vizController.getModel().getEngine().ifPresent(
             engine -> {
@@ -102,6 +103,17 @@ public class ScreenshotControllerImpl implements ScreenshotController {
             });
 
     }
+
+    public int getSurfaceWidth() {
+        return vizController.getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceWidth())
+            .orElse(0);
+    }
+
+    public int getSurfaceHeight() {
+        return vizController.getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceHeight())
+            .orElse(0);
+    }
+
 
     public void configure() {
         ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel(this);

@@ -44,10 +44,14 @@ package org.gephi.visualization.options;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.text.NumberFormat;
-import java.util.Locale;
-import javax.swing.text.NumberFormatter;
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.apiimpl.VizConfig;
+import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
+import org.openide.LifecycleManager;
+import org.openide.awt.NotificationDisplayer;
+import org.openide.util.ImageUtilities;
+import org.openide.util.Lookup;
+import org.openide.util.NbBundle;
 import org.openide.util.NbPreferences;
 
 final class OpenGLPanel extends javax.swing.JPanel {
@@ -61,11 +65,9 @@ final class OpenGLPanel extends javax.swing.JPanel {
     private org.jdesktop.swingx.JXTitledSeparator jXTitledSeparator1;
     private javax.swing.JLabel labelAntialiasing;
     private javax.swing.JLabel labelShow;
-    private javax.swing.JLabel labelOctreeWidth;
     private javax.swing.JTextArea openInfoText;
     private javax.swing.JPanel openglInfoPanel;
     private javax.swing.JButton resetButton;
-    private javax.swing.JFormattedTextField octreeWidthTextField;
     // End of variables declaration//GEN-END:variables
 
     OpenGLPanel(OpenGLOptionsPanelController controller) {
@@ -98,20 +100,10 @@ final class OpenGLPanel extends javax.swing.JPanel {
         labelAntialiasing = new javax.swing.JLabel();
         antialisaingCombobox = new javax.swing.JComboBox();
         labelShow = new javax.swing.JLabel();
-        labelOctreeWidth = new javax.swing.JLabel();
         fpsCheckbox = new javax.swing.JCheckBox();
         resetButton = new javax.swing.JButton();
         openglInfoPanel = new javax.swing.JPanel();
         openInfoText = new javax.swing.JTextArea();
-
-        NumberFormat format = NumberFormat.getInstance(Locale.ENGLISH);
-        NumberFormatter formatter = new NumberFormatter(format);
-        formatter.setValueClass(Integer.class);
-        formatter.setAllowsInvalid(false);
-        octreeWidthTextField = new javax.swing.JFormattedTextField(formatter);
-
-        org.openide.awt.Mnemonics.setLocalizedText(labelOctreeWidth,
-            org.openide.util.NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.labelOctreeWidth.text")); // NOI18N
 
         jXTitledSeparator1.setTitle(
             org.openide.util.NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.jXTitledSeparator1.title")); // NOI18N
@@ -119,8 +111,8 @@ final class OpenGLPanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(labelAntialiasing,
             org.openide.util.NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.labelAntialiasing.text")); // NOI18N
 
-        antialisaingCombobox
-            .setModel(new javax.swing.DefaultComboBoxModel(new String[] {"0x", "2x", "4x", "8x", "16x"}));
+        antialisaingCombobox.setModel(
+            new javax.swing.DefaultComboBoxModel(new String[] {"0x", "2x", "4x", "8x", "16x"}));
 
         org.openide.awt.Mnemonics.setLocalizedText(labelShow,
             org.openide.util.NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.labelShow.text")); // NOI18N
@@ -132,7 +124,6 @@ final class OpenGLPanel extends javax.swing.JPanel {
         org.openide.awt.Mnemonics.setLocalizedText(resetButton,
             org.openide.util.NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.resetButton.text")); // NOI18N
         resetButton.addActionListener(new java.awt.event.ActionListener() {
-            @Override
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 resetButtonActionPerformed(evt);
             }
@@ -140,8 +131,8 @@ final class OpenGLPanel extends javax.swing.JPanel {
 
         openglInfoPanel.setLayout(new java.awt.GridBagLayout());
 
-        openInfoText.setColumns(5);
         openInfoText.setEditable(false);
+        openInfoText.setColumns(5);
         openInfoText.setFont(new java.awt.Font("Monospaced", 0, 11)); // NOI18N
         openInfoText.setRows(3);
         openInfoText.setText("Vendor\nModel\nVersion"); // NOI18N
@@ -162,28 +153,28 @@ final class OpenGLPanel extends javax.swing.JPanel {
                     .addContainerGap()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jXTitledSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 679, Short.MAX_VALUE)
-                        .addComponent(resetButton)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(resetButton)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addGap(10, 10, 10)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(labelShow, javax.swing.GroupLayout.PREFERRED_SIZE, 52,
+                                            javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(labelAntialiasing))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(20, 20, 20)
+                                            .addComponent(fpsCheckbox))
+                                        .addGroup(layout.createSequentialGroup()
+                                            .addGap(18, 18, 18)
+                                            .addComponent(antialisaingCombobox, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                                javax.swing.GroupLayout.DEFAULT_SIZE,
+                                                javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                            .addGap(0, 0, Short.MAX_VALUE))
                         .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                            .addGap(10, 10, 10)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(labelOctreeWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 52,
-                                    javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelShow, javax.swing.GroupLayout.PREFERRED_SIZE, 52,
-                                    javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(labelAntialiasing))
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(20, 20, 20)
-                                    .addComponent(octreeWidthTextField))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(20, 20, 20)
-                                    .addComponent(fpsCheckbox))
-                                .addGroup(layout.createSequentialGroup()
-                                    .addGap(18, 18, 18)
-                                    .addComponent(antialisaingCombobox, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 192, Short.MAX_VALUE)
-                            .addComponent(openglInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 196,
+                            .addGap(0, 0, Short.MAX_VALUE)
+                            .addComponent(openglInfoPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 209,
                                 javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addContainerGap())
         );
@@ -205,12 +196,7 @@ final class OpenGLPanel extends javax.swing.JPanel {
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(labelShow, javax.swing.GroupLayout.DEFAULT_SIZE,
                                     javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(fpsCheckbox))
-                            .addGap(18, 18, 18)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(labelOctreeWidth, javax.swing.GroupLayout.DEFAULT_SIZE,
-                                    javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(octreeWidthTextField))))
+                                .addComponent(fpsCheckbox))))
                     .addGap(18, 18, Short.MAX_VALUE)
                     .addComponent(resetButton)
                     .addContainerGap())
@@ -235,19 +221,29 @@ final class OpenGLPanel extends javax.swing.JPanel {
             NbPreferences.forModule(VizConfig.class).getBoolean(VizConfig.SHOW_FPS, VizConfig.DEFAULT_SHOW_FPS));
 
         //OpenGLInfo
-//        GraphicalConfiguration gc = VizController.getInstance().getDrawable().getGraphicalConfiguration();
-//        if (gc != null) {
-//            openInfoText.setText(gc.getVendor() + "\n" + gc.getRenderer() + "\nOpenGL2 " + gc.getVersionStr());
-//        }
-        //TODO
+        VizController vizController = Lookup.getDefault().lookup(VizController.class);
+        vizController.getEngine().ifPresent(
+            engine -> {
+                GLCapabilitiesSummary summary = engine.getOpenGLOptions().getGlCapabilitiesSummary();
+                String vendor = summary.getVendor();
+                String renderer = summary.getRenderer();
+                String version = summary.getVersionString();
+                String shaderVersion = summary.getShadingLanguageVersion();
+                openInfoText.setText(vendor + "\n" + renderer + "\nOpenGL " + version + "\nGLSL " + shaderVersion);
+            }
+        );
     }
 
     void store() {
         NbPreferences.forModule(VizConfig.class).putInt(VizConfig.ANTIALIASING, antiAliasing);
         NbPreferences.forModule(VizConfig.class).putBoolean(VizConfig.SHOW_FPS, fpsCheckbox.isSelected());
 
-//        VizController.getInstance().getEngine().reinit();
-        //TODO
+        NotificationDisplayer.getDefault().notify(NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.restart.title"),
+            ImageUtilities.loadImageIcon("org/netbeans/core/windows/resources/restart.png", false),
+            NbBundle.getMessage(OpenGLPanel.class, "OpenGLPanel.restart.message"), e -> {
+                LifecycleManager.getDefault().markForRestart();
+                LifecycleManager.getDefault().exit();
+            }, NotificationDisplayer.Priority.HIGH, NotificationDisplayer.Category.INFO);
     }
 
     boolean valid() {

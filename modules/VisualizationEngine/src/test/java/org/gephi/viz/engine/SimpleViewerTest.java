@@ -61,7 +61,7 @@ public class SimpleViewerTest {
         private NewtCanvasAWT newtCanvas;
 
         public void start(final String graphFile) {
-            final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities();
+            final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities(4);
 
             final Display display = NewtFactory.createDisplay(null);
             final Screen screen = NewtFactory.createScreen(display, 0);
