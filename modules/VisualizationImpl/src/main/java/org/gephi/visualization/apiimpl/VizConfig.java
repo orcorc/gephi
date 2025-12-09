@@ -82,6 +82,7 @@ public class VizConfig {
     public static final String EDGE_SCALE = "VizConfig.defaultEdgeScale";
     public static final String NODE_SCALE = "VizConfig.defaultNodeScale";
     public static final String EDGE_WEIGHTED = "VizConfig.defaultUseEdgeWeight";
+    public static final String EDGE_RESCALE_WEIGHT = "VizConfig.defaultRescaleEdgeWeight";
     public static final String NODE_LABEL_SIZE_MODE = "VizConfig.defaultNodeLabelSizeMode";
     public static final String NODE_LABEL_COLOR_MODE = "VizConfig.defaultNodeLabelColorMode";
     public static final String NODE_LABEL_SCALE = "VizConfig.defaultNodeLabelScale";
@@ -133,6 +134,7 @@ public class VizConfig {
     public static final String DEFAULT_EDGE_LABEL_SIZE_MODE = LabelSizeMode.ZOOM.name();
     public static final String DEFAULT_EDGE_LABEL_COLOR_MODE = LabelColorMode.SELF.name();
     public static final boolean DEFAULT_EDGE_WEIGHTED = true;
+    public static final boolean DEFAULT_EDGE_RESCALE_WEIGHTED = true;
 
     //Default config - loaded in the VizModel
     protected static Color defaultBackgroundColor = ColorUtils.decode(
@@ -193,6 +195,8 @@ public class VizConfig {
             NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_COLOR_MODE, DEFAULT_NODE_LABEL_COLOR_MODE));
     protected static boolean defaultUseEdgeWeight =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_WEIGHTED, DEFAULT_EDGE_WEIGHTED);
+    protected static boolean defaultRescaleEdgeWeight =
+        NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_RESCALE_WEIGHT, DEFAULT_EDGE_RESCALE_WEIGHTED);
     protected static float defaultNodeLabelScale =
         NbPreferences.forModule(VizConfig.class).getFloat(NODE_LABEL_SCALE, DEFAULT_NODE_LABEL_SCALE);
     protected static float defaultEdgeLabelScale =
@@ -313,6 +317,10 @@ public class VizConfig {
 
     public static boolean isDefaultUseEdgeWeight() {
         return defaultUseEdgeWeight;
+    }
+
+    public static boolean isDefaultRescaleEdgeWeight() {
+        return defaultRescaleEdgeWeight;
     }
 
     public static float getDefaultNodeLabelScale() {

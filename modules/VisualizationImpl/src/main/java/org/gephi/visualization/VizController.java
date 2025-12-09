@@ -239,6 +239,12 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setUseEdgeWeight(useEdgeWeight);
     }
 
+    @Override
+    public void setRescaleEdgeWeight(boolean rescaleEdgeWeight) {
+        final VizModel model = getModel();
+        model.setEdgeRescaleWeightEnabled(rescaleEdgeWeight);
+    }
+
     // TEXT
 
     @Override

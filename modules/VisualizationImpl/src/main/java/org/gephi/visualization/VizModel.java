@@ -100,6 +100,7 @@ public class VizModel implements VisualisationModel {
     private Color edgeOutSelectionColor;
     private EdgeColorMode edgeColorMode;
     private boolean edgeWeightEnabled;
+    private boolean edgeRescaleWeightEnabled;
 
     //Nodes
     private float nodeScale;
@@ -162,6 +163,7 @@ public class VizModel implements VisualisationModel {
         this.edgeBothSelectionColor = VizConfig.getDefaultEdgeBothSelectedColor();
         this.edgeColorMode = VizConfig.getDefaultEdgeColorMode();
         this.edgeWeightEnabled = VizConfig.isDefaultUseEdgeWeight();
+        this.edgeRescaleWeightEnabled = VizConfig.isDefaultRescaleEdgeWeight();
 
         //Nodes
         this.nodeScale = VizConfig.getDefaultNodeScale();
@@ -206,6 +208,7 @@ public class VizModel implements VisualisationModel {
         options.setEdgeScale(getEdgeScale());
         options.setEdgeSelectionColor(isEdgeSelectionColor());
         options.setEdgeWeightEnabled(isUseEdgeWeight());
+        options.setEdgeRescaleWeightEnabled(isRescaleEdgeWeight());
         options.setHideNonSelectedEdges(isHideNonSelectedEdges());
         options.setLightenNonSelected(isLightenNonSelectedAuto());
         options.setLightenNonSelectedFactor(getLightenNonSelectedFactor());
@@ -529,6 +532,20 @@ public class VizModel implements VisualisationModel {
             this.edgeWeightEnabled = useEdgeWeight;
             getRenderingOptions().ifPresent(options -> options.setEdgeWeightEnabled(useEdgeWeight));
             firePropertyChange("useEdgeWeight", oldValue, useEdgeWeight);
+        }
+    }
+
+    @Override
+    public boolean isRescaleEdgeWeight() {
+        return edgeRescaleWeightEnabled;
+    }
+
+    public void setEdgeRescaleWeightEnabled(boolean edgeRescaleWeightEnabled) {
+        boolean oldValue = this.edgeRescaleWeightEnabled;
+        if (oldValue != edgeRescaleWeightEnabled) {
+            this.edgeRescaleWeightEnabled = edgeRescaleWeightEnabled;
+            getRenderingOptions().ifPresent(options -> options.setEdgeRescaleWeightEnabled(edgeRescaleWeightEnabled));
+            firePropertyChange("edgeRescaleWeightEnabled", oldValue, edgeRescaleWeightEnabled);
         }
     }
 

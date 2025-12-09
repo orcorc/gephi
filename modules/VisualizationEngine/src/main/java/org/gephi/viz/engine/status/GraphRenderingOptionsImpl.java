@@ -29,6 +29,9 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private Color edgeOutSelectionColor = DEFAULT_EDGE_OUT_SELECTION_COLOR;
     private EdgeColorMode edgeColorMode = DEFAULT_EDGE_COLOR_MODE;
     private boolean edgeWeightEnabled = DEFAULT_EDGE_WEIGHT_ENABLED;
+    private boolean edgeRescaleWeightEnabled = DEFAULT_EDGE_WEIGHT_ENABLED;
+    private float edgeRescaleMin = DEFAULT_EDGE_RESCALE_MIN;
+    private float edgeRescaleMax = DEFAULT_EDGE_RESCALE_MAX;
 
     //Nodes
     private float nodeScale = DEFAULT_NODE_SCALE;
@@ -91,6 +94,9 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
         this.edgeOutSelectionColor = other.getEdgeOutSelectionColor();
         this.edgeColorMode = other.getEdgeColorMode();
         this.edgeWeightEnabled = other.isEdgeWeightEnabled();
+        this.edgeRescaleWeightEnabled = other.isEdgeRescaleWeightEnabled();
+        this.edgeRescaleMin = other.getEdgeRescaleMin();
+        this.edgeRescaleMax = other.getEdgeRescaleMax();
 
         // Nodes
         this.nodeScale = other.getNodeScale();
@@ -334,6 +340,36 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     @Override
     public void setEdgeWeightEnabled(boolean enabled) {
         this.edgeWeightEnabled = enabled;
+    }
+
+    @Override
+    public boolean isEdgeRescaleWeightEnabled() {
+        return edgeRescaleWeightEnabled;
+    }
+
+    @Override
+    public void setEdgeRescaleWeightEnabled(boolean edgeRescaleWeightEnabled) {
+        this.edgeRescaleWeightEnabled = edgeRescaleWeightEnabled;
+    }
+
+    @Override
+    public float getEdgeRescaleMax() {
+        return edgeRescaleMax;
+    }
+
+    @Override
+    public void setEdgeRescaleMax(float edgeRescaleMax) {
+        this.edgeRescaleMax = edgeRescaleMax;
+    }
+
+    @Override
+    public float getEdgeRescaleMin() {
+        return edgeRescaleMin;
+    }
+
+    @Override
+    public void setEdgeRescaleMin(float edgeRescaleMin) {
+        this.edgeRescaleMin = edgeRescaleMin;
     }
 
     // Node Labels

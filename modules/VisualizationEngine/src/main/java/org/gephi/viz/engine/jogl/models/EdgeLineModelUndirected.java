@@ -7,8 +7,6 @@ import static org.gephi.viz.engine.util.gl.Constants.ATTRIB_NAME_SIZE;
 import static org.gephi.viz.engine.util.gl.Constants.ATTRIB_NAME_SOURCE_SIZE;
 import static org.gephi.viz.engine.util.gl.Constants.ATTRIB_NAME_TARGET_SIZE;
 import static org.gephi.viz.engine.util.gl.Constants.ATTRIB_NAME_VERT;
-import static org.gephi.viz.engine.util.gl.Constants.EDGE_SCALE_MAX;
-import static org.gephi.viz.engine.util.gl.Constants.EDGE_SCALE_MIN;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_COLOR_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_LOCATION;
 import static org.gephi.viz.engine.util.gl.Constants.SHADER_POSITION_TARGET_LOCATION;
@@ -142,34 +140,34 @@ public class EdgeLineModelUndirected {
     }
 
     public void useProgram(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight, float maxWeight,
-                           float nodeScale) {
+                           float edgeRescaleMin, float edgeRescaleMax, float nodeScale) {
         //Line:
         program.use(gl);
-        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale);
+        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, edgeRescaleMin, edgeRescaleMax);
     }
 
     public void useProgramWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                float maxWeight, float nodeScale, float globalTime,
+                                                float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float nodeScale, float globalTime,
                                                 float selectionTime) {
         programWithSelectionSelected.use(gl);
-        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, globalTime,
+        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, edgeRescaleMin, edgeRescaleMax, nodeScale, globalTime,
             selectionTime);
     }
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                  float maxWeight, float[] backgroundColorFloats,
+                                                  float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float[] backgroundColorFloats,
                                                   float colorLightenFactor, float nodeScale, float globalTime,
                                                   float selectionTime) {
         programWithSelectionUnselected.use(gl);
-        prepareProgramDataWithSelectionUnselected(gl, mvpFloats, edgeScale, minWeight, maxWeight, backgroundColorFloats,
+        prepareProgramDataWithSelectionUnselected(gl, mvpFloats, edgeScale, minWeight, maxWeight, edgeRescaleMin, edgeRescaleMax, backgroundColorFloats,
             colorLightenFactor, nodeScale, globalTime, selectionTime);
     }
 
     private void prepareProgramData(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight, float maxWeight,
-                                    float nodeScale) {
+                                    float nodeScale, float edgeRescaleMin, float edgeRescaleMax) {
         gl.glUniformMatrix4fv(program.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1, false, mvpFloats, 0);
-        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MIN), EDGE_SCALE_MIN * scale);
-        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MAX), EDGE_SCALE_MAX * scale);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MIN), edgeRescaleMin * scale);
+        gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MAX), edgeRescaleMax * scale);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_MIN_WEIGHT), minWeight);
         gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_NODE_SCALE), nodeScale);
         if (NumberUtils.equalsEpsilon(minWeight, maxWeight, 1e-3f)) {
@@ -180,14 +178,14 @@ public class EdgeLineModelUndirected {
     }
 
     private void prepareProgramDataWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
-                                                         float maxWeight, float nodeScale,
+                                                         float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float nodeScale,
                                                          float globalTime, float selectionTime) {
         gl.glUniformMatrix4fv(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
             false, mvpFloats, 0);
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MIN),
-            EDGE_SCALE_MIN * scale);
+            edgeRescaleMin * scale);
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MAX),
-            EDGE_SCALE_MAX * scale);
+            edgeRescaleMax * scale);
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_MIN_WEIGHT), minWeight);
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_NODE_SCALE), nodeScale);
         gl.glUniform1f(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_GLOBAL_TIME), globalTime);
@@ -201,7 +199,7 @@ public class EdgeLineModelUndirected {
     }
 
     private void prepareProgramDataWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
-                                                           float maxWeight, float[] backgroundColorFloats,
+                                                           float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float[] backgroundColorFloats,
                                                            float colorLightenFactor, float nodeScale, float globalTime,
                                                            float selectionTime) {
         gl.glUniformMatrix4fv(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
@@ -211,9 +209,9 @@ public class EdgeLineModelUndirected {
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_COLOR_LIGHTEN_FACTOR),
             colorLightenFactor);
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MIN),
-            EDGE_SCALE_MIN * scale);
+            edgeRescaleMin * scale);
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_EDGE_SCALE_MAX),
-            EDGE_SCALE_MAX * scale);
+            edgeRescaleMax * scale);
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_MIN_WEIGHT), minWeight);
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_NODE_SCALE), nodeScale);
         gl.glUniform1f(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_GLOBAL_TIME), globalTime);

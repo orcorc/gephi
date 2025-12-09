@@ -52,6 +52,9 @@ public interface GraphRenderingOptions {
     Color DEFAULT_EDGE_BOTH_SELECTION_COLOR = new Color(248, 215, 83, 255);
     EdgeColorMode DEFAULT_EDGE_COLOR_MODE = EdgeColorMode.SELF;
     boolean DEFAULT_EDGE_WEIGHT_ENABLED = true;
+    boolean DEFAULT_EDGE_RESCALE_WEIGHT_ENABLED = true;
+    float DEFAULT_EDGE_RESCALE_MIN = 0.4f;
+    float DEFAULT_EDGE_RESCALE_MAX = 8.0f;
 
     //Node Labels
     boolean DEFAULT_NODE_LABEL_FIT_TO_NODE_SIZE = false;
@@ -142,6 +145,18 @@ public interface GraphRenderingOptions {
     boolean isEdgeWeightEnabled();
 
     void setEdgeWeightEnabled(boolean enabled);
+
+    boolean isEdgeRescaleWeightEnabled();
+
+    void setEdgeRescaleWeightEnabled(boolean enabled);
+
+    float getEdgeRescaleMin();
+
+    void setEdgeRescaleMin(float edgeRescaleMin);
+
+    float getEdgeRescaleMax();
+
+    void setEdgeRescaleMax(float edgeRescaleMax);
 
     // Node Labels
 

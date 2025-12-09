@@ -9,6 +9,8 @@ public class EdgeWorldData implements WorldData {
     private final boolean someSelection;
     private final float minWeight;
     private final float maxWeight;
+    private final float edgeRescaleMin;
+    private final float edgeRescaleMax;
     private final float nodeScale;
     private final float edgeScale;
     private final float lightenNonSelectedFactor;
@@ -18,6 +20,8 @@ public class EdgeWorldData implements WorldData {
                          boolean someSelection,
                          float minWeight,
                          float maxWeight,
+                         float edgeRescaleMin,
+                         float edgeRescaleMax,
                          float nodeScale,
                          float edgeScale,
                          float lightenNonSelectedFactor,
@@ -26,6 +30,8 @@ public class EdgeWorldData implements WorldData {
         this.someSelection = someSelection;
         this.minWeight = minWeight;
         this.maxWeight = maxWeight;
+        this.edgeRescaleMin = edgeRescaleMin;
+        this.edgeRescaleMax = edgeRescaleMax;
         this.nodeScale = nodeScale;
         this.edgeScale = edgeScale;
         this.lightenNonSelectedFactor = lightenNonSelectedFactor;
@@ -42,6 +48,14 @@ public class EdgeWorldData implements WorldData {
 
     public float getMaxWeight() {
         return maxWeight;
+    }
+
+    public float getEdgeRescaleMax() {
+        return edgeRescaleMax;
+    }
+
+    public float getEdgeRescaleMin() {
+        return edgeRescaleMin;
     }
 
     public float getEdgeScale() {
