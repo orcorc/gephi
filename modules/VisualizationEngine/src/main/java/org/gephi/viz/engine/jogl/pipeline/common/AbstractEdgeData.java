@@ -322,8 +322,10 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             someSelection,
             edgeWeightEnabled ? edgesCallback.getMinWeight() : 0f,
             edgeWeightEnabled ? edgesCallback.getMaxWeight() : 1f,
-            model.getRenderingOptions().isEdgeRescaleWeightEnabled() ? model.getRenderingOptions().getEdgeRescaleMin() : 1f,
-            model.getRenderingOptions().isEdgeRescaleWeightEnabled() ? model.getRenderingOptions().getEdgeRescaleMax() : 1f,
+            model.getRenderingOptions().isEdgeRescaleWeightEnabled() ? model.getRenderingOptions().getEdgeRescaleMin() :
+                1f,
+            model.getRenderingOptions().isEdgeRescaleWeightEnabled() ? model.getRenderingOptions().getEdgeRescaleMax() :
+                1f,
             model.getRenderingOptions().getNodeScale(),
             model.getRenderingOptions().getEdgeScale(),
             model.getRenderingOptions().getLightenNonSelectedFactor(),

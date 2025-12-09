@@ -152,23 +152,27 @@ public class EdgeLineModelDirected {
     public void useProgram(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight, float maxWeight,
                            float edgeRescaleMin, float edgeRescaleMax, float nodeScale) {
         program.use(gl);
-        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale,  edgeRescaleMin, edgeRescaleMax);
+        prepareProgramData(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, edgeRescaleMin, edgeRescaleMax);
     }
 
     public void useProgramWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                float maxWeight, float edgeResclaleMin, float edgeRescaleMax, float nodeScale, float globalTime,
+                                                float maxWeight, float edgeResclaleMin, float edgeRescaleMax,
+                                                float nodeScale, float globalTime,
                                                 float selectionTime) {
         programWithSelectionSelected.use(gl);
-        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale, edgeResclaleMin, edgeRescaleMax, globalTime,
+        prepareProgramDataWithSelectionSelected(gl, mvpFloats, edgeScale, minWeight, maxWeight, nodeScale,
+            edgeResclaleMin, edgeRescaleMax, globalTime,
             selectionTime);
     }
 
     public void useProgramWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float edgeScale, float minWeight,
-                                                  float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float[] backgroundColorFloats,
+                                                  float maxWeight, float edgeRescaleMin, float edgeRescaleMax,
+                                                  float[] backgroundColorFloats,
                                                   float colorLightenFactor, float nodeScale, float globalTime,
                                                   float selectionTime) {
         programWithSelectionUnselected.use(gl);
-        prepareProgramDataWithSelectionUnselected(gl, mvpFloats, edgeScale, minWeight, maxWeight, edgeRescaleMin, edgeRescaleMax, backgroundColorFloats,
+        prepareProgramDataWithSelectionUnselected(gl, mvpFloats, edgeScale, minWeight, maxWeight, edgeRescaleMin,
+            edgeRescaleMax, backgroundColorFloats,
             colorLightenFactor, nodeScale, globalTime, selectionTime);
     }
 
@@ -187,7 +191,8 @@ public class EdgeLineModelDirected {
     }
 
     private void prepareProgramDataWithSelectionSelected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
-                                                         float maxWeight, float nodeScale, float edgeRescaleMin, float edgeRescaleMax,
+                                                         float maxWeight, float nodeScale, float edgeRescaleMin,
+                                                         float edgeRescaleMax,
                                                          float globalTime, float selectionTime) {
         gl.glUniformMatrix4fv(programWithSelectionSelected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
             false, mvpFloats, 0);
@@ -208,7 +213,8 @@ public class EdgeLineModelDirected {
     }
 
     private void prepareProgramDataWithSelectionUnselected(GL2ES2 gl, float[] mvpFloats, float scale, float minWeight,
-                                                           float maxWeight, float edgeRescaleMin, float edgeRescaleMax, float[] backgroundColorFloats,
+                                                           float maxWeight, float edgeRescaleMin, float edgeRescaleMax,
+                                                           float[] backgroundColorFloats,
                                                            float colorLightenFactor, float nodeScale, float globalTime,
                                                            float selectionTime) {
         gl.glUniformMatrix4fv(programWithSelectionUnselected.getUniformLocation(UNIFORM_NAME_MODEL_VIEW_PROJECTION), 1,
