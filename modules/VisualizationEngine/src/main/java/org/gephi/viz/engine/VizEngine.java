@@ -322,38 +322,6 @@ public class VizEngine<R extends RenderingTarget, I> {
         loadModelViewProjection();
     }
 
-    /**
-     * Converts screen coordinates to world coordinates using float precision.
-     *
-     * @param x X position in screen pixels (0 = left edge of viewport)
-     * @param y Y position in screen pixels (0 = top edge of viewport)
-     * @return World coordinates corresponding to the screen position
-     */
-    public Vector2f screenCoordinatesToWorldCoordinates(float x, float y) {
-        return screenCoordinatesToWorldCoordinates(x, y, new Vector2f());
-    }
-
-    /**
-     * Converts screen coordinates to world coordinates using float precision.
-     *
-     * @param x    X position in screen pixels (0 = left edge of viewport)
-     * @param y    Y position in screen pixels (0 = top edge of viewport)
-     * @param dest Vector to store the result
-     * @return The dest vector with world coordinates
-     */
-    public Vector2f screenCoordinatesToWorldCoordinates(float x, float y, Vector2f dest) {
-        final float halfWidth = width / 2.0f;
-        final float halfHeight = height / 2.0f;
-
-        float xScreenNormalized = (-halfWidth + x) / halfWidth;
-        float yScreenNormalized = (halfHeight - y) / halfHeight;
-
-        final Vector3f worldCoordinates = new Vector3f();
-        modelViewProjectionMatrixInverted.transformProject(xScreenNormalized, yScreenNormalized, 0, worldCoordinates);
-
-        return dest.set(worldCoordinates.x, worldCoordinates.y);
-    }
-
     private void loadModelViewProjection() {
         loadModel();
         loadView();
