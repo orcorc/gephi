@@ -19,6 +19,7 @@ import com.jogamp.opengl.util.TileRendererBase;
 import java.awt.Frame;
 import java.awt.image.BufferedImage;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.BooleanSupplier;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.util.ScreenshotTaker;
 import org.gephi.viz.engine.jogl.util.gl.capabilities.GLCapabilitiesSummary;
@@ -300,39 +301,40 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
      * @param transparentBackground Whether the screenshot should have a transparent background
      * @return A CompletableFuture that will be completed with the screenshot image
      */
-    public CompletableFuture<BufferedImage> requestScreenshot(int scaleFactor, boolean transparentBackground) {
+    public CompletableFuture<BufferedImage> requestScreenshot(int scaleFactor, boolean transparentBackground, BooleanSupplier isCancelled) {
         if (scaleFactor < 1) {
             throw new IllegalArgumentException("Scale factor must be 1 or greater");
         }
 
         // Prepare screenshot request
         CompletableFuture<BufferedImage> future = new CompletableFuture<>();
-        ScreenshotRequest request = new ScreenshotRequest(scaleFactor, transparentBackground, future);
         if (scaleFactor > 1) {
-            // With scale factor > 1 we need to do tiled screenshot, and it can be done on the same thread
-            try {
-                // Pause animation and  update
+            // With scale factor > 1 we need to do tiled screenshot
                 boolean wasAnimating = animator.isAnimating();
-                if (wasAnimating) {
-                    animator.pause();
+                try {
+                    // Pause animation and  update
+                    if (wasAnimating) {
+                        animator.pause();
+                    }
+                    engine.pauseUpdating();
+
+                    // Locks key and mouse events processing
+                    this.screenshotRequest = new ScreenshotRequest(scaleFactor, transparentBackground, future);;
+
+                    // Take tiled screenshot
+                    future.complete(ScreenshotTaker.takeTiledScreenshot(engine, scaleFactor, transparentBackground, isCancelled));
+                } finally {
+                    // Resume update and animation
+                    engine.resumeUpdating();
+                    if (wasAnimating) {
+                        animator.resume();
+                    }
+
+                    this.screenshotRequest = null;
                 }
-                engine.pauseUpdating();
-
-                // Locks key and mouse events processing
-                this.screenshotRequest = request;
-
-                // Take tiled screenshot
-                future.complete(ScreenshotTaker.takeTiledScreenshot(engine, scaleFactor, transparentBackground));
-
-                // Resume update and animation
-                engine.resumeUpdating();
-                if (wasAnimating) {
-                    animator.resume();
-                }
-            } finally {
-                this.screenshotRequest = null;
-            }
+                return future;
         } else {
+            // Regular simple screenshot
             if (transparentBackground) {
                 float[] bgColor = engine.getBackgroundColor();
                 bgColor[3] = 0f;
@@ -347,10 +349,10 @@ public class JOGLRenderingTarget implements RenderingTarget, GLEventListener, co
             }
 
             // Set request, to be completed in display()
-            this.screenshotRequest = request;
-        }
+            this.screenshotRequest = new ScreenshotRequest(scaleFactor, transparentBackground, future);
 
-        return future;
+            return future;
+        }
     }
 
     @Override

@@ -18,6 +18,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.concurrent.CancellationException;
+import java.util.function.BooleanSupplier;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.joml.Vector2fc;
@@ -72,10 +74,11 @@ public class ScreenshotTaker {
      * @param engine                The VizEngine to take the screenshot from.
      * @param scaleFactor           The scale factor for the screenshot (e.g., 2 for double size).
      * @param transparentBackground Whether the screenshot should have a transparent background (if supported).
+     * @param isCancelled           A BooleanSupplier that returns true if the operation should be cancelled.
      * @return A BufferedImage containing the tiled screenshot.
      */
     public static BufferedImage takeTiledScreenshot(VizEngine<JOGLRenderingTarget, NEWTEvent> engine, int scaleFactor,
-                                                    boolean transparentBackground) {
+                                                    boolean transparentBackground, BooleanSupplier isCancelled) {
 
         float originalZoom = engine.getZoom();
         Vector2fc originalPan = engine.getRenderingOptions().getPan();
@@ -129,19 +132,30 @@ public class ScreenshotTaker {
             engine.setBackgroundColor(backgroundColor);
         }
 
-        while (!renderer.eot()) {
-            renderer.display();
+        try {
+            while (!renderer.eot()) {
+                renderer.display();
+                engine.setZoom(originalZoom);
+                engine.setTranslate(originalPan);
+                // Check if the task was cancelled
+                if (isCancelled.getAsBoolean()) {
+                    break;
+                }
+            }
+        } finally {
+            renderer.detachAutoDrawable();
+
+            // Restore original view and background
             engine.setZoom(originalZoom);
             engine.setTranslate(originalPan);
+            if (transparentBackground) {
+                backgroundColor[3] = 1f;
+                engine.setBackgroundColor(backgroundColor);
+            }
         }
-        renderer.detachAutoDrawable();
 
-        // Restore original view and background
-        engine.setZoom(originalZoom);
-        engine.setTranslate(originalPan);
-        if (transparentBackground) {
-            backgroundColor[3] = 1f;
-            engine.setBackgroundColor(backgroundColor);
+        if (isCancelled.getAsBoolean()) {
+            throw new CancellationException("Tiled screenshot taking was cancelled.");
         }
 
         final GLPixelBuffer imageBuffer = renderer.getImageBuffer();
@@ -157,10 +171,10 @@ public class ScreenshotTaker {
             imageBuffer.buffer,
             null /* Flusher */);
 
-        return toImage(textureData);
+        return toImage(textureData, isCancelled);
     }
 
-    private static BufferedImage toImage(TextureData data) {
+    private static BufferedImage toImage(TextureData data, BooleanSupplier isCancelled) {
         final int pixelFormat = data.getPixelFormat();
         final int pixelType = data.getPixelType();
         if ((pixelFormat == GL.GL_RGB ||
@@ -179,6 +193,10 @@ public class ScreenshotTaker {
             buf.rewind();
             buf.get(imageData);
             buf.rewind();
+
+            if (isCancelled.getAsBoolean()) {
+                throw new CancellationException("Screenshot conversion to image was cancelled.");
+            }
 
             // Swizzle image components to be correct
             if (pixelFormat == GL.GL_RGB) {
@@ -203,6 +221,10 @@ public class ScreenshotTaker {
 
             // Flip image vertically for the user's convenience
             ImageUtil.flipImageVertically(image);
+
+            if (isCancelled.getAsBoolean()) {
+                throw new CancellationException("Screenshot conversion to image was cancelled.");
+            }
 
             return image;
         } else {

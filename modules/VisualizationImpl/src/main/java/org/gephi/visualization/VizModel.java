@@ -45,11 +45,9 @@ package org.gephi.visualization;
 import com.jogamp.newt.event.NEWTEvent;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -935,16 +933,6 @@ public class VizModel implements VisualisationModel {
             }
         }
     }
-
-    public Optional<CompletableFuture<BufferedImage>> makeScreenshot() {
-        return getEngine().map(
-            vizEngine ->
-                vizEngine
-                    .getRenderingTarget()
-                    .requestScreenshot(1, false)
-        );
-    }
-
 
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
         //Fast refresh

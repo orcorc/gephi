@@ -11,7 +11,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -32,6 +35,8 @@ public class ScreenshotTask implements LongTask, Runnable {
     private ProgressTicket progressTicket;
     private final ScreenshotModelImpl model;
     private final JOGLRenderingTarget renderingTarget;
+    private final AtomicBoolean cancelled = new AtomicBoolean(false);
+    private final BooleanSupplier isCancelled = cancelled::get;
     private File file;
 
     public ScreenshotTask(VizEngine<JOGLRenderingTarget, ?> engine, ScreenshotModelImpl model) {
@@ -46,7 +51,8 @@ public class ScreenshotTask implements LongTask, Runnable {
         int scaleFactor = model.getScaleFactor();
         boolean transparentBackground = model.isTransparentBackground();
         try {
-            BufferedImage image = renderingTarget.requestScreenshot(scaleFactor, transparentBackground).get();
+            BufferedImage image =
+                renderingTarget.requestScreenshot(scaleFactor, transparentBackground, isCancelled).get();
 
             // Write image to file
             // Get File
@@ -91,12 +97,16 @@ public class ScreenshotTask implements LongTask, Runnable {
                 javax.imageio.ImageIO.write(image, "png", file);
             }
 
-
+        } catch (CancellationException e) {
+            // Task cancelled, do nothing
+            final String msg = NbBundle
+                .getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.progress.cancelled");
+            StatusDisplayer.getDefault().setStatusText(msg);
         } catch (InterruptedException | ExecutionException | IOException | InvocationTargetException e) {
             throw new RuntimeException(e);
+        } finally {
+            afterTaking();
         }
-
-        afterTaking();
     }
 
     private void beforeTaking() {
@@ -144,7 +154,8 @@ public class ScreenshotTask implements LongTask, Runnable {
 
     @Override
     public boolean cancel() {
-        return false;
+        cancelled.set(true);
+        return true;
     }
 
     @Override
