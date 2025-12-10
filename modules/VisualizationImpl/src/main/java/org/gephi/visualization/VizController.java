@@ -83,12 +83,13 @@ public class VizController implements VisualizationController, Controller<VizMod
     protected final List<VisualizationPropertyChangeListener> listeners = new ArrayList<>();
     private final VizEngineGraphCanvasManager canvasManager;
     private final StandardVizEventManager vizEventManager;
-    private final ScreenshotControllerImpl screenshotMaker;
+    private final ScreenshotControllerImpl screenshotController;
 
     public VizController() {
         vizEventManager = new StandardVizEventManager();
-        screenshotMaker = new ScreenshotControllerImpl();
+        screenshotController = new ScreenshotControllerImpl(this);
         canvasManager = new VizEngineGraphCanvasManager(this);
+
     }
 
     @Override
@@ -112,8 +113,8 @@ public class VizController implements VisualizationController, Controller<VizMod
     }
 
     @Override
-    public ScreenshotController getScreenshotController() {
-        return null;
+    public ScreenshotControllerImpl getScreenshotController() {
+        return screenshotController;
     }
 
     public VizEngineGraphCanvasManager getCanvasManager() {
@@ -343,20 +344,33 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setEdgeLabelColumns(columns);
     }
 
-    @Override
-    public void makeScreenshot() {
-        final VizModel model = getModel();
-        model.makeScreenshot().ifPresent(screenshotCompletable -> {
-            screenshotCompletable.thenAccept(screenshotMaker::saveSceenshotOnFile);
-        });
+    //    public void refreshWorkspace() {
+//        final ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
+//        final Workspace currentWorkspace = pc.getCurrentWorkspace();
+//
+//        VizModel model = null;
+//        if (currentWorkspace != null) {
+//            model = currentWorkspace.getLookup().lookup(VizModel.class);
+//            if (model == null) {
+//                model = new VizModel(currentWorkspace);
+//                currentWorkspace.add(model);
+//            }
+//        }
+//
+//        currentModel = model;
+//        if (currentModel != null) {
+//            currentModel.init();
+//        }
+//    }
+
+    public void destroy() {
+//        vizEventManager = null;
+//        textManager = null;
+        //TODO
     }
 
     public StandardVizEventManager getVizEventManager() {
         return vizEventManager;
-    }
-
-    public ScreenshotControllerImpl getScreenshotMaker() {
-        return screenshotMaker;
     }
 
     @Override

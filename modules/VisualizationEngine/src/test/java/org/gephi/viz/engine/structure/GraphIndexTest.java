@@ -65,11 +65,6 @@ public class GraphIndexTest {
         }
 
         @Override
-        public int[] frameDump(GL3ES3 gl, int width, int height) {
-            return new int[width * height];
-        }
-
-        @Override
         public int getFps() {
             return 0;
         }

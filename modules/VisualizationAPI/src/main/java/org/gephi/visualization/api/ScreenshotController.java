@@ -6,11 +6,7 @@ public interface ScreenshotController {
 
     void takeScreenshot();
 
-    void setAntiAliasing(int antiAliasing);
-
-    void setWidth(int width);
-
-    void setHeight(int height);
+    void setScaleFactor(int scaleFactor);
 
     void setTransparentBackground(boolean transparentBackground);
 

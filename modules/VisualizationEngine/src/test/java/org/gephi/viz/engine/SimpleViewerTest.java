@@ -161,10 +161,10 @@ public class SimpleViewerTest {
                     break;
                 case KeyEvent.VK_S:
                     try {
-                        BufferedImage image = engine.getRenderingTarget().requestScreenshot().get();
                         File outputFile = new File("screenshot_" + System.currentTimeMillis() + ".png");
+                        BufferedImage image = engine.getRenderingTarget().requestScreenshot(1, false, () -> false).get();
                         ImageIO.write(image, "png", outputFile);
-                    } catch (InterruptedException | ExecutionException | IOException ex) {
+                    } catch (IOException | ExecutionException | InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }
                     break;

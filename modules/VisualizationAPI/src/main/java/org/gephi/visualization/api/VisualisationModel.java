@@ -444,5 +444,4 @@ public interface VisualisationModel extends Model {
      * @return the edge label columns
      */
     Column[] getEdgeLabelColumns();
-
 }

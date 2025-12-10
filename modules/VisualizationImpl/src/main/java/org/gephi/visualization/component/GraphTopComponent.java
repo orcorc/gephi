@@ -142,7 +142,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
 
     private CollapseGroup[] createCollapseGroups() {
         CollapseGroup[] groups = new CollapseGroup[5];
-        groups[0] = new GlobalGroup();
+        groups[0] = new GlobalGroup(controller);
         groups[1] = new NodeGroup();
         groups[2] = new NodeLabelGroup();
         groups[3] = new EdgeGroup();
