@@ -101,7 +101,7 @@ public class CopyOrMoveToWorkspaceSubItem extends BasicItem implements NodesMani
     @Override
     public String getName() {
         if (workspace != null) {
-            return workspace.getLookup().lookup(WorkspaceInformation.class).getName();
+            return workspace.getName();
         } else {
             return NbBundle.getMessage(CopyOrMoveToWorkspaceSubItem.class,
                 copy ? "GraphContextMenu_CopyToWorkspace_NewWorkspace" :

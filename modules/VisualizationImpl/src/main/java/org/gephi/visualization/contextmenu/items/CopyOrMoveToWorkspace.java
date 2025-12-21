@@ -75,8 +75,7 @@ public abstract class CopyOrMoveToWorkspace extends BasicItem implements NodesMa
             if (canExecute()) {
                 subItems.add(new CopyOrMoveToWorkspaceSubItem(null, true, 0, 0, isCopy()));//New workspace
                 ProjectController projectController = Lookup.getDefault().lookup(ProjectController.class);
-                for (final Workspace w : projectController.getCurrentProject().getLookup()
-                    .lookup(WorkspaceProvider.class).getWorkspaces()) {
+                for (final Workspace w : projectController.getCurrentProject().getWorkspaces()) {
                     GraphContextMenuItem item =
                         new CopyOrMoveToWorkspaceSubItem(w, w != projectController.getCurrentWorkspace(), 1, i,
                             isCopy());

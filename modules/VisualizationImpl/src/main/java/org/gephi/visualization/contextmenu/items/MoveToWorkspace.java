@@ -59,7 +59,8 @@ public class MoveToWorkspace extends CopyOrMoveToWorkspace {
 
     @Override
     public String getName() {
-        return NbBundle.getMessage(CopyOrMoveToWorkspace.class, "GraphContextMenu_MoveToWorkspace");
+        return nodes.length > 1 ? NbBundle.getMessage(CopyOrMoveToWorkspace.class, "GraphContextMenu_MoveToWorkspace_Plural", nodes.length) :
+                NbBundle.getMessage(CopyOrMoveToWorkspace.class, "GraphContextMenu_MoveToWorkspace");
     }
 
     @Override

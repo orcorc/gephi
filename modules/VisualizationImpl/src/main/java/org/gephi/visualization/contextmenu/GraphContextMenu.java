@@ -68,10 +68,6 @@ import org.openide.util.Lookup;
  */
 public class GraphContextMenu {
 
-    public GraphContextMenu() {
-
-    }
-
     public JPopupMenu getMenu(VizEngine engine) {
         GraphModel graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel();
         GraphSelection selection = engine.getGraphSelection();
