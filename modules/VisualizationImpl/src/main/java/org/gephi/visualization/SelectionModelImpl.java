@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import org.gephi.graph.api.Node;
-import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.status.GraphSelection;
 

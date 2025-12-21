@@ -13,11 +13,9 @@ import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.VisualisationModel;
-import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
-import org.gephi.visualization.apiimpl.VizConfig;
+import org.gephi.visualization.VizConfig;
 import org.openide.util.ImageUtilities;
-import org.openide.util.Lookup;
 import org.openide.util.NbBundle;
 
 public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeListener {

@@ -4,7 +4,7 @@ import java.io.File;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.ScreenshotModel;
 import org.gephi.visualization.api.VisualisationModel;
-import org.gephi.visualization.apiimpl.VizConfig;
+import org.gephi.visualization.VizConfig;
 import org.openide.util.NbPreferences;
 
 public class ScreenshotModelImpl implements ScreenshotModel {
@@ -24,7 +24,9 @@ public class ScreenshotModelImpl implements ScreenshotModel {
         String lastPathDefault = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH_DEFAULT, null);
         defaultDirectory = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH, lastPathDefault);
 
-        // TODO Set default based on VizConfig
+        scaleFactor = VizConfig.getDefaultScreenshotScaleFactor();
+        transparentBackground = VizConfig.isDefaultScreenshotTransparentBackground();
+        autoSave = VizConfig.isDefaultScreenshotAutoSave();
     }
 
     @Override

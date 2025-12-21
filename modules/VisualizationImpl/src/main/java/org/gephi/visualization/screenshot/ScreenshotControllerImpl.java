@@ -60,8 +60,6 @@ public class ScreenshotControllerImpl implements ScreenshotController {
 
     private final VizController vizController;
     private final LongTaskExecutor executor;
-    //Architecture
-    private VizEngine<?, ?> engine;
 
     public ScreenshotControllerImpl(VizController vizController) {
         this.vizController = vizController;
@@ -113,7 +111,6 @@ public class ScreenshotControllerImpl implements ScreenshotController {
         return vizController.getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceHeight())
             .orElse(0);
     }
-
 
     public void configure() {
         ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel(this);

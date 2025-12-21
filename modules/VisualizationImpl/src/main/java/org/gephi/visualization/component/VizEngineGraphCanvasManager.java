@@ -21,7 +21,7 @@ import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
-import org.gephi.visualization.apiimpl.VizConfig;
+import org.gephi.visualization.VizConfig;
 import org.gephi.visualization.events.StandardVizEventManager;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineFactory;

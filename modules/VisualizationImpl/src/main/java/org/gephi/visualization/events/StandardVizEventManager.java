@@ -47,7 +47,6 @@ import java.awt.Component;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -55,9 +54,8 @@ import org.gephi.graph.api.Node;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.VisualizationEvent;
 import org.gephi.visualization.api.VisualizationEventListener;
-import org.gephi.visualization.apiimpl.GraphContextMenu;
-import org.gephi.visualization.apiimpl.VizConfig;
-import org.gephi.visualization.apiimpl.VizEvent;
+import org.gephi.visualization.contextmenu.GraphContextMenu;
+import org.gephi.visualization.VizConfig;
 import org.gephi.visualization.component.VizEngineGraphCanvasManager;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.status.GraphSelection;
@@ -412,12 +410,7 @@ public class StandardVizEventManager {
         }
 
         protected synchronized void removeListener(VisualizationEventListener listener) {
-            for (Iterator<WeakReference<VisualizationEventListener>> itr = listeners.iterator(); itr.hasNext(); ) {
-                WeakReference<VisualizationEventListener> li = itr.next();
-                if (li.get() == listener) {
-                    itr.remove();
-                }
-            }
+            listeners.removeIf(li -> li.get() == listener);
         }
 
         protected boolean dispatch() {
@@ -463,8 +456,7 @@ public class StandardVizEventManager {
 
         private synchronized boolean fireVisualizationEvent(Object data) {
             final VisualizationEvent event = new VizEvent(this, type, data);
-            for (int i = 0; i < listeners.size(); i++) {
-                final WeakReference<VisualizationEventListener> weakListener = listeners.get(i);
+            for (final WeakReference<VisualizationEventListener> weakListener : listeners) {
                 final VisualizationEventListener listener = weakListener.get();
 
                 if (listener != null) {
