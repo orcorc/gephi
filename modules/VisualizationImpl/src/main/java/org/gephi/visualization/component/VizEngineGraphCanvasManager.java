@@ -32,26 +32,15 @@ import org.gephi.viz.engine.util.gl.OpenGLOptions;
 
 public class VizEngineGraphCanvasManager {
 
-    // Normally all of these options should be false
-    // because the engine will auto-detect what's compatible with OpenGL Driver.
-    private static final boolean DISABLE_INDIRECT_RENDERING = false;
-    private static final boolean DISABLE_INSTANCED_RENDERING = false;
-    private static final boolean DISABLE_VAOS = false;
-
-    private static final boolean DEBUG = false;
-
     private final VizController vizController;
-
-    private boolean initialized = false;
-
     private GLWindow glWindow;
     private NewtCanvasAWT glCanvas;
 
-    // Engine:
+    // Engine
     private transient VizEngine<JOGLRenderingTarget, NEWTEvent> engine = null;
 
-    // Engine state saved for when it's restarted:
-
+    // States
+    private boolean initialized = false;
 
     public VizEngineGraphCanvasManager(VizController vizController) {
         this.vizController = Objects.requireNonNull(vizController);
@@ -82,7 +71,7 @@ public class VizEngineGraphCanvasManager {
 
         this.glWindow = GLWindow.create(screen, caps);
 
-        if (DEBUG) {
+        if (VizConfig.isDefaultEngineOpenGLDebug()) {
             glWindow.setContextCreationFlags(GLContext.CTX_OPTION_DEBUG);
         }
 
@@ -97,10 +86,11 @@ public class VizEngineGraphCanvasManager {
         this.engine.setDarkLaf(UIUtils.isDarkLookAndFeel());
 
         final OpenGLOptions glOptions = engine.getOpenGLOptions();
-        glOptions.setDisableIndirectDrawing(DISABLE_INDIRECT_RENDERING);
-        glOptions.setDisableInstancedDrawing(DISABLE_INSTANCED_RENDERING);
-        glOptions.setDisableVAOS(DISABLE_VAOS);
-        glOptions.setDebug(DEBUG);
+        glOptions.setDisableIndirectDrawing(VizConfig.isDefaultEngineDisableIndirectRendering());
+        glOptions.setDisableInstancedDrawing(VizConfig.isDefaultEngineDisableInstancedRendering());
+        glOptions.setDisableVAOS(VizConfig.isDefaultEngineDisableVAOs());
+        glOptions.setDisableVertexArrayDrawing(VizConfig.isDefaultEngineDisableVertexArrayDrawing());
+        glOptions.setDebug(VizConfig.isDefaultEngineOpenGLDebug());
 
         engine.addInputListener(new InputListener<>() {
             @Override
@@ -143,8 +133,7 @@ public class VizEngineGraphCanvasManager {
 
             @Override
             public int getOrder() {
-                int i = -100;
-                return i; // Execute before default listener of viz engine (has order = 0)
+                return -100; // Execute before default listener of viz engine (has order = 0)
             }
         });
 

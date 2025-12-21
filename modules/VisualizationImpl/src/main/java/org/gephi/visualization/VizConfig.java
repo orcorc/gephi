@@ -98,6 +98,11 @@ public class VizConfig {
     public static final String SCREENSHOT_SCALE_FACTOR = "VizConfig.screenshotScaleFactor";
     public static final String SCREENSHOT_TRANSPARENT_BACKGROUND = "VizConfig.screenshotTransparentBackground";
     public static final String SCREENSHOT_AUTO_SAVE = "VizConfig.screenshotAutoSave";
+    public static final String ENGINE_DISABLE_INDIRECT_RENDERING = "VizConfig.engineDisableIndirectRendering";
+    public static final String ENGINE_DISABLE_INSTANCED_RENDERING = "VizConfig.engineDisableInstancedRendering";
+    public static final String ENGINE_DISABLE_VAOS = "VizConfig.engineDisableVAOs";
+    public static final String ENGINE_DISABLE_VERTEX_ARRAY_DRAWING = "VizConfig.engineDisableVertexArrayDrawing";
+    public static final String ENGINE_OPENGL_DEBUG = "VizConfig.engineOpenGLDebug";
     //Const Prefs
     public static final String ANTIALIASING = "VizConfig.antialiasing";
     public static final String SHOW_FPS = "VizConfig.showFPS";
@@ -141,6 +146,11 @@ public class VizConfig {
     public static final int DEFAULT_SCREENSHOT_SCALE_FACTOR = 1;
     public static final boolean DEFAULT_SCREENSHOT_TRANSPARENT_BACKGROUND = false;
     public static final boolean DEFAULT_SCREENSHOT_AUTO_SAVE = false;
+    public static final boolean DEFAULT_ENGINE_DISABLE_INDIRECT_RENDERING = false;
+    public static final boolean DEFAULT_ENGINE_DISABLE_INSTANCED_RENDERING = false;
+    public static final boolean DEFAULT_ENGINE_DISABLE_VAOS = false;
+    public static final boolean DEFAULT_ENGINE_DISABLE_VERTEX_ARRAY_DRAWING = false;
+    public static final boolean DEFAULT_ENGINE_OPENGL_DEBUG = false;
 
     //Default config - loaded in the VizModel
     protected static Color defaultBackgroundColor = ColorUtils.decode(
@@ -225,6 +235,21 @@ public class VizConfig {
     protected static boolean screenshotAutoSave =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(SCREENSHOT_AUTO_SAVE, DEFAULT_SCREENSHOT_AUTO_SAVE);
+    protected static boolean engineDisableIndirectRendering =
+        NbPreferences.forModule(VizConfig.class)
+            .getBoolean(ENGINE_DISABLE_INDIRECT_RENDERING, DEFAULT_ENGINE_DISABLE_INDIRECT_RENDERING);
+    protected static boolean engineDisableInstancedRendering =
+        NbPreferences.forModule(VizConfig.class)
+            .getBoolean(ENGINE_DISABLE_INSTANCED_RENDERING, DEFAULT_ENGINE_DISABLE_INSTANCED_RENDERING);
+    protected static boolean engineDisableVAOs =
+        NbPreferences.forModule(VizConfig.class)
+            .getBoolean(ENGINE_DISABLE_VAOS, DEFAULT_ENGINE_DISABLE_VAOS);
+    protected static boolean engineDisableVertexArrayDrawing =
+        NbPreferences.forModule(VizConfig.class)
+            .getBoolean(ENGINE_DISABLE_VERTEX_ARRAY_DRAWING, DEFAULT_ENGINE_DISABLE_VERTEX_ARRAY_DRAWING);
+    protected static boolean engineOpenGLDebug =
+        NbPreferences.forModule(VizConfig.class)
+            .getBoolean(ENGINE_OPENGL_DEBUG, DEFAULT_ENGINE_OPENGL_DEBUG);
     //Preferences
     protected static int antialiasing =
         NbPreferences.forModule(VizConfig.class).getInt(ANTIALIASING, DEFAULT_ANTIALIASING);
@@ -381,5 +406,25 @@ public class VizConfig {
 
     public static boolean isDefaultScreenshotAutoSave() {
         return screenshotAutoSave;
+    }
+
+    public static boolean isDefaultEngineDisableIndirectRendering() {
+        return engineDisableIndirectRendering;
+    }
+
+    public static boolean isDefaultEngineDisableInstancedRendering() {
+        return engineDisableInstancedRendering;
+    }
+
+    public static boolean isDefaultEngineDisableVAOs() {
+        return engineDisableVAOs;
+    }
+
+    public static boolean isDefaultEngineDisableVertexArrayDrawing() {
+        return engineDisableVertexArrayDrawing;
+    }
+
+    public static boolean isDefaultEngineOpenGLDebug() {
+        return engineOpenGLDebug;
     }
 }
