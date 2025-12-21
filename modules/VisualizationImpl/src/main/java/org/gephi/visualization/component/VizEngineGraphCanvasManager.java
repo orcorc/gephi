@@ -194,20 +194,6 @@ public class VizEngineGraphCanvasManager {
             component.revalidate();
         }
 
-        // Keep viz-engine state for when it's restarted:
-        if (engine != null) {
-//            engine.pause();
-
-//            engineTranslate = engine.getTranslate();
-//            engineZoom = engine.getZoom();
-//            engineBackgroundColor = engine.getBackgroundColor();
-
-            //TODO: Keep more state of GraphRenderingOptions
-//            workspace.remove(engine);
-            //Logger.getLogger("").info("Destroying viz-engine...");
-            //engine.destroy(); // This crashes in windows!!
-        }
-
         if (glWindow != null) {
             //Logger.getLogger("").info("Destroying glWindow...");
             glWindow.destroy();

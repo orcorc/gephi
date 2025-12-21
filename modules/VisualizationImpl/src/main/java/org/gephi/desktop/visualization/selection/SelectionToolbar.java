@@ -40,7 +40,7 @@ Contributor(s):
 Portions Copyrighted 2011 Gephi Consortium.
  */
 
-package org.gephi.visualization.component;
+package org.gephi.desktop.visualization.selection;
 
 import java.awt.Component;
 import java.beans.PropertyChangeEvent;

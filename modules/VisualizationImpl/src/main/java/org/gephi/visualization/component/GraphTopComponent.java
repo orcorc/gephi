@@ -42,6 +42,7 @@
 
 package org.gephi.visualization.component;
 
+import org.gephi.desktop.visualization.selection.SelectionToolbar;
 import java.awt.AWTEvent;
 import java.awt.BorderLayout;
 import java.awt.event.AWTEventListener;
@@ -61,7 +62,9 @@ import org.gephi.desktop.visualization.collapse.NodeGroup;
 import org.gephi.desktop.visualization.collapse.NodeLabelGroup;
 import org.gephi.desktop.visualization.collapse.VizExtendedBar;
 import org.gephi.desktop.visualization.collapse.VizToolbar;
+import org.gephi.desktop.visualization.tools.ActionsToolbar;
 import org.gephi.desktop.visualization.tools.DesktopToolController;
+import org.gephi.desktop.visualization.tools.PropertiesBar;
 import org.gephi.project.api.ProjectController;
 import org.gephi.project.api.Workspace;
 import org.gephi.project.api.WorkspaceListener;
@@ -95,7 +98,7 @@ public class GraphTopComponent extends TopComponent implements AWTEventListener 
     // Variables declaration - do not modify
     private CollapsePanel collapsePanel;
     private javax.swing.JLabel waitingLabel;
-    // End of variables declaration//GEN-END:variables
+    // End of variables declaration                   
 
     private final ExecutorService vizExecutor;
 

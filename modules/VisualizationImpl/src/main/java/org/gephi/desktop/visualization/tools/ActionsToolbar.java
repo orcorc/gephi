@@ -40,7 +40,7 @@
  Portions Copyrighted 2011 Gephi Consortium.
  */
 
-package org.gephi.visualization.component;
+package org.gephi.desktop.visualization.tools;
 
 import java.awt.Color;
 import java.awt.Component;
