@@ -71,7 +71,7 @@ public class VizEngineGraphCanvasManager {
 
         this.glWindow = GLWindow.create(screen, caps);
 
-        if (VizConfig.isDefaultEngineOpenGLDebug()) {
+        if (VizConfig.isEngineOpenGLDebug()) {
             glWindow.setContextCreationFlags(GLContext.CTX_OPTION_DEBUG);
         }
 
@@ -86,11 +86,11 @@ public class VizEngineGraphCanvasManager {
         this.engine.setDarkLaf(UIUtils.isDarkLookAndFeel());
 
         final OpenGLOptions glOptions = engine.getOpenGLOptions();
-        glOptions.setDisableIndirectDrawing(VizConfig.isDefaultEngineDisableIndirectRendering());
-        glOptions.setDisableInstancedDrawing(VizConfig.isDefaultEngineDisableInstancedRendering());
-        glOptions.setDisableVAOS(VizConfig.isDefaultEngineDisableVAOs());
-        glOptions.setDisableVertexArrayDrawing(VizConfig.isDefaultEngineDisableVertexArrayDrawing());
-        glOptions.setDebug(VizConfig.isDefaultEngineOpenGLDebug());
+        glOptions.setDisableIndirectDrawing(VizConfig.isEngineDisableIndirectRendering());
+        glOptions.setDisableInstancedDrawing(VizConfig.isEngineDisableInstancedRendering());
+        glOptions.setDisableVAOS(VizConfig.isEngineDisableVAOs());
+        glOptions.setDisableVertexArrayDrawing(VizConfig.isEngineDisableVertexArrayDrawing());
+        glOptions.setDebug(VizConfig.isEngineOpenGLDebug());
 
         engine.addInputListener(new InputListener<>() {
             @Override

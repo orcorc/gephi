@@ -98,15 +98,15 @@ public class VizConfig {
     public static final String SCREENSHOT_SCALE_FACTOR = "VizConfig.screenshotScaleFactor";
     public static final String SCREENSHOT_TRANSPARENT_BACKGROUND = "VizConfig.screenshotTransparentBackground";
     public static final String SCREENSHOT_AUTO_SAVE = "VizConfig.screenshotAutoSave";
+    //Const Prefs
+    public static final String ANTIALIASING = "VizConfig.antialiasing";
+    public static final String SHOW_FPS = "VizConfig.showFPS";
+    public static final String CONTEXT_MENU = "VizConfig.contextMenu";
     public static final String ENGINE_DISABLE_INDIRECT_RENDERING = "VizConfig.engineDisableIndirectRendering";
     public static final String ENGINE_DISABLE_INSTANCED_RENDERING = "VizConfig.engineDisableInstancedRendering";
     public static final String ENGINE_DISABLE_VAOS = "VizConfig.engineDisableVAOs";
     public static final String ENGINE_DISABLE_VERTEX_ARRAY_DRAWING = "VizConfig.engineDisableVertexArrayDrawing";
     public static final String ENGINE_OPENGL_DEBUG = "VizConfig.engineOpenGLDebug";
-    //Const Prefs
-    public static final String ANTIALIASING = "VizConfig.antialiasing";
-    public static final String SHOW_FPS = "VizConfig.showFPS";
-    public static final String CONTEXT_MENU = "VizConfig.contextMenu";
     //Default values
     public static final Color DEFAULT_BACKGROUND_COLOR = Color.WHITE;
     public static final Color DEFAULT_DARK_BACKGROUND_COLOR = new Color(52, 55, 57, 255);
@@ -153,107 +153,109 @@ public class VizConfig {
     public static final boolean DEFAULT_ENGINE_OPENGL_DEBUG = false;
 
     //Default config - loaded in the VizModel
-    protected static Color defaultBackgroundColor = ColorUtils.decode(
+    protected static final Color defaultBackgroundColor = ColorUtils.decode(
         NbPreferences.forModule(VizConfig.class).get(BACKGROUND_COLOR, ColorUtils.encode(DEFAULT_BACKGROUND_COLOR)));
-    protected static Color defaultDarkBackgroundColor = ColorUtils.decode(
+    protected static final Color defaultDarkBackgroundColor = ColorUtils.decode(
         NbPreferences.forModule(VizConfig.class)
             .get(BACKGROUND_COLOR_DARK, ColorUtils.encode(DEFAULT_DARK_BACKGROUND_COLOR)));
-    protected static boolean defaultShowNodeLabels =
+    protected static final boolean defaultShowNodeLabels =
         NbPreferences.forModule(VizConfig.class).getBoolean(NODE_LABELS, DEFAULT_NODE_LABELS);
-    protected static boolean defaultShowEdgeLabels =
+    protected static final boolean defaultShowEdgeLabels =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_LABELS, DEFAULT_EDGE_LABELS);
-    protected static boolean defaultShowEdges =
+    protected static final boolean defaultShowEdges =
         NbPreferences.forModule(VizConfig.class).getBoolean(SHOW_EDGES, DEFAULT_SHOW_EDGES);
-    protected static EdgeColorMode defaultEdgeColorMode =
+    protected static final EdgeColorMode defaultEdgeColorMode =
         EdgeColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_COLOR_MODE, DEFAULT_EDGE_COLOR_MODE.name()));
-    protected static boolean defaultLightenNonSelectedAuto =
+    protected static final boolean defaultLightenNonSelectedAuto =
         NbPreferences.forModule(VizConfig.class).getBoolean(HIGHLIGHT, DEFAULT_HIGHLIGHT);
-    protected static float defaultLightenNonSelectedFactor =
+    protected static final float defaultLightenNonSelectedFactor =
         NbPreferences.forModule(VizConfig.class).getFloat(HIGHLIGHT_FACTOR, DEFAULT_HIGHLIGHT_FACTOR);
-    protected static boolean defaultAutoSelectNeighbor =
+    protected static final boolean defaultAutoSelectNeighbor =
         NbPreferences.forModule(VizConfig.class).getBoolean(NEIGHBOUR_SELECT, DEFAULT_NEIGHBOUR_SELECT);
-    protected static boolean defaultHideNonSelectedEdges =
+    protected static final boolean defaultHideNonSelectedEdges =
         NbPreferences.forModule(VizConfig.class).getBoolean(HIDE_NONSELECTED_EDGES, DEFAULT_HIDE_NONSELECTED_EDGES);
-    protected static Font defaultNodeLabelFont = Font.decode(
+    protected static final Font defaultNodeLabelFont = Font.decode(
         NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_FONT, FontUtils.encode(DEFAULT_NODE_LABEL_FONT)));
-    protected static Font defaultEdgeLabelFont = Font.decode(
+    protected static final Font defaultEdgeLabelFont = Font.decode(
         NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_FONT, FontUtils.encode(DEFAULT_EDGE_LABEL_FONT)));
-    protected static boolean defaultHideNonSelectedNodeLabels =
+    protected static final boolean defaultHideNonSelectedNodeLabels =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(HIDE_NONSELECTED_NODE_LABELS, DEFAULT_HIDE_NONSELECTED_NODE_LABELS);
-    protected static boolean defaultHideNonSelectedEdgeLabels =
+    protected static final boolean defaultHideNonSelectedEdgeLabels =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(HIDE_NONSELECTED_EDGE_LABELS, DEFAULT_HIDE_NONSELECTED_EDGE_LABELS);
-    protected static boolean defaultFitNodeLabelsToNodeSize =
+    protected static final boolean defaultFitNodeLabelsToNodeSize =
         NbPreferences.forModule(VizConfig.class).getBoolean(FIT_NODE_LABELS_TO_NODE_SIZE,
             DEFAULT_FIT_NODE_LABELS_TO_NODE_SIZE);
-    protected static boolean defaultAvoidNodeLabelOverlap =
+    protected static final boolean defaultAvoidNodeLabelOverlap =
         NbPreferences.forModule(VizConfig.class).getBoolean(AVOID_NODE_LABEL_OVERLAP,
             DEFAULT_AVOID_NODE_LABEL_OVERLAP);
-    protected static boolean defaultEdgeSelectionColor =
+    protected static final boolean defaultEdgeSelectionColor =
         NbPreferences.forModule(VizConfig.class).getBoolean(SELECTEDEDGE_HAS_COLOR, DEFAULT_SELECTEDEDGE_HAS_COLOR);
-    protected static Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+    protected static final Color defaultEdgeInSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
         .get(SELECTEDEDGE_IN_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_IN_COLOR)));
-    protected static Color defaultEdgeOutSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
-        .get(SELECTEDEDGE_OUT_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_OUT_COLOR)));
-    protected static Color defaultEdgeBothSelectedColor = ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
-        .get(SELECTEDEDGE_BOTH_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_BOTH_COLOR)));
-    protected static float defaultEdgeScale =
+    protected static final Color defaultEdgeOutSelectedColor =
+        ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+            .get(SELECTEDEDGE_OUT_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_OUT_COLOR)));
+    protected static final Color defaultEdgeBothSelectedColor =
+        ColorUtils.decode(NbPreferences.forModule(VizConfig.class)
+            .get(SELECTEDEDGE_BOTH_COLOR, ColorUtils.encode(DEFAULT_SELECTEDEDGE_BOTH_COLOR)));
+    protected static final float defaultEdgeScale =
         NbPreferences.forModule(VizConfig.class).getFloat(EDGE_SCALE, DEFAULT_EDGE_SCALE);
-    protected static float defaultNodeScale =
+    protected static final float defaultNodeScale =
         NbPreferences.forModule(VizConfig.class).getFloat(NODE_SCALE, DEFAULT_NODE_SCALE);
-    protected static LabelSizeMode defaultNodeLabelSizeMode =
+    protected static final LabelSizeMode defaultNodeLabelSizeMode =
         LabelSizeMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_SIZE_MODE, DEFAULT_NODE_LABEL_SIZE_MODE));
-    protected static LabelColorMode defaultNodeLabelColorMode =
+    protected static final LabelColorMode defaultNodeLabelColorMode =
         LabelColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(NODE_LABEL_COLOR_MODE, DEFAULT_NODE_LABEL_COLOR_MODE));
-    protected static boolean defaultUseEdgeWeight =
+    protected static final boolean defaultUseEdgeWeight =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_WEIGHTED, DEFAULT_EDGE_WEIGHTED);
-    protected static boolean defaultRescaleEdgeWeight =
+    protected static final boolean defaultRescaleEdgeWeight =
         NbPreferences.forModule(VizConfig.class).getBoolean(EDGE_RESCALE_WEIGHT, DEFAULT_EDGE_RESCALE_WEIGHTED);
-    protected static float defaultNodeLabelScale =
+    protected static final float defaultNodeLabelScale =
         NbPreferences.forModule(VizConfig.class).getFloat(NODE_LABEL_SCALE, DEFAULT_NODE_LABEL_SCALE);
-    protected static float defaultEdgeLabelScale =
+    protected static final float defaultEdgeLabelScale =
         NbPreferences.forModule(VizConfig.class).getFloat(EDGE_LABEL_SCALE, DEFAULT_EDGE_LABEL_SCALE);
-    protected static LabelSizeMode defaultEdgeLabelSizeMode =
+    protected static final LabelSizeMode defaultEdgeLabelSizeMode =
         LabelSizeMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_SIZE_MODE, DEFAULT_EDGE_LABEL_SIZE_MODE));
-    protected static LabelColorMode defaultEdgeLabelColorMode =
+    protected static final LabelColorMode defaultEdgeLabelColorMode =
         LabelColorMode.valueOf(
             NbPreferences.forModule(VizConfig.class).get(EDGE_LABEL_COLOR_MODE, DEFAULT_EDGE_LABEL_COLOR_MODE));
-    protected static float defaultZoom = NbPreferences.forModule(VizConfig.class).getFloat(ZOOM, DEFAULT_ZOOM);
-    protected static int defaultMouseSelectionDiameter =
+    protected static final float defaultZoom = NbPreferences.forModule(VizConfig.class).getFloat(ZOOM, DEFAULT_ZOOM);
+    protected static final int defaultMouseSelectionDiameter =
         NbPreferences.forModule(VizConfig.class).getInt(MOUSE_SELECTION_DIAMETER, DEFAULT_MOUSE_SELECTION_DIAMETER);
-    protected static int screenshotScaleFactor =
+    protected static final int screenshotScaleFactor =
         NbPreferences.forModule(VizConfig.class)
             .getInt(SCREENSHOT_SCALE_FACTOR, DEFAULT_SCREENSHOT_SCALE_FACTOR);
-    protected static boolean screenshotTransparentBackground =
+    protected static final boolean screenshotTransparentBackground =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(SCREENSHOT_TRANSPARENT_BACKGROUND, DEFAULT_SCREENSHOT_TRANSPARENT_BACKGROUND);
-    protected static boolean screenshotAutoSave =
+    protected static final boolean screenshotAutoSave =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(SCREENSHOT_AUTO_SAVE, DEFAULT_SCREENSHOT_AUTO_SAVE);
-    protected static boolean engineDisableIndirectRendering =
+    protected static final boolean engineDisableIndirectRendering =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(ENGINE_DISABLE_INDIRECT_RENDERING, DEFAULT_ENGINE_DISABLE_INDIRECT_RENDERING);
-    protected static boolean engineDisableInstancedRendering =
+    protected static final boolean engineDisableInstancedRendering =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(ENGINE_DISABLE_INSTANCED_RENDERING, DEFAULT_ENGINE_DISABLE_INSTANCED_RENDERING);
-    protected static boolean engineDisableVAOs =
+    protected static final boolean engineDisableVAOs =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(ENGINE_DISABLE_VAOS, DEFAULT_ENGINE_DISABLE_VAOS);
-    protected static boolean engineDisableVertexArrayDrawing =
+    protected static final boolean engineDisableVertexArrayDrawing =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(ENGINE_DISABLE_VERTEX_ARRAY_DRAWING, DEFAULT_ENGINE_DISABLE_VERTEX_ARRAY_DRAWING);
-    protected static boolean engineOpenGLDebug =
+    protected static final boolean engineOpenGLDebug =
         NbPreferences.forModule(VizConfig.class)
             .getBoolean(ENGINE_OPENGL_DEBUG, DEFAULT_ENGINE_OPENGL_DEBUG);
     //Preferences
-    protected static int antialiasing =
+    protected static final int antialiasing =
         NbPreferences.forModule(VizConfig.class).getInt(ANTIALIASING, DEFAULT_ANTIALIASING);
-    protected static boolean enableContextMenu =
+    protected static final boolean enableContextMenu =
         NbPreferences.forModule(VizConfig.class).getBoolean(CONTEXT_MENU, DEFAULT_CONTEXT_MENU);
 
     public static int getAntialiasing() {
@@ -408,23 +410,23 @@ public class VizConfig {
         return screenshotAutoSave;
     }
 
-    public static boolean isDefaultEngineDisableIndirectRendering() {
+    public static boolean isEngineDisableIndirectRendering() {
         return engineDisableIndirectRendering;
     }
 
-    public static boolean isDefaultEngineDisableInstancedRendering() {
+    public static boolean isEngineDisableInstancedRendering() {
         return engineDisableInstancedRendering;
     }
 
-    public static boolean isDefaultEngineDisableVAOs() {
+    public static boolean isEngineDisableVAOs() {
         return engineDisableVAOs;
     }
 
-    public static boolean isDefaultEngineDisableVertexArrayDrawing() {
+    public static boolean isEngineDisableVertexArrayDrawing() {
         return engineDisableVertexArrayDrawing;
     }
 
-    public static boolean isDefaultEngineOpenGLDebug() {
+    public static boolean isEngineOpenGLDebug() {
         return engineOpenGLDebug;
     }
 }
