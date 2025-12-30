@@ -374,10 +374,11 @@ public class VizEngine<R extends RenderingTarget, I> {
         setup();
     }
 
-    public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
+    public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions, GraphSelection graphSelection) {
         if (this.engineModel.getGraphModel() != graphModel) {
             this.engineModel = new VizEngineModel(graphModel,
-                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl(darkLaf));
+                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl(darkLaf),
+                graphSelection);
         }
 
         // Sync local translate from new model's pan
@@ -396,7 +397,7 @@ public class VizEngine<R extends RenderingTarget, I> {
     private VizEngineModel createEmptyModel() {
         Configuration config = Configuration.builder().enableSpatialIndex(true).build();
         GraphModel emptyModel = GraphModel.Factory.newInstance(config);
-        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl(darkLaf));
+        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl(darkLaf), null);
     }
 
     public synchronized void initPipeline() {

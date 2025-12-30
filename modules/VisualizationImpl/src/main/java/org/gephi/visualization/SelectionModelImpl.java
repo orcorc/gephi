@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.gephi.graph.api.Node;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.status.GraphSelectionImpl;
 
 public class SelectionModelImpl {
 
@@ -26,6 +27,28 @@ public class SelectionModelImpl {
 
         // Settings
         this.mouseSelectionDiameter = VizConfig.getDefaultMouseSelectionDiameter();
+    }
+
+    public GraphSelection toGraphSelection() {
+        GraphSelectionImpl gs = new GraphSelectionImpl();
+        if (selectionEnable) {
+            if (rectangleSelection) {
+                gs.setMode(GraphSelection.GraphSelectionMode.RECTANGLE_SELECTION);
+            } else if (customSelection) {
+                gs.setMode(GraphSelection.GraphSelectionMode.CUSTOM_SELECTION);
+            } else if (nodeSelection) {
+                if (singleNodeSelection) {
+                    gs.setMode(GraphSelection.GraphSelectionMode.SINGLE_NODE_SELECTION);
+                } else {
+                    gs.setMode(GraphSelection.GraphSelectionMode.MULTI_NODE_SELECTION);
+                }
+            } else {
+                gs.setMode(GraphSelection.GraphSelectionMode.SIMPLE_MOUSE_SELECTION);
+            }
+        }
+        gs.setMouseSelectionDiameter(mouseSelectionDiameter);
+        gs.setMouseSelectionDiameterZoomProportional(mouseSelectionZoomProportional);
+        return gs;
     }
 
     protected Optional<GraphSelection> currentEngineSelectionModel() {

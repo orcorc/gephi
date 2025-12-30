@@ -344,25 +344,6 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setEdgeLabelColumns(columns);
     }
 
-    //    public void refreshWorkspace() {
-//        final ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-//        final Workspace currentWorkspace = pc.getCurrentWorkspace();
-//
-//        VizModel model = null;
-//        if (currentWorkspace != null) {
-//            model = currentWorkspace.getLookup().lookup(VizModel.class);
-//            if (model == null) {
-//                model = new VizModel(currentWorkspace);
-//                currentWorkspace.add(model);
-//            }
-//        }
-//
-//        currentModel = model;
-//        if (currentModel != null) {
-//            currentModel.init();
-//        }
-//    }
-
     public void destroy() {
 //        vizEventManager = null;
 //        textManager = null;

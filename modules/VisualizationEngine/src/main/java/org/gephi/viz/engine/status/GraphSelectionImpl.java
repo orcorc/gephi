@@ -28,6 +28,16 @@ public class GraphSelectionImpl implements GraphSelection {
         nodes.clear();
     }
 
+    public GraphSelectionImpl(GraphSelection other) {
+        super();
+        if  (other != null) {
+            this.selectionMode = other.getMode();
+            this.simpleMouseSelectionDiameter = other.getMouseSelectionDiameter();
+            this.simpleMouseSelectionMVPScale = other.getSimpleMouseSelectionMVPScale();
+            this.mouseSelectionDiameterZoomProportional = other.getMouseSelectionDiameterZoomProportional();
+        }
+    }
+
     public BitSet getNodesWithNeighbours() {
         return nodesWithNeighbours;
     }

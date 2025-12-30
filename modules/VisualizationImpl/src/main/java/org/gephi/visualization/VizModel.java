@@ -70,6 +70,7 @@ import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
+import org.gephi.viz.engine.status.GraphSelection;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.openide.util.Lookup;
@@ -230,6 +231,10 @@ public class VizModel implements VisualisationModel {
         options.setHideNonSelectedEdgeLabels(isHideNonSelectedEdgeLabels());
         options.setEdgeLabelColumns(getEdgeLabelColumns());
         return options;
+    }
+
+    public GraphSelection toGraphSelection() {
+        return selectionModel.toGraphSelection();
     }
 
     public void unsetup() {

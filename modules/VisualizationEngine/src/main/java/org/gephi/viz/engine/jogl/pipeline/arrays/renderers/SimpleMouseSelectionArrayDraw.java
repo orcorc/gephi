@@ -61,8 +61,6 @@ public class SimpleMouseSelectionArrayDraw implements Renderer<JOGLRenderingTarg
 
 
     public SimpleMouseSelectionArrayDraw(VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
-
-
         this.engine = engine;
     }
 

@@ -22,7 +22,7 @@ public class VizEngineFactory {
 
         // Set graph model
         if (graphModel != null) {
-            engine.setGraphModel(graphModel, null);
+            engine.setGraphModel(graphModel, null, null);
         }
 
         //Configure
