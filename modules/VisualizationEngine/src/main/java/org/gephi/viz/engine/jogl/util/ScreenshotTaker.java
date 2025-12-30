@@ -28,6 +28,21 @@ import org.joml.Vector2fc;
 public class ScreenshotTaker {
 
     /**
+     * Calculates the maximum scale factor that can be used for tiled screenshots without exceeding array size limits.
+     *
+     * @param viewportWidth         The width of the viewport/tile.
+     * @param viewportHeight        The height of the viewport/tile.
+     * @param transparentBackground Whether the screenshot will have a transparent background (requires more memory).
+     * @return The maximum scale factor that can be safely used.
+     */
+    public static int getMaxScaleFactor(int viewportWidth, int viewportHeight, boolean transparentBackground) {
+        int bytesPerPixel = transparentBackground ? 4 : 3;
+        long maxTotalPixels = Integer.MAX_VALUE / bytesPerPixel;
+        long baseTilePixels = (long) viewportWidth * viewportHeight;
+        return (int) Math.sqrt((double) maxTotalPixels / baseTilePixels);
+    }
+
+    /**
      * Takes a simple screenshot of the current framebuffer.
      *
      * @param gl                    The GL context to read from.
@@ -87,8 +102,32 @@ public class ScreenshotTaker {
         int tileWidth = drawable.getSurfaceWidth();
         int tileHeight = drawable.getSurfaceHeight();
 
-        int imageWidth = tileWidth * scaleFactor;
-        int imageHeight = tileHeight * scaleFactor;
+        // Check for potential overflow when calculating final image dimensions
+        long imageWidthLong = (long) tileWidth * scaleFactor;
+        long imageHeightLong = (long) tileHeight * scaleFactor;
+        
+        // Check if dimensions exceed int range
+        if (imageWidthLong > Integer.MAX_VALUE || imageHeightLong > Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(
+                String.format("Image dimensions too large: %dx%d (scale factor: %d). Maximum dimension is %d.",
+                    imageWidthLong, imageHeightLong, scaleFactor, Integer.MAX_VALUE));
+        }
+        
+        // Check if total byte array size would exceed array size limits
+        // BufferedImage uses byte[] internally: TYPE_3BYTE_BGR (3 bytes/pixel) or TYPE_4BYTE_ABGR (4 bytes/pixel)
+        long totalPixels = imageWidthLong * imageHeightLong;
+        int bytesPerPixel = transparentBackground ? 4 : 3;
+        long totalBytes = totalPixels * bytesPerPixel;
+        
+        if (totalBytes > Integer.MAX_VALUE) {
+            int maxScaleFactor = getMaxScaleFactor(tileWidth, tileHeight, transparentBackground);
+            throw new IllegalArgumentException(
+                String.format("Scale factor %d is too large for %dx%d viewport. Maximum scale factor: %d",
+                    scaleFactor, tileWidth, tileHeight, maxScaleFactor));
+        }
+        
+        int imageWidth = (int) imageWidthLong;
+        int imageHeight = (int) imageHeightLong;
 
         TileRenderer renderer = new TileRenderer();
         renderer.setImageSize(imageWidth, imageHeight);

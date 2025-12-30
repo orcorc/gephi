@@ -46,10 +46,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.gephi.visualization.api.ScreenshotModel;
 import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
+import org.gephi.viz.engine.jogl.util.ScreenshotTaker;
 import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
 
@@ -94,22 +96,15 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
             }
         });
 
-        String customElement =
-            NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
-        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
-        comboModel.addElement("1x");
-        comboModel.addElement("2x");
-        comboModel.addElement("4x");
-        comboModel.addElement("8x");
-        comboModel.addElement("16x");
-        comboModel.addElement(customElement);
-        scaleFactorCombo.setModel(comboModel);
+        // Setup combo listener for custom scale factor toggle
         scaleFactorCombo.addItemListener(e -> {
-            if (scaleFactorCombo.getSelectedItem().equals(customElement)) {
+            String customElement =
+                NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+            if (scaleFactorCombo.getSelectedItem() != null && scaleFactorCombo.getSelectedItem().equals(customElement)) {
                 customScaleFactorSpinner.setVisible(true);
                 labelCustomScaleFactor.setVisible(true);
                 refreshWidthAndHeightLabels((Integer) customScaleFactorSpinner.getModel().getValue());
-            } else {
+            } else if (scaleFactorCombo.getSelectedItem() != null) {
                 customScaleFactorSpinner.setVisible(false);
                 labelCustomScaleFactor.setVisible(false);
                 customScaleFactorSpinner.getModel()
@@ -135,34 +130,60 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
     public void setup(final ScreenshotModel model) {
         this.surfaceHeight = controller.getSurfaceHeight();
         this.surfaceWidth = controller.getSurfaceWidth();
+        
+        // Calculate maximum scale factor using worst case (transparent = 4 bytes/pixel)
+        int maxScaleFactor = ScreenshotTaker.getMaxScaleFactor(surfaceWidth, surfaceHeight, true);
+        
+        // Build combo model with scale factors up to the maximum
+        String customElement =
+            NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
+        int[] standardScaleFactors = {1, 2, 4, 8, 16, 32, 64};
+        for (int scaleFactor : standardScaleFactors) {
+            if (scaleFactor <= maxScaleFactor) {
+                comboModel.addElement(scaleFactor + "x");
+            }
+        }
+        comboModel.addElement(customElement);
+        scaleFactorCombo.setModel(comboModel);
+        
+        // Update spinner model with maximum
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
+            Math.min(model.getScaleFactor(), maxScaleFactor), // current value
+            1, // minimum
+            maxScaleFactor, // maximum
+            1  // step
+        );
+        customScaleFactorSpinner.setModel(spinnerModel);
+        
         autoSaveCheckBox.setSelected(model.isAutoSave());
         selectDirectoryButton.setEnabled(autoSaveCheckBox.isSelected());
-        customScaleFactorSpinner.setValue(model.getScaleFactor());
         customScaleFactorSpinner.setVisible(false);
         labelCustomScaleFactor.setVisible(false);
-        switch (model.getScaleFactor()) {
-            case 1:
-                scaleFactorCombo.setSelectedIndex(0);
+        
+        // Select appropriate combo item based on model's scale factor
+        int modelScaleFactor = Math.min(model.getScaleFactor(), maxScaleFactor);
+        boolean foundInCombo = false;
+        for (int i = 0; i < comboModel.getSize() - 1; i++) { // -1 to exclude custom element
+            String item = comboModel.getElementAt(i);
+            int itemScaleFactor = Integer.parseInt(item.replace("x", ""));
+            if (itemScaleFactor == modelScaleFactor) {
+                scaleFactorCombo.setSelectedIndex(i);
+                foundInCombo = true;
                 break;
-            case 2:
-                scaleFactorCombo.setSelectedIndex(1);
-                break;
-            case 4:
-                scaleFactorCombo.setSelectedIndex(2);
-                break;
-            case 8:
-                scaleFactorCombo.setSelectedIndex(3);
-                break;
-            case 16:
-                scaleFactorCombo.setSelectedIndex(4);
-                break;
-            default:
-                scaleFactorCombo.setSelectedIndex(5);
-                customScaleFactorSpinner.setVisible(true);
-                labelCustomScaleFactor.setVisible(true);
-                break;
+            }
         }
+        
+        if (!foundInCombo) {
+            // Select custom and show spinner
+            scaleFactorCombo.setSelectedIndex(comboModel.getSize() - 1);
+            customScaleFactorSpinner.setValue(modelScaleFactor);
+            customScaleFactorSpinner.setVisible(true);
+            labelCustomScaleFactor.setVisible(true);
+        }
+        
         transparentBackgroundCheckbox.setSelected(model.isTransparentBackground());
+        
         selectDirectoryButton.addActionListener(new ActionListener() {
 
             @Override
@@ -180,26 +201,18 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
 
     public void unsetup() {
         controller.setAutoSave(autoSaveCheckBox.isSelected());
-        switch (scaleFactorCombo.getSelectedIndex()) {
-            case 0:
-                controller.setScaleFactor(1);
-                break;
-            case 1:
-                controller.setScaleFactor(2);
-                break;
-            case 2:
-                controller.setScaleFactor(4);
-                break;
-            case 3:
-                controller.setScaleFactor(8);
-                break;
-            case 4:
-                controller.setScaleFactor(16);
-                break;
-            default:
-                controller.setScaleFactor((Integer) customScaleFactorSpinner.getModel().getValue());
-                break;
+        
+        // Get scale factor from either combo or custom spinner
+        String customElement =
+            NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+        Object selectedItem = scaleFactorCombo.getSelectedItem();
+        
+        if (selectedItem != null && selectedItem.equals(customElement)) {
+            controller.setScaleFactor((Integer) customScaleFactorSpinner.getModel().getValue());
+        } else if (selectedItem != null) {
+            controller.setScaleFactor(Integer.parseInt(selectedItem.toString().replace("x", "")));
         }
+        
         controller.setTransparentBackground(transparentBackgroundCheckbox.isSelected());
     }
 
