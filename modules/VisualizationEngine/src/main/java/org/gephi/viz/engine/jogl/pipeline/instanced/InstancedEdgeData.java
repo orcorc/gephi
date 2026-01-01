@@ -46,8 +46,6 @@ public class InstancedEdgeData extends AbstractEdgeData {
         drawSelfLoop(gl, data, layer, mvpFloats);
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
-
-
     }
 
     private void drawSelfLoop(GL3ES3 gl, EdgeWorldData data,
@@ -141,14 +139,14 @@ public class InstancedEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoop =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELF_LOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoop.bind(gl);
-        attributesGLBufferSelfLoop.init(gl, (long) ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_EDGES_SIZE,
+        attributesGLBufferSelfLoop.init(gl, (long) ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_SELFLOOP_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoop.unbind(gl);
 
         attributesGLBufferSelfLoopSecondary =
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELF_LOOP_SECONDARY], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoopSecondary.bind(gl);
-        attributesGLBufferSelfLoopSecondary.init(gl, (long) ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_EDGES_SIZE,
+        attributesGLBufferSelfLoopSecondary.init(gl, (long) ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_SELFLOOP_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoopSecondary.unbind(gl);
 

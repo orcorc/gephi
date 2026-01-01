@@ -98,6 +98,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected float[] attributesBufferBatch;
     protected static final int BATCH_EDGES_SIZE = 32768;
+    protected static final int BATCH_SELFLOOP_EDGES_SIZE = 8192;
 
     protected float[] selfLoopAttributesBufferBatch;
 
@@ -133,8 +134,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         attributesBufferBatch = new float[ATTRIBS_STRIDE * BATCH_EDGES_SIZE];
         attributesBuffer = new ManagedDirectBuffer(GL_FLOAT, ATTRIBS_STRIDE * BATCH_EDGES_SIZE);
 
-        selfLoopAttributesBufferBatch = new float[ATTRIBS_STRIDE_SELFLOOP * BATCH_EDGES_SIZE];
-        selfLoopAttributesBuffer = new ManagedDirectBuffer(GL_FLOAT, ATTRIBS_STRIDE_SELFLOOP * BATCH_EDGES_SIZE);
+        selfLoopAttributesBufferBatch = new float[ATTRIBS_STRIDE_SELFLOOP * BATCH_SELFLOOP_EDGES_SIZE];
+        selfLoopAttributesBuffer = new ManagedDirectBuffer(GL_FLOAT, ATTRIBS_STRIDE_SELFLOOP * BATCH_SELFLOOP_EDGES_SIZE);
     }
 
     protected int setupShaderProgramForRenderingLayerSelfLoop(
