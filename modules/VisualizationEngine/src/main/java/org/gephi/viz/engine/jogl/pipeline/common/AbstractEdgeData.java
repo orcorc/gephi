@@ -429,6 +429,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         if (!renderingOptions.isShowEdges()) {
             undirectedInstanceCounter.clearCount();
             directedInstanceCounter.clearCount();
+            selfLoopCounter.clearCount();
             return;
         }
 
@@ -440,6 +441,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         if (!someSelection && hideNonSelectedFlag) {
             undirectedInstanceCounter.clearCount();
             directedInstanceCounter.clearCount();
+            selfLoopCounter.clearCount();
             return;
         }
         // When there is a selection, hide unselected edges if the flag is on
