@@ -4,12 +4,15 @@ import static org.gephi.viz.engine.util.ArrayUtils.getNextPowerOf2;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.ColumnIndex;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Graph;
 import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Rect2D;
+import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.spi.ElementsCallback;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphSelection;
@@ -177,7 +180,8 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     protected Edge[] ensureEdgesArraySize(Edge[] array, int size) {
         if (size > array.length) {
             int newSize = getNextPowerOf2(size);
-            System.out.println("Growing edge vector from " + array.length + " to " + newSize + " elements");
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(
+                Level.FINE, "Growing edge vector from " + array.length + " to " + newSize + " elements");
 
             final Edge[] newVector = new Edge[newSize];
             System.arraycopy(array, 0, newVector, 0, array.length);

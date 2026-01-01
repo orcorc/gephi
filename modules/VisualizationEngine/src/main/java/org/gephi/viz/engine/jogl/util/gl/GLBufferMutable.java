@@ -7,6 +7,9 @@ import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
 import com.jogamp.opengl.GL3ES3;
 import java.nio.Buffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gephi.viz.engine.VizEngine;
 
 /**
  *
@@ -132,7 +135,7 @@ public class GLBufferMutable implements GLBuffer {
         if (sizeBytes < neededBytes) {
             long newSizeBytes = getNextPowerOf2(neededBytes);
 
-            System.out.println("Growing GL buffer from " + sizeBytes + " to " + newSizeBytes + " bytes");
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.FINE, "Growing GL buffer from " + sizeBytes + " to " + newSizeBytes + " bytes");
             init(gl, newSizeBytes, usage);
         }
     }

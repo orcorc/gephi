@@ -125,8 +125,8 @@ public class VizEngine<R extends RenderingTarget, I> {
         this.renderingTarget.setup(this);
 
         isSetUp = true;
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "World updaters execution mode: {0}", worldUpdatersExecutionMode);
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "World updaters execution mode: {0}", worldUpdatersExecutionMode);
     }
 
     public R getRenderingTarget() {
@@ -159,11 +159,11 @@ public class VizEngine<R extends RenderingTarget, I> {
 
             if (bestElement != null) {
                 elements.add(bestElement);
-                Logger.getLogger(VizEngine.class.getName()).log(Level.INFO,
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.FINE,
                     "Using best available {0} ''{1}'' for category {2}",
                     new Object[] {elementType, bestElement.getName(), category});
             } else {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.WARNING,
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.WARNING,
                     "No available {0} for category {1}", new Object[] {elementType, category});
             }
         });
@@ -445,7 +445,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 updatersThreadPool.awaitTermination(1, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
-                Logger.getLogger(VizEngine.class.getName())
+                Logger.getLogger(VizEngine.class.getSimpleName())
                     .log(Level.WARNING, "Interrupted while disposing VizEngine", ex);
             }
         }
@@ -495,20 +495,20 @@ public class VizEngine<R extends RenderingTarget, I> {
                     worldUpdaterManagerThread.shutdownNow();
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(VizEngine.class.getName())
+                Logger.getLogger(VizEngine.class.getSimpleName())
                     .log(Level.WARNING, "Interrupted while destroying VizEngine", ex);
             }
         }
 
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "Disposing {0} world updaters", updatersPipeline.size());
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "Disposing {0} world updaters", updatersPipeline.size());
         updatersPipeline.forEach((worldUpdater) -> {
             worldUpdater.dispose(renderingTarget);
         });
         updatersElementsCallbacks.forEach(ElementsCallback::reset);
 
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "Disposing {0} renderers", renderersPipeline.size());
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "Disposing {0} renderers", renderersPipeline.size());
         renderersPipeline.forEach((renderer) -> {
             renderer.dispose(renderingTarget);
         });
@@ -522,7 +522,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 updater.updateWorld(engineModel);
             } catch (Throwable t) {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             }
         }, updatersThreadPool);
     }
@@ -535,7 +535,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 callback.run(graphIndex, renderingOptions, boundaries);
             } catch (Throwable t) {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             }
         }, updatersThreadPool);
     }
@@ -635,7 +635,7 @@ public class VizEngine<R extends RenderingTarget, I> {
                 r -> r.worldUpdated(modelUsedByUpdaters, renderingTarget)
             ).toList();
         } catch (Throwable t) {
-            Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             throw new RuntimeException(t);
         }
     }

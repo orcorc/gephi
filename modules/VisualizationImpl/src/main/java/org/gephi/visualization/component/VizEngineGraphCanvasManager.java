@@ -9,12 +9,15 @@ import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLProfile;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.project.api.Workspace;
@@ -73,6 +76,12 @@ public class VizEngineGraphCanvasManager {
 
         if (VizConfig.isEngineOpenGLDebug()) {
             glWindow.setContextCreationFlags(GLContext.CTX_OPTION_DEBUG);
+
+            // Set logger to FINE to see debug messages
+            Logger logger = Logger.getLogger(VizEngine.class.getSimpleName());
+            logger.setLevel(Level.FINE);
+
+            logger.log(Level.FINE, GLProfile.glAvailabilityToString());
         }
 
         final JOGLRenderingTarget renderingTarget = new JOGLRenderingTarget(glWindow);

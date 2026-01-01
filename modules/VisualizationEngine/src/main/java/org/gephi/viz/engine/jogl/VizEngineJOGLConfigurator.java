@@ -67,8 +67,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         GLProfile glProfile = GLProfile.get(GL_PROFILE_LIST_MAX_PROGSHADER_CORE_OR_GL2, true);
         GLCapabilities caps = new GLCapabilities(glProfile);
 
-        Logger.getLogger(VizEngine.class.getName()).log(Level.CONFIG, GLProfile.glAvailabilityToString());
-        Logger.getLogger(VizEngine.class.getName()).log(Level.INFO, "Chosen GL Profile: {0}", glProfile);
+        Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.INFO, "Chosen GL Profile: {0}", glProfile);
 
         caps.setAlphaBits(8);
         caps.setDoubleBuffered(true);
@@ -107,12 +106,12 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
     private void setupInstancedRendering(final NodesCallback nodesCallback,
                                          final EdgesCallback edgesCallback,
                                          VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
-        //Nodes:
+        //Nodes
         final InstancedNodeData nodeData = new InstancedNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererInstanced(engine, nodeData));
         engine.addWorldUpdater(new NodesUpdaterInstancedRendering(engine, nodeData));
 
-        //Edges:
+        //Edges
         final InstancedEdgeData indirectEdgeData = new InstancedEdgeData(edgesCallback, nodesCallback);
         engine.addRenderer(new EdgeRendererInstanced(engine, indirectEdgeData));
         engine.addWorldUpdater(new EdgesUpdaterInstancedRendering(engine, indirectEdgeData));
@@ -121,12 +120,12 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
     private void setupVertexArrayRendering(final NodesCallback nodesCallback,
                                            final EdgesCallback edgesCallback,
                                            VizEngine<JOGLRenderingTarget, NEWTEvent> engine) {
-        //Nodes:
+        //Nodes
         final ArrayDrawNodeData nodeData = new ArrayDrawNodeData(nodesCallback);
         engine.addRenderer(new NodeRendererArrayDraw(engine, nodeData));
         engine.addWorldUpdater(new NodesUpdaterArrayDrawRendering(engine, nodeData));
 
-        //Edges:
+        //Edges
         final ArrayDrawEdgeData edgeData = new ArrayDrawEdgeData(edgesCallback, nodesCallback);
         engine.addRenderer(new EdgeRendererArrayDraw(engine, edgeData));
         engine.addWorldUpdater(new EdgesUpdaterArrayDrawRendering(engine, edgeData));
@@ -141,7 +140,7 @@ public class VizEngineJOGLConfigurator implements VizEngineConfigurator<JOGLRend
         engine.addRenderer(new EdgeLabelRenderer(engine, edgeLabelData));
         engine.addWorldUpdater(new EdgeLabelUpdater(engine, edgeLabelData));
 
-        //Selection:
+        //Selection
         engine.addRenderer(new RectangleSelectionArrayDraw(engine));
         engine.addRenderer(new SimpleMouseSelectionArrayDraw(engine));
     }

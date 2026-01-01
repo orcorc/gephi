@@ -7,6 +7,9 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gephi.viz.engine.VizEngine;
 
 /**
  *
@@ -40,7 +43,7 @@ public class ManagedDirectBuffer {
         if (elementsCapacity < elements) {
             int newElementsCapacity = getNextPowerOf2(elements);
 
-            System.out.println(
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.FINE,
                 "Growing managed direct buffer from " + elementsCapacity + " to " + newElementsCapacity + " elements");
             Buffer newBuffer = GLBuffers.newDirectGLBuffer(glType, newElementsCapacity);
 

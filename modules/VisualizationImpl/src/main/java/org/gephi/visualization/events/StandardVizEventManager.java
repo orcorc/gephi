@@ -443,7 +443,7 @@ public class StandardVizEventManager {
 
                     return consumed;
                 } catch (Exception e) {
-                    Logger.getLogger("").log(Level.SEVERE, null, e);
+                    Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, e);
                 }
             }
 
