@@ -1156,7 +1156,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
     private float computeElementColor(final Edge edge) {
         final int colorInt;
         switch (edgeColorMode) {
-            case SELF:
             case SOURCE: {
                 colorInt = edge.getSource().getRGBA();
                 break;
@@ -1179,7 +1178,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 colorInt = ((b3 >>> 1) << 24) | ((b2 >>> 1) << 16) | ((b1 >>> 1) << 8) | (b0 >>> 1);
                 break;
             }
-
+            case SELF:
             default: {
                 colorInt = edge.getRGBA();
                 break;
