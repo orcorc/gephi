@@ -580,24 +580,12 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 }
 
             }
+        }
 
-            // For the moment let's do same rendering for all selection states
-            // if (someSelection)
-
-            // Attributes 5
-            // Index	0	    1	    2	        3	    4
-            // Value	posX	posY    color	    size	nodeSize
-            //
-
-
-            //Remaining:
-            if (directBuffer != null && index > 0) {
-                directBuffer.put(attribs, 0, index);
-                index = 0;
-            }
-
-            // For the moment let's concider everything as undirected
-
+        // Flush remaining data in batch buffer to directBuffer
+        if (directBuffer != null && index > 0) {
+            directBuffer.put(attribs, 0, index);
+            index = 0;
         }
 
         selfLoopCounter.selectedCount = selfLoopEdgeIndex;
