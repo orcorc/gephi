@@ -11,7 +11,6 @@ import org.gephi.viz.engine.jogl.pipeline.instanced.InstancedEdgeData;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
 
 /**
- * TODO: self loops
  *
  * @author Eduardo Ramos
  */
