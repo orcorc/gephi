@@ -61,7 +61,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
     protected final Mesh undirectedEdgeMesh = EdgeLineMeshGenerator.undirectedMeshGenerator();
     protected final Mesh directedEdgeMesh = EdgeLineMeshGenerator.directedMeshGenerator();
-    protected final Mesh selfLoopMesh = NodeDiskVertexMeshGenerator.generateFilledCircle(16);
+    protected final Mesh selfLoopMesh = NodeDiskVertexMeshGenerator.generateFilledCircle(64);
     // NOTE: Why secondary buffers and VAOs?
     // Sadly, we cannot use glDrawArraysInstancedBaseInstance in MacOS and it will be never available
 
