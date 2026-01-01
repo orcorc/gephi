@@ -16,6 +16,7 @@ uniform float minWeight;
 uniform float weightDifferenceDivisor;
 uniform float edgeScaleMin;
 uniform float edgeScaleMax;
+uniform float nodeScale;
 
 struct VertexData {
     vec4 color;
@@ -32,7 +33,8 @@ void main() {
 
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size, minWeight, weightDifferenceDivisor);
     float strokeWidth = thickness * STROKE_MULTIPLIER;
-    float loopRadius = nodeSize * 0.5 + strokeWidth * 2.0;
+    float scaledNodeSize = nodeSize * nodeScale;
+    float loopRadius = scaledNodeSize * 0.5 + strokeWidth * 2.0;
     vec2 instancePosition = loopRadius * vert + position + vec2(loopRadius);
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 

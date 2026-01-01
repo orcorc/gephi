@@ -152,6 +152,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         final float[] backgroundColorFloats = data.getBackgroundColor();
         final float edgeScale = data.getEdgeScale();
+        final float nodeScale = data.getNodeScale();
         final float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
         final float minWeight = data.getMinWeight();
         final float maxWeight = data.getMaxWeight();
@@ -173,7 +174,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 minWeight,
                 maxWeight,
                 edgeRescaleMin,
-                edgeRescaleMax
+                edgeRescaleMax,
+                nodeScale
             );
 
             if (usesSecondaryBuffer) {
@@ -193,7 +195,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         minWeight,
                         maxWeight,
                         edgeRescaleMin,
-                        edgeRescaleMax
+                        edgeRescaleMax,
+                        nodeScale
                     );
                 } else {
                     edgeCircleSelfLoopSelectionSelected.useProgram(
@@ -207,7 +210,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                         minWeight,
                         maxWeight,
                         edgeRescaleMin,
-                        edgeRescaleMax
+                        edgeRescaleMax,
+                        nodeScale
                     );
                 }
             } else {
@@ -218,7 +222,8 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     minWeight,
                     maxWeight,
                     edgeRescaleMin,
-                    edgeRescaleMax
+                    edgeRescaleMax,
+                    nodeScale
                 );
             }
             setupSelfLoopVertexArrayAttributes(gl, data);
