@@ -27,21 +27,6 @@ import org.gephi.viz.engine.util.NumberUtils;
 import org.gephi.viz.engine.util.gl.Constants;
 
 public class EdgeCircleSelfLoopSelectionSelected {
-    // Attributes 5
-    // Index	0	    1	    2	        3	    4
-    // Value	posX	posY    color	    size	nodeSize
-    //
-    public static final int VERTEX_FLOATS = 2;
-    public static final int POSITION_FLOATS = 2;
-    public static final int COLOR_FLOATS = 1;
-    public static final int SIZE_FLOATS = 1;
-    public static final int NODE_SIZE_FLOATS = 1;
-
-    public static final int TOTAL_ATTRIBUTES_FLOATS
-        = POSITION_FLOATS
-        + COLOR_FLOATS
-        + SIZE_FLOATS
-        + NODE_SIZE_FLOATS;
     private GLShaderProgram program;
 
     private static final String SHADERS_ROOT = Constants.SHADERS_ROOT + "edge";

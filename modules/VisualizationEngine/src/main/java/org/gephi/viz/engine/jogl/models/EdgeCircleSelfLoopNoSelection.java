@@ -24,9 +24,12 @@ import org.gephi.viz.engine.util.gl.Constants;
 
 public class EdgeCircleSelfLoopNoSelection {
     // Attributes 5
-    // Index	0	    1	    2	        3	    4
-    // Value	posX	posY    color	    size	nodeSize
-    //
+    // Index
+    // 0: posX
+    // 1: posY
+    // 2: color
+    // 3: size
+    // 4: nodeSize
     public static final int VERTEX_FLOATS = 2;
     public static final int POSITION_FLOATS = 2;
     public static final int COLOR_FLOATS = 1;
