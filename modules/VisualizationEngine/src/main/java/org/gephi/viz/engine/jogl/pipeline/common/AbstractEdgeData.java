@@ -493,7 +493,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     }
 
                     selfLoopEdgeIndex++;
-                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+                    final float weight = edgeWeightEnabled ? edgeWeightsArray[i] : 1f;
 
 
                     fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
@@ -519,7 +519,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     }
 
                     unselectedSelfLoopEdgeIndex++;
-                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+                    final float weight = edgeWeightEnabled ? edgeWeightsArray[i] : 1f;
 
                     fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
                     index += ATTRIBS_STRIDE_SELFLOOP;
@@ -543,7 +543,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                     }
 
                     selfLoopEdgeIndex++;
-                    final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+                    final float weight = edgeWeightEnabled ? edgeWeightsArray[i] : 1f;
 
 
                     fillSelfLoopEdgeAttributesDataWithSelection(attribs, e, index, weight);
@@ -568,7 +568,7 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 }
 
                 selfLoopEdgeIndex++;
-                final float weight = edgeWeightEnabled ? (float) e.getWeight() : 1f;
+                final float weight = edgeWeightEnabled ? edgeWeightsArray[i] : 1f;
 
 
                 fillSelfLoopEdgeAttributesDataWithoutSelection(attribs, e, index, weight);
