@@ -1,5 +1,9 @@
 package org.gephi.viz.engine.util;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gephi.viz.engine.VizEngine;
+
 public class ArrayUtils {
 
     /**
@@ -28,7 +32,8 @@ public class ArrayUtils {
         if (capacity < elements) {
             int newElementsCapacity = getNextPowerOf2(elements);
 
-            System.out.println("Growing float buffer from " + capacity + " to " + newElementsCapacity + " elements");
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(
+                Level.FINE, "Growing float buffer from " + capacity + " to " + newElementsCapacity + " elements");
             float[] newBuffer = new float[newElementsCapacity];
 
             System.arraycopy(buffer, 0, newBuffer, 0, capacity);
@@ -43,14 +48,14 @@ public class ArrayUtils {
         if (capacity < elements) {
             int newElementsCapacity = getNextPowerOf2(elements);
 
-            System.out.println("Growing float buffer from " + capacity + " to " + newElementsCapacity + " elements");
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.FINE, "Growing float buffer from " + capacity + " to " + newElementsCapacity + " elements");
             return new float[newElementsCapacity];
         } else {
             return buffer;
         }
     }
 
-    public static final int getNextPowerOf2(int number) {
+    public static int getNextPowerOf2(int number) {
         if (((number - 1) & number) == 0) {
             //ex: 8 -> 0b1000; 8-1=7 -> 0b0111; 0b1000&0b0111 == 0
             return number;
@@ -63,7 +68,7 @@ public class ArrayUtils {
         return (1 << power);
     }
 
-    public static final long getNextPowerOf2(long number) {
+    public static long getNextPowerOf2(long number) {
         if (((number - 1) & number) == 0) {
             //ex: 8 -> 0b1000; 8-1=7 -> 0b0111; 0b1000&0b0111 == 0
             return number;

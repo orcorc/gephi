@@ -42,10 +42,12 @@
 
 package org.gephi.visualization;
 
+import com.jogamp.newt.event.NEWTEvent;
 import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Estimator;
@@ -63,6 +65,7 @@ import org.gephi.visualization.component.VizEngineGraphCanvasManager;
 import org.gephi.visualization.events.StandardVizEventManager;
 import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
 import org.gephi.viz.engine.VizEngine;
+import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.joml.Vector2f;
 import org.openide.util.lookup.ServiceProvider;
@@ -80,11 +83,11 @@ public class VizController implements VisualizationController, Controller<VizMod
     protected final List<VisualizationPropertyChangeListener> listeners = new ArrayList<>();
     private final VizEngineGraphCanvasManager canvasManager;
     private final StandardVizEventManager vizEventManager;
-    private final ScreenshotControllerImpl screenshotMaker;
+    private final ScreenshotControllerImpl screenshotController;
 
     public VizController() {
         vizEventManager = new StandardVizEventManager();
-        screenshotMaker = new ScreenshotControllerImpl();
+        screenshotController = new ScreenshotControllerImpl(this);
         canvasManager = new VizEngineGraphCanvasManager(this);
 
     }
@@ -110,12 +113,16 @@ public class VizController implements VisualizationController, Controller<VizMod
     }
 
     @Override
-    public ScreenshotController getScreenshotController() {
-        return null;
+    public ScreenshotControllerImpl getScreenshotController() {
+        return screenshotController;
     }
 
     public VizEngineGraphCanvasManager getCanvasManager() {
         return canvasManager;
+    }
+
+    public Optional<VizEngine<JOGLRenderingTarget, NEWTEvent>> getEngine() {
+        return canvasManager.getEngine();
     }
 
     @Override
@@ -233,6 +240,12 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setUseEdgeWeight(useEdgeWeight);
     }
 
+    @Override
+    public void setRescaleEdgeWeight(boolean rescaleEdgeWeight) {
+        final VizModel model = getModel();
+        model.setEdgeRescaleWeightEnabled(rescaleEdgeWeight);
+    }
+
     // TEXT
 
     @Override
@@ -331,34 +344,6 @@ public class VizController implements VisualizationController, Controller<VizMod
         model.setEdgeLabelColumns(columns);
     }
 
-    @Override
-    public void makeScreenshot() {
-        final VizModel model = getModel();
-        model.makeScreenshot().ifPresent(screenshotCompletable -> {
-            screenshotCompletable.thenAccept(screenshotMaker::saveSceenshotOnFile);
-        });
-    }
-
-
-    //    public void refreshWorkspace() {
-//        final ProjectController pc = Lookup.getDefault().lookup(ProjectController.class);
-//        final Workspace currentWorkspace = pc.getCurrentWorkspace();
-//
-//        VizModel model = null;
-//        if (currentWorkspace != null) {
-//            model = currentWorkspace.getLookup().lookup(VizModel.class);
-//            if (model == null) {
-//                model = new VizModel(currentWorkspace);
-//                currentWorkspace.add(model);
-//            }
-//        }
-//
-//        currentModel = model;
-//        if (currentModel != null) {
-//            currentModel.init();
-//        }
-//    }
-
     public void destroy() {
 //        vizEventManager = null;
 //        textManager = null;
@@ -369,13 +354,9 @@ public class VizController implements VisualizationController, Controller<VizMod
         return vizEventManager;
     }
 
-    public ScreenshotControllerImpl getScreenshotMaker() {
-        return screenshotMaker;
-    }
-
     @Override
     public void centerOnGraph() {
-        getModel().getEngine().ifPresent(
+        getEngine().ifPresent(
             VizEngine::centerOnGraph
         );
     }
@@ -387,7 +368,7 @@ public class VizController implements VisualizationController, Controller<VizMod
 
     @Override
     public void centerOn(float x, float y, float width, float height) {
-        getModel().getEngine().ifPresent(
+        getEngine().ifPresent(
             engine -> engine.centerOn(new Vector2f(x, y), width, height)
         );
     }
@@ -397,7 +378,7 @@ public class VizController implements VisualizationController, Controller<VizMod
         if (node == null) {
             return;
         }
-        getModel().getEngine().ifPresent(
+        getEngine().ifPresent(
             engine -> {
                 final Vector2f position = new Vector2f(node.x(), node.y());
                 final float size = node.size() * 10f;
@@ -411,7 +392,7 @@ public class VizController implements VisualizationController, Controller<VizMod
         if (edge == null) {
             return;
         }
-        getModel().getEngine().ifPresent(
+        getEngine().ifPresent(
             engine -> {
                 Node source = edge.getSource();
                 Node target = edge.getTarget();

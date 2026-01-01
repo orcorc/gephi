@@ -44,16 +44,15 @@ package org.gephi.desktop.visualization.screenshot;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.gephi.lib.validation.Multiple4NumberValidator;
-import org.gephi.visualization.api.ScreenshotController;
 import org.gephi.visualization.api.ScreenshotModel;
-import org.netbeans.validation.api.builtin.stringvalidation.StringValidators;
-import org.netbeans.validation.api.ui.ValidationGroup;
-import org.netbeans.validation.api.ui.swing.ValidationPanel;
-import org.openide.util.Lookup;
+import org.gephi.visualization.screenshot.ScreenshotControllerImpl;
+import org.gephi.viz.engine.jogl.util.ScreenshotTaker;
+import org.openide.util.NbBundle;
 import org.openide.windows.WindowManager;
 
 /**
@@ -62,26 +61,31 @@ import org.openide.windows.WindowManager;
 public class ScreenshotSettingsPanel extends javax.swing.JPanel {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox antiAliasingCombo;
     private javax.swing.JCheckBox autoSaveCheckBox;
-    private javax.swing.JTextField heightTextField;
+    private javax.swing.JSpinner customScaleFactorSpinner;
+    private javax.swing.JLabel heightLabel;
     private javax.swing.JPanel imagePanel;
-    private javax.swing.JLabel labelAntiAliasing;
+    private javax.swing.JLabel labelCustomScaleFactor;
     private javax.swing.JLabel labelHeight;
+    private javax.swing.JLabel labelScaleFactor;
     private javax.swing.JLabel labelWidth;
+    private javax.swing.JComboBox<String> scaleFactorCombo;
     private javax.swing.JButton selectDirectoryButton;
     private javax.swing.JCheckBox transparentBackgroundCheckbox;
-    private javax.swing.JTextField widthTextField;
+    private javax.swing.JLabel widthLabel;
     // End of variables declaration//GEN-END:variables
 
     // Controller
-    private final ScreenshotController controller;
+    private final ScreenshotControllerImpl controller;
+    //
+    private int surfaceWidth;
+    private int surfaceHeight;
 
     /**
      * Creates new form ScreenshotSettingsPanel
      */
-    public ScreenshotSettingsPanel() {
-        controller = Lookup.getDefault().lookup(ScreenshotController.class);
+    public ScreenshotSettingsPanel(ScreenshotControllerImpl screenshotController) {
+        controller = screenshotController;
         initComponents();
 
         autoSaveCheckBox.addChangeListener(new ChangeListener() {
@@ -91,51 +95,95 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
                 selectDirectoryButton.setEnabled(autoSaveCheckBox.isSelected());
             }
         });
+
+        // Setup combo listener for custom scale factor toggle
+        scaleFactorCombo.addItemListener(e -> {
+            String customElement =
+                NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+            if (scaleFactorCombo.getSelectedItem() != null && scaleFactorCombo.getSelectedItem().equals(customElement)) {
+                customScaleFactorSpinner.setVisible(true);
+                labelCustomScaleFactor.setVisible(true);
+                refreshWidthAndHeightLabels((Integer) customScaleFactorSpinner.getModel().getValue());
+            } else if (scaleFactorCombo.getSelectedItem() != null) {
+                customScaleFactorSpinner.setVisible(false);
+                labelCustomScaleFactor.setVisible(false);
+                customScaleFactorSpinner.getModel()
+                    .setValue(Integer.parseInt(scaleFactorCombo.getSelectedItem().toString().replace("x", "")));
+            }
+        });
+        customScaleFactorSpinner.addChangeListener(
+            e -> refreshWidthAndHeightLabels((Integer) customScaleFactorSpinner.getModel().getValue()));
     }
 
-    public static ValidationPanel createValidationPanel(ScreenshotSettingsPanel innerPanel) {
-        ValidationPanel validationPanel = new ValidationPanel();
-        if (innerPanel == null) {
-            innerPanel = new ScreenshotSettingsPanel();
+    private void refreshWidthAndHeightLabels(int scaleFactor) {
+        if (this.surfaceHeight == 0 || this.surfaceWidth == 0) {
+            widthLabel.setText("0");
+            heightLabel.setText("0");
+            return;
         }
-        validationPanel.setInnerComponent(innerPanel);
-
-        ValidationGroup group = validationPanel.getValidationGroup();
-
-        //Node field
-        group.add(innerPanel.widthTextField, StringValidators.REQUIRE_NON_EMPTY_STRING,
-            new Multiple4NumberValidator());
-
-        //Edge field
-        group.add(innerPanel.heightTextField, StringValidators.REQUIRE_NON_EMPTY_STRING,
-            new Multiple4NumberValidator());
-
-        return validationPanel;
+        int width = this.surfaceWidth * scaleFactor;
+        int height = this.surfaceHeight * scaleFactor;
+        widthLabel.setText(width + "px");
+        heightLabel.setText(height + "px");
     }
 
     public void setup(final ScreenshotModel model) {
+        this.surfaceHeight = controller.getSurfaceHeight();
+        this.surfaceWidth = controller.getSurfaceWidth();
+        
+        // Calculate maximum scale factor using worst case (transparent = 4 bytes/pixel)
+        int maxScaleFactor = ScreenshotTaker.getMaxScaleFactor(surfaceWidth, surfaceHeight, true);
+        
+        // Build combo model with scale factors up to the maximum
+        String customElement =
+            NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+        DefaultComboBoxModel<String> comboModel = new DefaultComboBoxModel<>();
+        int[] standardScaleFactors = {1, 2, 4, 8, 16, 32, 64};
+        for (int scaleFactor : standardScaleFactors) {
+            if (scaleFactor <= maxScaleFactor) {
+                comboModel.addElement(scaleFactor + "x");
+            }
+        }
+        comboModel.addElement(customElement);
+        scaleFactorCombo.setModel(comboModel);
+        
+        // Update spinner model with maximum
+        SpinnerNumberModel spinnerModel = new SpinnerNumberModel(
+            Math.min(model.getScaleFactor(), maxScaleFactor), // current value
+            1, // minimum
+            maxScaleFactor, // maximum
+            1  // step
+        );
+        customScaleFactorSpinner.setModel(spinnerModel);
+        
         autoSaveCheckBox.setSelected(model.isAutoSave());
         selectDirectoryButton.setEnabled(autoSaveCheckBox.isSelected());
-        widthTextField.setText(String.valueOf(model.getWidth()));
-        heightTextField.setText(String.valueOf(model.getHeight()));
-        switch (model.getAntiAliasing()) {
-            case 0:
-                antiAliasingCombo.setSelectedIndex(0);
+        customScaleFactorSpinner.setVisible(false);
+        labelCustomScaleFactor.setVisible(false);
+        
+        // Select appropriate combo item based on model's scale factor
+        int modelScaleFactor = Math.min(model.getScaleFactor(), maxScaleFactor);
+        boolean foundInCombo = false;
+        for (int i = 0; i < comboModel.getSize() - 1; i++) { // -1 to exclude custom element
+            String item = comboModel.getElementAt(i);
+            int itemScaleFactor = Integer.parseInt(item.replace("x", ""));
+            if (itemScaleFactor == modelScaleFactor) {
+                scaleFactorCombo.setSelectedIndex(i);
+                foundInCombo = true;
                 break;
-            case 2:
-                antiAliasingCombo.setSelectedIndex(1);
-                break;
-            case 4:
-                antiAliasingCombo.setSelectedIndex(2);
-                break;
-            case 8:
-                antiAliasingCombo.setSelectedIndex(3);
-                break;
-            default:
-                antiAliasingCombo.setSelectedIndex(4);
-                break;
+            }
         }
+        
+        if (!foundInCombo) {
+            // Select custom and show spinner
+            scaleFactorCombo.setSelectedIndex(comboModel.getSize() - 1);
+            customScaleFactorSpinner.setValue(modelScaleFactor);
+            customScaleFactorSpinner.setVisible(true);
+            labelCustomScaleFactor.setVisible(true);
+        }
+        
         transparentBackgroundCheckbox.setSelected(model.isTransparentBackground());
+        
         selectDirectoryButton.addActionListener(new ActionListener() {
 
             @Override
@@ -148,32 +196,23 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
                 }
             }
         });
+        refreshWidthAndHeightLabels((Integer) customScaleFactorSpinner.getModel().getValue());
     }
 
     public void unsetup() {
         controller.setAutoSave(autoSaveCheckBox.isSelected());
-        controller.setWidth(Integer.parseInt(widthTextField.getText()));
-        controller.setHeight(Integer.parseInt(heightTextField.getText()));
-        switch (antiAliasingCombo.getSelectedIndex()) {
-            case 0:
-                controller.setAntiAliasing(0);
-                break;
-            case 1:
-                controller.setAntiAliasing(2);
-                break;
-            case 2:
-                controller.setAntiAliasing(4);
-                break;
-            case 3:
-                controller.setAntiAliasing(8);
-                break;
-            case 4:
-                controller.setAntiAliasing(16);
-                break;
-            default:
-                controller.setAntiAliasing(0);
-                break;
+        
+        // Get scale factor from either combo or custom spinner
+        String customElement =
+            NbBundle.getMessage(ScreenshotSettingsPanel.class, "ScreenshotSettingsPanel.scaleFactorCombo.customItem");
+        Object selectedItem = scaleFactorCombo.getSelectedItem();
+        
+        if (selectedItem != null && selectedItem.equals(customElement)) {
+            controller.setScaleFactor((Integer) customScaleFactorSpinner.getModel().getValue());
+        } else if (selectedItem != null) {
+            controller.setScaleFactor(Integer.parseInt(selectedItem.toString().replace("x", "")));
         }
+        
         controller.setTransparentBackground(transparentBackgroundCheckbox.isSelected());
     }
 
@@ -187,37 +226,42 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
     private void initComponents() {
 
         imagePanel = new javax.swing.JPanel();
-        labelHeight = new javax.swing.JLabel();
-        labelWidth = new javax.swing.JLabel();
-        widthTextField = new javax.swing.JTextField();
-        labelAntiAliasing = new javax.swing.JLabel();
-        antiAliasingCombo = new javax.swing.JComboBox();
-        heightTextField = new javax.swing.JTextField();
+        labelScaleFactor = new javax.swing.JLabel();
+        scaleFactorCombo = new javax.swing.JComboBox<>();
         transparentBackgroundCheckbox = new javax.swing.JCheckBox();
+        labelCustomScaleFactor = new javax.swing.JLabel();
+        customScaleFactorSpinner = new javax.swing.JSpinner();
+        labelWidth = new javax.swing.JLabel();
+        widthLabel = new javax.swing.JLabel();
+        labelHeight = new javax.swing.JLabel();
+        heightLabel = new javax.swing.JLabel();
         autoSaveCheckBox = new javax.swing.JCheckBox();
         selectDirectoryButton = new javax.swing.JButton();
 
         imagePanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
-        labelHeight.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
-            "ScreenshotSettingsPanel.labelHeight.text")); // NOI18N
+        labelScaleFactor.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.labelScaleFactor.text")); // NOI18N
+
+        transparentBackgroundCheckbox.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.transparentBackgroundCheckbox.text")); // NOI18N
+
+        labelCustomScaleFactor.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.labelCustomScaleFactor.text")); // NOI18N
+
+        customScaleFactorSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
 
         labelWidth.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
             "ScreenshotSettingsPanel.labelWidth.text")); // NOI18N
 
-        widthTextField.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
-            "ScreenshotSettingsPanel.widthTextField.text")); // NOI18N
+        widthLabel.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.widthLabel.text")); // NOI18N
 
-        labelAntiAliasing.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
-            "ScreenshotSettingsPanel.labelAntiAliasing.text")); // NOI18N
+        labelHeight.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.labelHeight.text")); // NOI18N
 
-        antiAliasingCombo.setModel(new javax.swing.DefaultComboBoxModel(new String[] {"0x", "2x", "4x", "8x", "16x"}));
-
-        heightTextField.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
-            "ScreenshotSettingsPanel.heightTextField.text")); // NOI18N
-
-        transparentBackgroundCheckbox.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
-            "ScreenshotSettingsPanel.transparentBackgroundCheckbox.text")); // NOI18N
+        heightLabel.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
+            "ScreenshotSettingsPanel.heightLabel.text")); // NOI18N
 
         javax.swing.GroupLayout imagePanelLayout = new javax.swing.GroupLayout(imagePanel);
         imagePanel.setLayout(imagePanelLayout);
@@ -226,43 +270,53 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
                 .addGroup(imagePanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(transparentBackgroundCheckbox, javax.swing.GroupLayout.PREFERRED_SIZE, 0,
+                            Short.MAX_VALUE)
                         .addGroup(imagePanelLayout.createSequentialGroup()
-                            .addComponent(labelAntiAliasing)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(antiAliasingCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
-                                javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addComponent(transparentBackgroundCheckbox)
-                        .addGroup(imagePanelLayout.createSequentialGroup()
-                            .addComponent(labelWidth)
-                            .addGap(3, 3, 3)
-                            .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 58,
-                                javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGap(18, 18, 18)
-                            .addComponent(labelHeight)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(heightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 58,
-                                javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(imagePanelLayout.createSequentialGroup()
+                                    .addComponent(labelScaleFactor)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(scaleFactorCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(imagePanelLayout.createSequentialGroup()
+                                    .addComponent(labelCustomScaleFactor)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(customScaleFactorSpinner, javax.swing.GroupLayout.PREFERRED_SIZE,
+                                        javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGroup(imagePanelLayout.createSequentialGroup()
+                                    .addComponent(labelWidth)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(widthLabel)
+                                    .addGap(32, 32, 32)
+                                    .addComponent(labelHeight)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                    .addComponent(heightLabel)))
+                            .addGap(0, 0, Short.MAX_VALUE)))
+                    .addContainerGap())
         );
         imagePanelLayout.setVerticalGroup(
             imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(imagePanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelWidth)
-                        .addComponent(widthTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20,
-                            javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(labelHeight)
-                        .addComponent(heightTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 20,
-                            javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(labelAntiAliasing)
-                        .addComponent(antiAliasingCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
+                        .addComponent(labelScaleFactor)
+                        .addComponent(scaleFactorCombo, javax.swing.GroupLayout.PREFERRED_SIZE,
                             javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelCustomScaleFactor)
+                        .addComponent(customScaleFactorSpinner, javax.swing.GroupLayout.PREFERRED_SIZE,
+                            javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(imagePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(labelWidth)
+                        .addComponent(heightLabel)
+                        .addComponent(widthLabel)
+                        .addComponent(labelHeight))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
                     .addComponent(transparentBackgroundCheckbox)
-                    .addContainerGap(18, Short.MAX_VALUE))
+                    .addContainerGap())
         );
 
         autoSaveCheckBox.setText(org.openide.util.NbBundle.getMessage(ScreenshotSettingsPanel.class,
@@ -282,9 +336,9 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
                             javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                             .addComponent(autoSaveCheckBox)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                            .addComponent(selectDirectoryButton)
-                            .addGap(0, 0, Short.MAX_VALUE)))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(selectDirectoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 1,
+                                Short.MAX_VALUE)))
                     .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -293,12 +347,12 @@ public class ScreenshotSettingsPanel extends javax.swing.JPanel {
                     .addContainerGap()
                     .addComponent(imagePanel, javax.swing.GroupLayout.PREFERRED_SIZE,
                         javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 36, Short.MAX_VALUE)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(autoSaveCheckBox)
                         .addComponent(selectDirectoryButton, javax.swing.GroupLayout.PREFERRED_SIZE, 23,
                             javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addContainerGap(23, Short.MAX_VALUE))
+                    .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
 }

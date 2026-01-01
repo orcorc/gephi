@@ -101,6 +101,17 @@ public interface VisualisationModel extends Model {
     Color getBackgroundColor();
 
     /**
+     * Returns whether the background color is dark.
+     * <p>
+     * Default value is <code>false</code> for light themes and <code>true</code> for dark themes.
+     * <p>
+     * The value is determined based on the luminance of the background color.
+     *
+     * @return <code>true</code> if background is dark, <code>false</code> otherwise
+     */
+    boolean isBackgroundColorDark();
+
+    /**
      * Returns whether non-selected elements are automatically lightened.
      * <p>
      * Default value is <code>true</code>.
@@ -200,6 +211,15 @@ public interface VisualisationModel extends Model {
      * @return <code>true</code> if edge weight is used, <code>false</code> otherwise
      */
     boolean isUseEdgeWeight();
+
+    /**
+     * Returns whether edge weight rescaling is enabled.
+     * <p>
+     * Default value is <code>true</code>.
+     *
+     * @return <code>true</code> if edge weight rescaling is enabled, <code>false</code> otherwise
+     */
+    boolean isRescaleEdgeWeight();
 
     /**
      * Returns the estimator used for dynamic edge weights.
@@ -424,5 +444,4 @@ public interface VisualisationModel extends Model {
      * @return the edge label columns
      */
     Column[] getEdgeLabelColumns();
-
 }

@@ -5,11 +5,7 @@ public interface ScreenshotModel {
 
     VisualisationModel getVisualisationModel();
 
-    int getAntiAliasing();
-
-    int getWidth();
-
-    int getHeight();
+    int getScaleFactor();
 
     boolean isTransparentBackground();
 

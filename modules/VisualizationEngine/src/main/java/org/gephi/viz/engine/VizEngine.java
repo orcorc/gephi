@@ -20,6 +20,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import org.gephi.graph.api.Configuration;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.graph.api.Rect2D;
 import org.gephi.viz.engine.pipeline.RenderingLayer;
@@ -52,12 +53,14 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public static final int DEFAULT_MAX_WORLD_UPDATES_PER_SECOND = 60;
     public static final int DEFAULT_FPS = 60;
+    public static final boolean DEFAULT_DARK_LAF = false;
     private static final RenderingLayer[] ALL_LAYERS = RenderingLayer.values();
 
     //Rendering target
     private final R renderingTarget;
     private boolean isSetUp = false;
     private boolean isDestroyed = false;
+    private boolean updating = true;
 
     //State
     private int width = 0;
@@ -102,10 +105,11 @@ public class VizEngine<R extends RenderingTarget, I> {
     private List<? extends WorldData> currentWorldData = Collections.emptyList();
 
     //Settings:
+    private boolean darkLaf = DEFAULT_DARK_LAF;
     private int maxWorldUpdatesPerSecond = DEFAULT_MAX_WORLD_UPDATES_PER_SECOND;
 
     public VizEngine(R renderingTarget) {
-        this.engineModel = VizEngineModel.createEmptyModel();
+        this.engineModel = createEmptyModel();
         this.openGLOptions = new OpenGLOptions();
         this.renderingTarget = Objects.requireNonNull(renderingTarget, "renderingTarget mandatory");
         this.worldUpdaterManagerThread = Executors.newSingleThreadExecutor(
@@ -121,8 +125,8 @@ public class VizEngine<R extends RenderingTarget, I> {
         this.renderingTarget.setup(this);
 
         isSetUp = true;
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "World updaters execution mode: {0}", worldUpdatersExecutionMode);
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "World updaters execution mode: {0}", worldUpdatersExecutionMode);
     }
 
     public R getRenderingTarget() {
@@ -155,11 +159,11 @@ public class VizEngine<R extends RenderingTarget, I> {
 
             if (bestElement != null) {
                 elements.add(bestElement);
-                Logger.getLogger(VizEngine.class.getName()).log(Level.INFO,
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.FINE,
                     "Using best available {0} ''{1}'' for category {2}",
                     new Object[] {elementType, bestElement.getName(), category});
             } else {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.WARNING,
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.WARNING,
                     "No available {0} for category {1}", new Object[] {elementType, category});
             }
         });
@@ -284,6 +288,40 @@ public class VizEngine<R extends RenderingTarget, I> {
         loadModelViewProjection();
     }
 
+    /**
+     * Centers the view on a specific tile of a larger image by adjusting the zoom and translation.
+     *
+     * @param tileX the X coordinate of the tile in the larger image
+     * @param tileY the Y coordinate of the tile in the larger image
+     * @param imageWidth the width of the full image
+     * @param imageHeight the height of the full image
+     */
+    public void centerOnTile(float tileX, float tileY, float imageWidth, float imageHeight) {
+        // Calculate scale factor from the full image dimensions
+        float scaleFactor = imageWidth / width;
+
+        // Calculate the offset of this tile from the top-left corner of the full image
+        float tileOffsetX = (tileX + width / 2f - imageWidth / 2f) / width;
+        float tileOffsetY = (tileY + height / 2f - imageHeight / 2f) / height;
+
+        // Apply zoom scaling
+        float newZoom = getZoom() * scaleFactor;
+        engineModel.getRenderingOptions().setZoom(newZoom);
+
+        // Adjust translate based on tile offset and original translate
+        // The tile offset needs to be in world coordinates, so we divide by the new zoom
+        float translateOffsetX = -tileOffsetX * width / newZoom;
+        float translateOffsetY = -tileOffsetY * height / newZoom;
+
+        Vector2fc pan = engineModel.getRenderingOptions().getPan();
+        translate.set(
+            pan.x() + translateOffsetX,
+            pan.y() + translateOffsetY
+        );
+
+        loadModelViewProjection();
+    }
+
     private void loadModelViewProjection() {
         loadModel();
         loadView();
@@ -336,10 +374,11 @@ public class VizEngine<R extends RenderingTarget, I> {
         setup();
     }
 
-    public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
+    public synchronized void setGraphModel(GraphModel graphModel, GraphRenderingOptions renderingOptions, GraphSelection graphSelection) {
         if (this.engineModel.getGraphModel() != graphModel) {
             this.engineModel = new VizEngineModel(graphModel,
-                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl());
+                renderingOptions != null ? renderingOptions : new GraphRenderingOptionsImpl(darkLaf),
+                graphSelection);
         }
 
         // Sync local translate from new model's pan
@@ -349,10 +388,16 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public synchronized void unsetGraphModel(GraphModel graphModel) {
         if (engineModel.getGraphModel() == graphModel) {
-            this.engineModel = VizEngineModel.createEmptyModel();
+            this.engineModel = createEmptyModel();
             this.translate.set(0, 0);
             loadModelViewProjection();
         }
+    }
+
+    private VizEngineModel createEmptyModel() {
+        Configuration config = Configuration.builder().enableSpatialIndex(true).build();
+        GraphModel emptyModel = GraphModel.Factory.newInstance(config);
+        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl(darkLaf), null);
     }
 
     public synchronized void initPipeline() {
@@ -400,7 +445,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 updatersThreadPool.awaitTermination(1, TimeUnit.SECONDS);
             } catch (InterruptedException ex) {
-                Logger.getLogger(VizEngine.class.getName())
+                Logger.getLogger(VizEngine.class.getSimpleName())
                     .log(Level.WARNING, "Interrupted while disposing VizEngine", ex);
             }
         }
@@ -450,20 +495,20 @@ public class VizEngine<R extends RenderingTarget, I> {
                     worldUpdaterManagerThread.shutdownNow();
                 }
             } catch (InterruptedException ex) {
-                Logger.getLogger(VizEngine.class.getName())
+                Logger.getLogger(VizEngine.class.getSimpleName())
                     .log(Level.WARNING, "Interrupted while destroying VizEngine", ex);
             }
         }
 
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "Disposing {0} world updaters", updatersPipeline.size());
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "Disposing {0} world updaters", updatersPipeline.size());
         updatersPipeline.forEach((worldUpdater) -> {
             worldUpdater.dispose(renderingTarget);
         });
         updatersElementsCallbacks.forEach(ElementsCallback::reset);
 
-        Logger.getLogger(VizEngine.class.getName())
-            .log(Level.INFO, "Disposing {0} renderers", renderersPipeline.size());
+        Logger.getLogger(VizEngine.class.getSimpleName())
+            .log(Level.FINE, "Disposing {0} renderers", renderersPipeline.size());
         renderersPipeline.forEach((renderer) -> {
             renderer.dispose(renderingTarget);
         });
@@ -477,7 +522,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 updater.updateWorld(engineModel);
             } catch (Throwable t) {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             }
         }, updatersThreadPool);
     }
@@ -490,7 +535,7 @@ public class VizEngine<R extends RenderingTarget, I> {
             try {
                 callback.run(graphIndex, renderingOptions, boundaries);
             } catch (Throwable t) {
-                Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+                Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             }
         }, updatersThreadPool);
     }
@@ -504,7 +549,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         List<? extends WorldData> worldData =
             worldUpdatersExecutionMode.isConcurrent() ? checkConcurrentWorldUpdateIsDone()
                 : runWorldUpdatersSynchronous(this.engineModel);
-        if (worldData.isEmpty()) {
+        if (worldData.isEmpty() || !updating) {
             // No world update was done this frame, use last one
             worldData = currentWorldData;
         }
@@ -525,7 +570,7 @@ public class VizEngine<R extends RenderingTarget, I> {
         }
 
         //Schedule next concurrent world update:
-        if (worldUpdatersExecutionMode.isConcurrent()) {
+        if (worldUpdatersExecutionMode.isConcurrent() && updating) {
             scheduleNextConcurrentWorldUpdateIfDone(this.engineModel);
         }
 
@@ -538,6 +583,10 @@ public class VizEngine<R extends RenderingTarget, I> {
     private long lastWorldUpdateMillis = 0;
 
     private List<? extends WorldData> runWorldUpdatersSynchronous(VizEngineModel model) {
+        if (!updating) {
+            return Collections.emptyList();
+        }
+
         //Control max world updates per second
         if (maxWorldUpdatesPerSecond >= 1) {
             if (TimeUtils.getTimeMillis() < lastWorldUpdateMillis + 1000 / maxWorldUpdatesPerSecond) {
@@ -586,7 +635,7 @@ public class VizEngine<R extends RenderingTarget, I> {
                 r -> r.worldUpdated(modelUsedByUpdaters, renderingTarget)
             ).toList();
         } catch (Throwable t) {
-            Logger.getLogger(VizEngine.class.getName()).log(Level.SEVERE, null, t);
+            Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, t);
             throw new RuntimeException(t);
         }
     }
@@ -696,6 +745,17 @@ public class VizEngine<R extends RenderingTarget, I> {
         engineModel.getRenderingOptions().setBackgroundColor(Arrays.copyOf(backgroundColor, backgroundColor.length));
     }
 
+    public void setDarkLaf(boolean darkLaf) {
+        this.darkLaf = darkLaf;
+        if (darkLaf && Arrays.equals(engineModel.getRenderingOptions().getBackgroundColor(),
+            GraphRenderingOptions.DEFAULT_BACKGROUND_COLOR)) {
+            engineModel.getRenderingOptions().setBackgroundColor(GraphRenderingOptions.DEFAULT_DARK_BACKGROUND_COLOR);
+        } else if (!darkLaf && Arrays.equals(engineModel.getRenderingOptions().getBackgroundColor(),
+            GraphRenderingOptions.DEFAULT_DARK_BACKGROUND_COLOR)) {
+            engineModel.getRenderingOptions().setBackgroundColor(GraphRenderingOptions.DEFAULT_BACKGROUND_COLOR);
+        }
+    }
+
     public int getMaxWorldUpdatesPerSecond() {
         return maxWorldUpdatesPerSecond;
     }
@@ -710,6 +770,14 @@ public class VizEngine<R extends RenderingTarget, I> {
 
     public float[] getModelViewProjectionMatrixFloats() {
         return Arrays.copyOf(modelViewProjectionMatrixFloats, modelViewProjectionMatrixFloats.length);
+    }
+
+    public void pauseUpdating() {
+        updating = false;
+    }
+
+    public void resumeUpdating() {
+        updating = true;
     }
 
     public Vector2f screenCoordinatesToWorldCoordinates(int x, int y) {

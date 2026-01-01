@@ -42,126 +42,85 @@
 
 package org.gephi.visualization.screenshot;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
-import org.gephi.project.api.Workspace;
+import org.gephi.desktop.visualization.screenshot.ScreenshotSettingsPanel;
 import org.gephi.utils.longtask.api.LongTaskExecutor;
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.ScreenshotController;
-import org.gephi.visualization.api.VisualizationController;
 import org.gephi.viz.engine.VizEngine;
-import org.gephi.viz.engine.jogl.util.Framedata;
-import org.openide.util.Lookup;
+import org.openide.DialogDescriptor;
+import org.openide.DialogDisplayer;
+import org.openide.NotifyDescriptor;
+import org.openide.util.NbBundle;
 
 /**
  * @author Mathieu Bastian
  */
 public class ScreenshotControllerImpl implements ScreenshotController {
 
+    private final VizController vizController;
     private final LongTaskExecutor executor;
-    //Architecture
-    private VizEngine<?, ?> engine;
 
-    public ScreenshotControllerImpl() {
+    public ScreenshotControllerImpl(VizController vizController) {
+        this.vizController = vizController;
         executor = new LongTaskExecutor(true, "Screenshot Maker");
     }
 
-
-    public ScreenshotModelImpl newModel(Workspace workspace) {
-        VisualizationController vizController = Lookup.getDefault().lookup(VisualizationController.class);
-        return new ScreenshotModelImpl(vizController.getModel(workspace));
-    }
-
-    public void saveSceenshotOnFile(Framedata framedata) {
-        BufferedImage screenshot =
-            new BufferedImage(framedata.width(), framedata.height(), BufferedImage.TYPE_INT_ARGB);
-        screenshot.setRGB(0, 0, framedata.width(), framedata.height(), framedata.data(), 0, framedata.width());
-
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-            "PNG Images", "png");
-        chooser.setFileFilter(filter);
-        int returnVal = chooser.showOpenDialog(null);
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-            String filepath = chooser.getSelectedFile().getAbsolutePath();
-            if (!filepath.endsWith(".png")) {
-                filepath += ".png";
-            }
-            File outputfile = new File(filepath);
-            try {
-                ImageIO.write(screenshot, "png", outputfile);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
-    @Override
-    public void setAntiAliasing(int antiAliasing) {
-
+    private ScreenshotModelImpl getModel() {
+        return vizController.getModel().getScreenshotModel();
     }
 
     @Override
     public void setAutoSave(boolean autoSave) {
-
+        getModel().setAutoSave(autoSave);
     }
 
     @Override
     public void setDefaultDirectory(File directory) {
-
-    }
-
-    @Override
-    public void setHeight(int height) {
-
+        getModel().setDefaultDirectory(directory);
     }
 
     @Override
     public void setTransparentBackground(boolean transparentBackground) {
-
+        getModel().setTransparentBackground(transparentBackground);
     }
 
     @Override
-    public void setWidth(int width) {
-
+    public void setScaleFactor(int scaleFactor) {
+        getModel().setScaleFactor(scaleFactor);
     }
 
+    @Override
     public void takeScreenshot() {
-        // Todo Fix
-//        ScreenshotTask task = new ScreenshotTask();
-//        executor
-//            .execute(this, this, NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.progress.message"), null);
+        vizController.getModel().getEngine().ifPresent(
+            engine -> {
+                ScreenshotTask task = new ScreenshotTask(engine, getModel());
+                executor
+                    .execute(task, task,
+                        NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.progress.message"), null);
+            });
+
     }
 
+    public int getSurfaceWidth() {
+        return vizController.getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceWidth())
+            .orElse(0);
+    }
 
-    // Todo fix
-//    private String getDefaultFileName() {
-//
-//        Calendar cal = Calendar.getInstance();
-//        DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_NOW);
-//        String datetime = dateFormat.format(cal.getTime());
-//
-//        return "screenshot_" + datetime;
-//    }
+    public int getSurfaceHeight() {
+        return vizController.getEngine().map(engine -> engine.getRenderingTarget().getDrawable().getSurfaceHeight())
+            .orElse(0);
+    }
 
     public void configure() {
-        // TODO fix
-//        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel();
-//        panel.setup(this);
-//        ValidationPanel validationPanel = ScreenshotSettingsPanel.createValidationPanel(panel);
-//        if (validationPanel
-//            .showOkCancelDialog(NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.configure.title"))) {
-//            panel.unsetup(this);
-//        }
-//        DialogDescriptor dd = new DialogDescriptor(validationPanel, NbBundle.getMessage(ScreenshotMaker.class, "ScreenshotMaker.configure.title"));
-//        Object result = DialogDisplayer.getDefault().notify(dd);
-//        if (result == NotifyDescriptor.OK_OPTION) {
-//            panel.unsetup(this);
-//        }
+        ScreenshotSettingsPanel panel = new ScreenshotSettingsPanel(this);
+        panel.setup(getModel());
+        DialogDescriptor dd = new DialogDescriptor(panel,
+            NbBundle.getMessage(ScreenshotControllerImpl.class, "ScreenshotMaker.configure.title"));
+        Object result = DialogDisplayer.getDefault().notify(dd);
+        if (result == NotifyDescriptor.OK_OPTION) {
+            panel.unsetup();
+        }
     }
 
 }

@@ -48,7 +48,6 @@ import java.awt.Font;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
@@ -66,13 +65,12 @@ import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
 import org.gephi.visualization.api.VisualisationModel;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
-import org.gephi.visualization.apiimpl.VizConfig;
 import org.gephi.visualization.screenshot.ScreenshotModelImpl;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
-import org.gephi.viz.engine.jogl.util.Framedata;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
+import org.gephi.viz.engine.status.GraphSelection;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.openide.util.Lookup;
@@ -85,8 +83,6 @@ public class VizModel implements VisualisationModel {
     private final VizController vizController;
     private final Workspace workspace;
     private final GraphModel graphModel;
-
-    protected final VizConfig config;
 
     //Global
     private float zoom;
@@ -102,6 +98,7 @@ public class VizModel implements VisualisationModel {
     private Color edgeOutSelectionColor;
     private EdgeColorMode edgeColorMode;
     private boolean edgeWeightEnabled;
+    private boolean edgeRescaleWeightEnabled;
 
     //Nodes
     private float nodeScale;
@@ -134,13 +131,14 @@ public class VizModel implements VisualisationModel {
 
     // Selection
     private final SelectionModelImpl selectionModel;
+    private final ScreenshotModelImpl screenshotModel;
 
     public VizModel(VizController controller, Workspace workspace) {
         this.vizController = controller;
         this.workspace = workspace;
-        this.config = new VizConfig();
         this.graphModel = Lookup.getDefault().lookup(GraphController.class).getGraphModel(workspace);
-        this.selectionModel = new SelectionModelImpl(this, config);
+        this.selectionModel = new SelectionModelImpl(this);
+        this.screenshotModel = new ScreenshotModelImpl(this);
 
         // Initialize default values
         defaultValues();
@@ -149,50 +147,51 @@ public class VizModel implements VisualisationModel {
     private void defaultValues() {
         //Global
         if (UIUtils.isDarkLookAndFeel()) {
-            this.backgroundColor = config.getDefaultDarkBackgroundColor();
+            this.backgroundColor = VizConfig.getDefaultDarkBackgroundColor();
         } else {
-            this.backgroundColor = config.getDefaultBackgroundColor();
+            this.backgroundColor = VizConfig.getDefaultBackgroundColor();
         }
-        this.zoom = config.getDefaultZoom();
-        this.pan = config.getDefaultPan();
+        this.zoom = VizConfig.getDefaultZoom();
+        this.pan = VizConfig.getDefaultPan();
 
         //Edges
-        this.showEdges = config.isDefaultShowEdges();
-        this.edgeScale = config.getDefaultEdgeScale();
-        this.edgeSelectionColor = config.isDefaultEdgeSelectionColor();
-        this.edgeInSelectionColor = config.getDefaultEdgeInSelectedColor();
-        this.edgeOutSelectionColor = config.getDefaultEdgeOutSelectedColor();
-        this.edgeBothSelectionColor = config.getDefaultEdgeBothSelectedColor();
-        this.edgeColorMode = config.getDefaultEdgeColorMode();
-        this.edgeWeightEnabled = config.isDefaultUseEdgeWeight();
+        this.showEdges = VizConfig.isDefaultShowEdges();
+        this.edgeScale = VizConfig.getDefaultEdgeScale();
+        this.edgeSelectionColor = VizConfig.isDefaultEdgeSelectionColor();
+        this.edgeInSelectionColor = VizConfig.getDefaultEdgeInSelectedColor();
+        this.edgeOutSelectionColor = VizConfig.getDefaultEdgeOutSelectedColor();
+        this.edgeBothSelectionColor = VizConfig.getDefaultEdgeBothSelectedColor();
+        this.edgeColorMode = VizConfig.getDefaultEdgeColorMode();
+        this.edgeWeightEnabled = VizConfig.isDefaultUseEdgeWeight();
+        this.edgeRescaleWeightEnabled = VizConfig.isDefaultRescaleEdgeWeight();
 
         //Nodes
-        this.nodeScale = config.getDefaultNodeScale();
+        this.nodeScale = VizConfig.getDefaultNodeScale();
 
         //Selection
-        this.autoSelectNeighbours = config.isDefaultAutoSelectNeighbor();
-        this.hideNonSelectedEdges = config.isDefaultHideNonSelectedEdges();
-        this.lightenNonSelected = config.isDefaultLightenNonSelectedAuto();
-        this.lightenNonSelectedFactor = config.getDefaultLightenNonSelectedFactor();
+        this.autoSelectNeighbours = VizConfig.isDefaultAutoSelectNeighbor();
+        this.hideNonSelectedEdges = VizConfig.isDefaultHideNonSelectedEdges();
+        this.lightenNonSelected = VizConfig.isDefaultLightenNonSelectedAuto();
+        this.lightenNonSelectedFactor = VizConfig.getDefaultLightenNonSelectedFactor();
 
         //Node Labels
-        this.showNodeLabels = config.isDefaultShowNodeLabels();
-        this.nodeLabelColorMode = config.getDefaultNodeLabelColorMode();
-        this.nodeLabelSizeMode = config.getDefaultNodeLabelSizeMode();
-        this.nodeLabelFont = config.getDefaultNodeLabelFont();
-        this.nodeLabelScale = config.getDefaultNodeLabelScale();
-        this.hideNonSelectedNodeLabels = config.isDefaultHideNonSelectedNodeLabels();
-        this.fitNodeLabelsToNodeSize = config.isDefaultFitNodeLabelsToNodeSize();
-        this.avoidNodeLabelOverlap = config.isDefaultAvoidNodeLabelOverlap();
+        this.showNodeLabels = VizConfig.isDefaultShowNodeLabels();
+        this.nodeLabelColorMode = VizConfig.getDefaultNodeLabelColorMode();
+        this.nodeLabelSizeMode = VizConfig.getDefaultNodeLabelSizeMode();
+        this.nodeLabelFont = VizConfig.getDefaultNodeLabelFont();
+        this.nodeLabelScale = VizConfig.getDefaultNodeLabelScale();
+        this.hideNonSelectedNodeLabels = VizConfig.isDefaultHideNonSelectedNodeLabels();
+        this.fitNodeLabelsToNodeSize = VizConfig.isDefaultFitNodeLabelsToNodeSize();
+        this.avoidNodeLabelOverlap = VizConfig.isDefaultAvoidNodeLabelOverlap();
         this.nodeLabelColumns = new Column[] {this.graphModel.defaultColumns().nodeLabel()};
 
         //Edge Labels
-        this.showEdgeLabels = config.isDefaultShowEdgeLabels();
-        this.edgeLabelColorMode = config.getDefaultEdgeLabelColorMode();
-        this.edgeLabelSizeMode = config.getDefaultEdgeLabelSizeMode();
-        this.edgeLabelFont = config.getDefaultEdgeLabelFont();
-        this.edgeLabelScale = config.getDefaultEdgeLabelScale();
-        this.hideNonSelectedEdgeLabels = config.isDefaultHideNonSelectedEdgeLabels();
+        this.showEdgeLabels = VizConfig.isDefaultShowEdgeLabels();
+        this.edgeLabelColorMode = VizConfig.getDefaultEdgeLabelColorMode();
+        this.edgeLabelSizeMode = VizConfig.getDefaultEdgeLabelSizeMode();
+        this.edgeLabelFont = VizConfig.getDefaultEdgeLabelFont();
+        this.edgeLabelScale = VizConfig.getDefaultEdgeLabelScale();
+        this.hideNonSelectedEdgeLabels = VizConfig.isDefaultHideNonSelectedEdgeLabels();
         this.edgeLabelColumns = new Column[] {this.graphModel.defaultColumns().edgeLabel()};
     }
 
@@ -209,6 +208,7 @@ public class VizModel implements VisualisationModel {
         options.setEdgeScale(getEdgeScale());
         options.setEdgeSelectionColor(isEdgeSelectionColor());
         options.setEdgeWeightEnabled(isUseEdgeWeight());
+        options.setEdgeRescaleWeightEnabled(isRescaleEdgeWeight());
         options.setHideNonSelectedEdges(isHideNonSelectedEdges());
         options.setLightenNonSelected(isLightenNonSelectedAuto());
         options.setLightenNonSelectedFactor(getLightenNonSelectedFactor());
@@ -233,6 +233,10 @@ public class VizModel implements VisualisationModel {
         return options;
     }
 
+    public GraphSelection toGraphSelection() {
+        return selectionModel.toGraphSelection();
+    }
+
     public void unsetup() {
         getEngine().ifPresent(d -> {
             GraphRenderingOptions options = d.getRenderingOptions();
@@ -241,16 +245,12 @@ public class VizModel implements VisualisationModel {
         });
     }
 
-    public VizConfig getConfig() {
-        return config;
-    }
-
     public SelectionModelImpl getSelectionModel() {
         return selectionModel;
     }
 
     public ScreenshotModelImpl getScreenshotModel() {
-        return null;
+        return screenshotModel;
     }
 
     @Override
@@ -329,6 +329,11 @@ public class VizModel implements VisualisationModel {
     @Override
     public Color getBackgroundColor() {
         return backgroundColor;
+    }
+
+    @Override
+    public boolean isBackgroundColorDark() {
+        return org.gephi.viz.engine.util.ColorUtils.isColorDark(backgroundColor.getRGBComponents(null));
     }
 
     private void setBackgroundColor(float[] bgColor) {
@@ -531,6 +536,20 @@ public class VizModel implements VisualisationModel {
             this.edgeWeightEnabled = useEdgeWeight;
             getRenderingOptions().ifPresent(options -> options.setEdgeWeightEnabled(useEdgeWeight));
             firePropertyChange("useEdgeWeight", oldValue, useEdgeWeight);
+        }
+    }
+
+    @Override
+    public boolean isRescaleEdgeWeight() {
+        return edgeRescaleWeightEnabled;
+    }
+
+    public void setEdgeRescaleWeightEnabled(boolean edgeRescaleWeightEnabled) {
+        boolean oldValue = this.edgeRescaleWeightEnabled;
+        if (oldValue != edgeRescaleWeightEnabled) {
+            this.edgeRescaleWeightEnabled = edgeRescaleWeightEnabled;
+            getRenderingOptions().ifPresent(options -> options.setEdgeRescaleWeightEnabled(edgeRescaleWeightEnabled));
+            firePropertyChange("edgeRescaleWeightEnabled", oldValue, edgeRescaleWeightEnabled);
         }
     }
 
@@ -918,16 +937,6 @@ public class VizModel implements VisualisationModel {
             }
         }
     }
-
-    public Optional<CompletableFuture<Framedata>> makeScreenshot() {
-        return getEngine().map(
-            vizEngine ->
-                vizEngine
-                    .getRenderingTarget()
-                    .requestScreenshot()
-        );
-    }
-
 
     public void writeXML(XMLStreamWriter writer) throws XMLStreamException {
         //Fast refresh

@@ -166,6 +166,13 @@ public interface VisualizationController {
     void setUseEdgeWeight(boolean useEdgeWeight);
 
     /**
+     * Sets whether edge weights are rescaled to fit within the specified min and max thickness.
+     *
+     * @param rescaleEdgeWeight <code>true</code> to enable, <code>false</code> to disable
+     */
+    void setRescaleEdgeWeight(boolean rescaleEdgeWeight);
+
+    /**
      * Sets whether non-selected elements are automatically lightened.
      *
      * @param lightenNonSelectedAuto <code>true</code> to enable, <code>false</code> to disable
@@ -425,6 +432,4 @@ public interface VisualizationController {
      * @param columns the edge label columns
      */
     void setEdgeLabelColumns(Column[] columns);
-
-    void makeScreenshot();
 }

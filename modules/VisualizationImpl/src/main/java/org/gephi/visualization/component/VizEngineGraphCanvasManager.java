@@ -9,17 +9,22 @@ import com.jogamp.newt.event.NEWTEvent;
 import com.jogamp.newt.opengl.GLWindow;
 import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
+import com.jogamp.opengl.GLProfile;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JComponent;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.project.api.Workspace;
+import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
+import org.gephi.visualization.VizConfig;
 import org.gephi.visualization.events.StandardVizEventManager;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.VizEngineFactory;
@@ -30,26 +35,15 @@ import org.gephi.viz.engine.util.gl.OpenGLOptions;
 
 public class VizEngineGraphCanvasManager {
 
-    // Normally all of these options should be false
-    // because the engine will auto-detect what's compatible with OpenGL Driver.
-    private static final boolean DISABLE_INDIRECT_RENDERING = false;
-    private static final boolean DISABLE_INSTANCED_RENDERING = false;
-    private static final boolean DISABLE_VAOS = false;
-
-    private static final boolean DEBUG = false;
-
     private final VizController vizController;
-
-    private boolean initialized = false;
-
     private GLWindow glWindow;
     private NewtCanvasAWT glCanvas;
 
-    // Engine:
+    // Engine
     private transient VizEngine<JOGLRenderingTarget, NEWTEvent> engine = null;
 
-    // Engine state saved for when it's restarted:
-
+    // States
+    private boolean initialized = false;
 
     public VizEngineGraphCanvasManager(VizController vizController) {
         this.vizController = Objects.requireNonNull(vizController);
@@ -73,15 +67,21 @@ public class VizEngineGraphCanvasManager {
 
         this.initialized = true;
 
-        final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities();
+        final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities(VizConfig.getAntialiasing());
 
         final Display display = NewtFactory.createDisplay(null);
         final Screen screen = NewtFactory.createScreen(display, 0);
 
         this.glWindow = GLWindow.create(screen, caps);
 
-        if (DEBUG) {
+        if (VizConfig.isEngineOpenGLDebug()) {
             glWindow.setContextCreationFlags(GLContext.CTX_OPTION_DEBUG);
+
+            // Set logger to FINE to see debug messages
+            Logger logger = Logger.getLogger(VizEngine.class.getSimpleName());
+            logger.setLevel(Level.FINE);
+
+            logger.log(Level.FINE, GLProfile.glAvailabilityToString());
         }
 
         final JOGLRenderingTarget renderingTarget = new JOGLRenderingTarget(glWindow);
@@ -92,12 +92,14 @@ public class VizEngineGraphCanvasManager {
                 new VizEngineJOGLConfigurator()
             )
         );
+        this.engine.setDarkLaf(UIUtils.isDarkLookAndFeel());
 
         final OpenGLOptions glOptions = engine.getOpenGLOptions();
-        glOptions.setDisableIndirectDrawing(DISABLE_INDIRECT_RENDERING);
-        glOptions.setDisableInstancedDrawing(DISABLE_INSTANCED_RENDERING);
-        glOptions.setDisableVAOS(DISABLE_VAOS);
-        glOptions.setDebug(DEBUG);
+        glOptions.setDisableIndirectDrawing(VizConfig.isEngineDisableIndirectRendering());
+        glOptions.setDisableInstancedDrawing(VizConfig.isEngineDisableInstancedRendering());
+        glOptions.setDisableVAOS(VizConfig.isEngineDisableVAOs());
+        glOptions.setDisableVertexArrayDrawing(VizConfig.isEngineDisableVertexArrayDrawing());
+        glOptions.setDebug(VizConfig.isEngineOpenGLDebug());
 
         engine.addInputListener(new InputListener<>() {
             @Override
@@ -140,8 +142,7 @@ public class VizEngineGraphCanvasManager {
 
             @Override
             public int getOrder() {
-                int i = -100;
-                return i; // Execute before default listener of viz engine (has order = 0)
+                return -100; // Execute before default listener of viz engine (has order = 0)
             }
         });
 
@@ -163,7 +164,7 @@ public class VizEngineGraphCanvasManager {
         VizModel model = vizController.getModel(workspace);
         GraphModel graphModel = workspace.getLookup().lookup(GraphModel.class);
 
-        engine.setGraphModel(graphModel, model.toGraphRenderingOptions());
+        engine.setGraphModel(graphModel, model.toGraphRenderingOptions(), model.toGraphSelection());
         return model;
     }
 
@@ -189,20 +190,6 @@ public class VizEngineGraphCanvasManager {
         if (glCanvas != null) {
             component.remove(glCanvas);
             component.revalidate();
-        }
-
-        // Keep viz-engine state for when it's restarted:
-        if (engine != null) {
-//            engine.pause();
-
-//            engineTranslate = engine.getTranslate();
-//            engineZoom = engine.getZoom();
-//            engineBackgroundColor = engine.getBackgroundColor();
-
-            //TODO: Keep more state of GraphRenderingOptions
-//            workspace.remove(engine);
-            //Logger.getLogger("").info("Destroying viz-engine...");
-            //engine.destroy(); // This crashes in windows!!
         }
 
         if (glWindow != null) {

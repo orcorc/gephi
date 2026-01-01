@@ -1,61 +1,46 @@
 package org.gephi.visualization.screenshot;
 
 import java.io.File;
+import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.ScreenshotModel;
 import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.VizConfig;
 import org.openide.util.NbPreferences;
 
 public class ScreenshotModelImpl implements ScreenshotModel {
 
-    private static final String LAST_PATH = "ScreenshotMaker_Last_Path";
-    private static final String LAST_PATH_DEFAULT = "ScreenshotMaker_Last_Path_Default";
+    protected static final String LAST_PATH = "ScreenshotMaker_Last_Path";
+    protected static final String LAST_PATH_DEFAULT = "ScreenshotMaker_Last_Path_Default";
     // Model
-    private final VisualisationModel visualisationModel;
+    private final VizModel vizModel;
     // Settings
-    private int antiAliasing = 2;
-    private int width = 1024;
-    private int height = 768;
+    private int scaleFactor = 1;
     private boolean transparentBackground = false;
     private boolean autoSave = false;
     private String defaultDirectory;
 
-    public ScreenshotModelImpl(VisualisationModel visualisationModel) {
-        this.visualisationModel = visualisationModel;
+    public ScreenshotModelImpl(VizModel vizModel) {
+        this.vizModel = vizModel;
         String lastPathDefault = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH_DEFAULT, null);
         defaultDirectory = NbPreferences.forModule(ScreenshotControllerImpl.class).get(LAST_PATH, lastPathDefault);
+
+        scaleFactor = VizConfig.getDefaultScreenshotScaleFactor();
+        transparentBackground = VizConfig.isDefaultScreenshotTransparentBackground();
+        autoSave = VizConfig.isDefaultScreenshotAutoSave();
     }
 
     @Override
     public VisualisationModel getVisualisationModel() {
-        return visualisationModel;
-    }
-
-
-    @Override
-    public int getAntiAliasing() {
-        return antiAliasing;
-    }
-
-    void setAntiAliasing(int antiAliasing) {
-        this.antiAliasing = antiAliasing;
+        return vizModel;
     }
 
     @Override
-    public int getWidth() {
-        return width;
+    public int getScaleFactor() {
+        return scaleFactor;
     }
 
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    @Override
-    public int getHeight() {
-        return height;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
+    public void setScaleFactor(int scaleFactor) {
+        this.scaleFactor = scaleFactor;
     }
 
     @Override

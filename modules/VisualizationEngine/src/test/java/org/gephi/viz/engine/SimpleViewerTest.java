@@ -12,11 +12,15 @@ import com.jogamp.opengl.GLCapabilities;
 import com.jogamp.opengl.GLContext;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.Collections;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.GraphModel;
@@ -57,7 +61,7 @@ public class SimpleViewerTest {
         private NewtCanvasAWT newtCanvas;
 
         public void start(final String graphFile) {
-            final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities();
+            final GLCapabilities caps = VizEngineJOGLConfigurator.createCapabilities(4);
 
             final Display display = NewtFactory.createDisplay(null);
             final Screen screen = NewtFactory.createScreen(display, 0);
@@ -155,7 +159,15 @@ public class SimpleViewerTest {
                     final boolean showLabels = engine.getRenderingOptions().isShowNodeLabels();
                     engine.getRenderingOptions().setShowNodeLabels(!showLabels);
                     break;
-
+                case KeyEvent.VK_S:
+                    try {
+                        File outputFile = new File("screenshot_" + System.currentTimeMillis() + ".png");
+                        BufferedImage image = engine.getRenderingTarget().requestScreenshot(1, false, () -> false).get();
+                        ImageIO.write(image, "png", outputFile);
+                    } catch (IOException | ExecutionException | InterruptedException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    break;
             }
         }
 

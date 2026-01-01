@@ -154,7 +154,7 @@
                         <publicPackage>org.gephi.visualization.api.initializer</publicPackage>
                         <publicPackage>org.gephi.visualization.api.objects</publicPackage>
                         <publicPackage>org.gephi.visualization.api.selection</publicPackage>
-                        <publicPackage>org.gephi.visualization.apiimpl</publicPackage>
+                        <publicPackage>org.gephi.visualization.contextmenu</publicPackage>
                         <publicPackage>org.gephi.visualization.events</publicPackage>
                         <publicPackage>org.gephi.visualization.opengl.text</publicPackage>
                     </publicPackages>

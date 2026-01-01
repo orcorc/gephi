@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Objects;
 import org.gephi.graph.api.Column;
+import org.gephi.viz.engine.util.ColorUtils;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 
@@ -28,6 +29,9 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private Color edgeOutSelectionColor = DEFAULT_EDGE_OUT_SELECTION_COLOR;
     private EdgeColorMode edgeColorMode = DEFAULT_EDGE_COLOR_MODE;
     private boolean edgeWeightEnabled = DEFAULT_EDGE_WEIGHT_ENABLED;
+    private boolean edgeRescaleWeightEnabled = DEFAULT_EDGE_WEIGHT_ENABLED;
+    private float edgeRescaleMin = DEFAULT_EDGE_RESCALE_MIN;
+    private float edgeRescaleMax = DEFAULT_EDGE_RESCALE_MAX;
 
     //Nodes
     private float nodeScale = DEFAULT_NODE_SCALE;
@@ -58,6 +62,13 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     private float lightenNonSelectedFactor = DEFAULT_LIGHTEN_NON_SELECTED_FACTOR;
 
     public GraphRenderingOptionsImpl() {
+        this(false);
+    }
+
+    public GraphRenderingOptionsImpl(boolean darkLaf) {
+        if (darkLaf) {
+            this.backgroundColor = DEFAULT_DARK_BACKGROUND_COLOR;
+        }
     }
 
     public GraphRenderingOptionsImpl(GraphRenderingOptions other) {
@@ -83,6 +94,9 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
         this.edgeOutSelectionColor = other.getEdgeOutSelectionColor();
         this.edgeColorMode = other.getEdgeColorMode();
         this.edgeWeightEnabled = other.isEdgeWeightEnabled();
+        this.edgeRescaleWeightEnabled = other.isEdgeRescaleWeightEnabled();
+        this.edgeRescaleMin = other.getEdgeRescaleMin();
+        this.edgeRescaleMax = other.getEdgeRescaleMax();
 
         // Nodes
         this.nodeScale = other.getNodeScale();
@@ -129,6 +143,11 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     public void setBackgroundColor(float[] backgroundColor) {
         Objects.requireNonNull(backgroundColor, "backgroundColor can't be null");
         this.backgroundColor = backgroundColor;
+    }
+
+    @Override
+    public boolean isBackgroundColorDark() {
+        return ColorUtils.isColorDark(backgroundColor);
     }
 
     @Override
@@ -321,6 +340,36 @@ public class GraphRenderingOptionsImpl implements GraphRenderingOptions {
     @Override
     public void setEdgeWeightEnabled(boolean enabled) {
         this.edgeWeightEnabled = enabled;
+    }
+
+    @Override
+    public boolean isEdgeRescaleWeightEnabled() {
+        return edgeRescaleWeightEnabled;
+    }
+
+    @Override
+    public void setEdgeRescaleWeightEnabled(boolean edgeRescaleWeightEnabled) {
+        this.edgeRescaleWeightEnabled = edgeRescaleWeightEnabled;
+    }
+
+    @Override
+    public float getEdgeRescaleMax() {
+        return edgeRescaleMax;
+    }
+
+    @Override
+    public void setEdgeRescaleMax(float edgeRescaleMax) {
+        this.edgeRescaleMax = edgeRescaleMax;
+    }
+
+    @Override
+    public float getEdgeRescaleMin() {
+        return edgeRescaleMin;
+    }
+
+    @Override
+    public void setEdgeRescaleMin(float edgeRescaleMin) {
+        this.edgeRescaleMin = edgeRescaleMin;
     }
 
     // Node Labels

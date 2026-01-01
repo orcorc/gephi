@@ -1,9 +1,9 @@
 package org.gephi.viz.engine;
 
-import org.gephi.graph.api.Configuration;
 import org.gephi.graph.api.GraphModel;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
+import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.status.GraphSelectionImpl;
 import org.gephi.viz.engine.structure.GraphIndexImpl;
 
@@ -21,10 +21,10 @@ public class VizEngineModel {
     //Rendering Options
     private final GraphRenderingOptionsImpl renderingOptions;
 
-    protected VizEngineModel(GraphModel graphModel, GraphRenderingOptions renderingOptions) {
+    protected VizEngineModel(GraphModel graphModel, GraphRenderingOptions renderingOptions, GraphSelection graphSelection) {
         this.graphModel = graphModel;
-        this.graphSelection = new GraphSelectionImpl();
-        this.graphIndex = new GraphIndexImpl(graphModel, graphSelection);
+        this.graphSelection = new GraphSelectionImpl(graphSelection);
+        this.graphIndex = new GraphIndexImpl(graphModel, this.graphSelection);
         this.renderingOptions = new GraphRenderingOptionsImpl(renderingOptions);
     }
 
@@ -42,11 +42,5 @@ public class VizEngineModel {
 
     public GraphSelectionImpl getGraphSelection() {
         return graphSelection;
-    }
-
-    public static VizEngineModel createEmptyModel() {
-        Configuration config = Configuration.builder().enableSpatialIndex(true).build();
-        GraphModel emptyModel = GraphModel.Factory.newInstance(config);
-        return new VizEngineModel(emptyModel, new GraphRenderingOptionsImpl());
     }
 }

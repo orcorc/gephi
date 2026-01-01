@@ -78,6 +78,10 @@ public class OpenGLOptions {
         return glCapabilitiesSummary.isVendorIntel();
     }
 
+    public GLCapabilitiesSummary getGlCapabilitiesSummary() {
+        return glCapabilitiesSummary;
+    }
+
     @Override
     public String toString() {
         return "OpenGLOptions{" + "disableIndirectDrawing=" + disableIndirectDrawing + ", disableInstancedDrawing=" +

@@ -47,21 +47,22 @@ import java.awt.Component;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.gephi.graph.api.Node;
+import org.gephi.visualization.VizController;
 import org.gephi.visualization.api.VisualizationEvent;
 import org.gephi.visualization.api.VisualizationEventListener;
-import org.gephi.visualization.apiimpl.GraphContextMenu;
-import org.gephi.visualization.apiimpl.VizEvent;
+import org.gephi.visualization.contextmenu.GraphContextMenu;
+import org.gephi.visualization.VizConfig;
 import org.gephi.visualization.component.VizEngineGraphCanvasManager;
 import org.gephi.viz.engine.VizEngine;
 import org.gephi.viz.engine.status.GraphSelection;
 import org.gephi.viz.engine.structure.GraphIndex;
 import org.joml.Vector2f;
 import org.joml.Vector2i;
+import org.openide.util.Lookup;
 
 /**
  * @author Mathieu Bastian
@@ -325,11 +326,14 @@ public class StandardVizEventManager {
 
     public boolean mouseRightClick(Component parentComponent, VizEngineGraphCanvasManager canvasManager,
                                    VizEngine engine) {
-        GraphContextMenu popupMenu = new GraphContextMenu();
-        float globalScale = canvasManager.getSurfaceScale().orElse(1.0f);
-        int x = (int) (mouseScreenPosition.x / globalScale);
-        int y = (int) (mouseScreenPosition.y / globalScale);
-        popupMenu.getMenu(engine).show(parentComponent, x, y);
+        VizController controller = Lookup.getDefault().lookup(VizController.class);
+        if (controller != null && controller.getModel() != null && VizConfig.isEnableContextMenu()) {
+            GraphContextMenu popupMenu = new GraphContextMenu();
+            float globalScale = canvasManager.getSurfaceScale().orElse(1.0f);
+            int x = (int) (mouseScreenPosition.x / globalScale);
+            int y = (int) (mouseScreenPosition.y / globalScale);
+            popupMenu.getMenu(engine).show(parentComponent, x, y);
+        }
 
         return handlers[VisualizationEvent.Type.MOUSE_RIGHT_CLICK.ordinal()].dispatch();
     }
@@ -406,12 +410,7 @@ public class StandardVizEventManager {
         }
 
         protected synchronized void removeListener(VisualizationEventListener listener) {
-            for (Iterator<WeakReference<VisualizationEventListener>> itr = listeners.iterator(); itr.hasNext(); ) {
-                WeakReference<VisualizationEventListener> li = itr.next();
-                if (li.get() == listener) {
-                    itr.remove();
-                }
-            }
+            listeners.removeIf(li -> li.get() == listener);
         }
 
         protected boolean dispatch() {
@@ -444,7 +443,7 @@ public class StandardVizEventManager {
 
                     return consumed;
                 } catch (Exception e) {
-                    Logger.getLogger("").log(Level.SEVERE, null, e);
+                    Logger.getLogger(VizEngine.class.getSimpleName()).log(Level.SEVERE, null, e);
                 }
             }
 
@@ -457,8 +456,7 @@ public class StandardVizEventManager {
 
         private synchronized boolean fireVisualizationEvent(Object data) {
             final VisualizationEvent event = new VizEvent(this, type, data);
-            for (int i = 0; i < listeners.size(); i++) {
-                final WeakReference<VisualizationEventListener> weakListener = listeners.get(i);
+            for (final WeakReference<VisualizationEventListener> weakListener : listeners) {
                 final VisualizationEventListener listener = weakListener.get();
 
                 if (listener != null) {
