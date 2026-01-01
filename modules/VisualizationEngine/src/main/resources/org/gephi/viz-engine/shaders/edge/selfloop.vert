@@ -1,5 +1,7 @@
 //#include "../common.vert.glsl"
 
+//#include "common.edge.vert.glsl"
+
 in vec2 vert;
 in vec2 position;
 in vec4 elementColor;
@@ -7,25 +9,37 @@ in float size;
 in float nodeSize;
 
 uniform mat4 mvp;
+uniform float minWeight;
+uniform float weightDifferenceDivisor;
+uniform float edgeScaleMin;
+uniform float edgeScaleMax;
+
 struct VertexData {
     vec4 color;
-    float size;
+    float innerRadiusSq; // squared inner radius for ring cutoff
 };
 flat out VertexData vertexData;
 out vec2 vLocal;
 
+// Multiplier to make self-loop stroke visually match regular edge thickness
+const float STROKE_MULTIPLIER = 1.3;
+
 void main() {
     vLocal = vert;
 
-    vec2 instancePosition = nodeSize*.66 * vert + position + vec2(nodeSize*.66);
-    //vec2 instancePosition = 100.f * vert + position;
+    float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size, minWeight, weightDifferenceDivisor);
+    float strokeWidth = thickness * STROKE_MULTIPLIER;
+    float loopRadius = nodeSize * 0.5 + strokeWidth * 2.0;
+    vec2 instancePosition = loopRadius * vert + position + vec2(loopRadius);
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
+
+    // Compute inner radius for ring effect (in normalized space)
+    // strokeWidth is the stroke width, loopRadius is the outer radius
+    float innerRadius = max(0.0, 1.0 - strokeWidth / loopRadius);
+    vertexData.innerRadiusSq = innerRadius * innerRadius;
 
     //bgra -> rgba because Java color is argb big-endian
     vec4 color = elementColor.bgra / 255.0;
 
-    color.rgb = color.rgb;
-
     vertexData.color = color;
-    vertexData.size = size;
 }

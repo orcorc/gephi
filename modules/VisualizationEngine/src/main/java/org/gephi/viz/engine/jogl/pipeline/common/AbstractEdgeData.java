@@ -152,10 +152,12 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
 
         final float[] backgroundColorFloats = data.getBackgroundColor();
         final float edgeScale = data.getEdgeScale();
-        final float nodeScale = data.getNodeScale();
-        float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
+        final float lightenNonSelectedFactor = data.getLightenNonSelectedFactor();
         final float minWeight = data.getMinWeight();
         final float maxWeight = data.getMaxWeight();
+        final float edgeRescaleMin = data.getEdgeRescaleMin();
+        final float edgeRescaleMax = data.getEdgeRescaleMax();
+
         final int instanceCount;
         if (renderingUnselectedEdges) {
             instanceCount = selfLoopCounter.unselectedCountToDraw;
@@ -166,7 +168,12 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
                 backgroundColorFloats,
                 lightenNonSelectedFactor,
                 globalTime,
-                selectedTime
+                selectedTime,
+                edgeScale,
+                minWeight,
+                maxWeight,
+                edgeRescaleMin,
+                edgeRescaleMax
             );
 
             if (usesSecondaryBuffer) {
@@ -176,22 +183,42 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             }
         } else {
             instanceCount = selfLoopCounter.selectedCountToDraw;
-            edgeCircleSelfLoopNoSelection.useProgram(gl,
-                mvpFloats);
 
             if (someSelection) {
                 if (edgeSelectionColor) {
-                    edgeCircleSelfLoopNoSelection.useProgram(gl,
-                        mvpFloats);
+                    edgeCircleSelfLoopNoSelection.useProgram(
+                        gl,
+                        mvpFloats,
+                        edgeScale,
+                        minWeight,
+                        maxWeight,
+                        edgeRescaleMin,
+                        edgeRescaleMax
+                    );
                 } else {
-                    edgeCircleSelfLoopSelectionSelected.useProgram(gl,
-                        mvpFloats, backgroundColorFloats, lightenNonSelectedFactor, globalTime,
-                        selectedTime);
+                    edgeCircleSelfLoopSelectionSelected.useProgram(
+                        gl,
+                        mvpFloats,
+                        backgroundColorFloats,
+                        lightenNonSelectedFactor,
+                        globalTime,
+                        selectedTime,
+                        edgeScale,
+                        minWeight,
+                        maxWeight,
+                        edgeRescaleMin,
+                        edgeRescaleMax
+                    );
                 }
             } else {
                 edgeCircleSelfLoopNoSelection.useProgram(
                     gl,
-                    mvpFloats
+                    mvpFloats,
+                    edgeScale,
+                    minWeight,
+                    maxWeight,
+                    edgeRescaleMin,
+                    edgeRescaleMax
                 );
             }
             setupSelfLoopVertexArrayAttributes(gl, data);

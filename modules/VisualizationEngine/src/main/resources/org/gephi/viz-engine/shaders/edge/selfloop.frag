@@ -1,17 +1,21 @@
 //#include "../common.frag.glsl"
 
-
 in vec2 vLocal;
 struct VertexData {
     vec4 color;
-    float size;
+    float innerRadiusSq; // squared inner radius for ring cutoff
 };
 flat in VertexData vertexData;
 out vec4 fragColor;
 
 void main(void) {
-    vec4 color = vertexData.color;
-    float size = vertexData.size;
-    if (dot(vLocal, vLocal)<= .5) discard;
-    fragColor =  color;
+    float distSq = dot(vLocal, vLocal);
+    
+    // Discard pixels inside the inner radius (creates the ring/stroke effect)
+    if (distSq <= vertexData.innerRadiusSq) discard;
+    
+    // Discard pixels outside the outer radius (circle edge)
+    if (distSq > 1.0) discard;
+    
+    fragColor = vertexData.color;
 }
