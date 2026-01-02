@@ -6,7 +6,6 @@ import static org.gephi.viz.engine.pipeline.RenderingLayer.BACK1;
 
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2ES2;
-import com.jogamp.opengl.GL3ES3;
 import com.jogamp.opengl.util.GLBuffers;
 import java.nio.FloatBuffer;
 import org.gephi.graph.api.Edge;
@@ -38,6 +37,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     private static final int ATTRIBS_BUFFER_SELFLOOP = 5;
 
     private float[] attributesBuffer;
+    private float[] selfLoopAttributesBuffer;
 
     //For drawing in a loop:
     private float[] attributesDrawBufferBatchOneCopyPerVertex;
@@ -64,7 +64,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
 
         final boolean renderingUnselectedEdges = layer == BACK1;
         final int instancesOffset =
-            renderingUnselectedEdges ? 0 : selfLoopCounter.selectedCountToDraw;
+            renderingUnselectedEdges ? 0 : selfLoopCounter.unselectedCountToDraw;
 
         final FloatBuffer batchUpdateBuffer =
             attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer.floatBuffer();
@@ -76,7 +76,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             //Need to copy attributes as many times as vertex per model:
             for (int edgeIndex = 0; edgeIndex < drawBatchCount; edgeIndex++) {
                 System.arraycopy(
-                    attributesBuffer, (edgeBase + edgeIndex) * ATTRIBS_STRIDE_SELFLOOP,
+                    selfLoopAttributesBuffer, (edgeBase + edgeIndex) * ATTRIBS_STRIDE_SELFLOOP,
                     attributesDrawBufferBatchOneCopyPerVertex,
                     edgeIndex * ATTRIBS_STRIDE_SELFLOOP * selfLoopMesh.vertexCount,
                     ATTRIBS_STRIDE_SELFLOOP
@@ -99,7 +99,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             attributesGLBufferSelfLoop.updateWithOrphaning(gl, batchUpdateBuffer);
             attributesGLBufferSelfLoop.unbind(gl);
 
-            GLFunctions.drawInstanced((GL3ES3) gl, 0, drawBatchCount, selfLoopMesh.vertexCount * drawBatchCount);
+            GLFunctions.drawArraysSingleInstance(gl, 0, selfLoopMesh.vertexCount * drawBatchCount);
         }
 
         GLFunctions.stopUsingProgram(gl);
@@ -145,7 +145,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             attributesGLBufferUndirected.updateWithOrphaning(gl, batchUpdateBuffer);
             attributesGLBufferUndirected.unbind(gl);
 
-            GLFunctions.drawInstanced((GL3ES3) gl, 0, drawBatchCount, VERTEX_COUNT * drawBatchCount);
+            GLFunctions.drawArraysSingleInstance(gl, 0, VERTEX_COUNT * drawBatchCount);
         }
 
         GLFunctions.stopUsingProgram(gl);
@@ -207,10 +207,15 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     @Override
     protected void initBuffers(GL gl) {
         super.initBuffers(gl);
-        attributesDrawBufferBatchOneCopyPerVertex = new float[ATTRIBS_STRIDE * VERTEX_COUNT_MAX *
-            BATCH_EDGES_SIZE];//Need to copy attributes as many times as vertex per model
+        // Need to allocate enough space for both regular edges and self-loops
+        // Self-loops have more vertices (192 for 64-triangle circle) and different stride
+        final int regularEdgeBufferSize = ATTRIBS_STRIDE * VERTEX_COUNT_MAX * BATCH_EDGES_SIZE;
+        final int selfLoopBufferSize = ATTRIBS_STRIDE_SELFLOOP * selfLoopMesh.vertexCount * BATCH_SELFLOOP_EDGES_SIZE;
+        final int maxBufferSize = Math.max(regularEdgeBufferSize, selfLoopBufferSize);
+
+        attributesDrawBufferBatchOneCopyPerVertex = new float[maxBufferSize];
         attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer =
-            new ManagedDirectBuffer(GL_FLOAT, ATTRIBS_STRIDE * VERTEX_COUNT_MAX * BATCH_EDGES_SIZE);
+            new ManagedDirectBuffer(GL_FLOAT, maxBufferSize);
 
         gl.glGenBuffers(bufferName.length, bufferName, 0);
 
@@ -286,6 +291,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         attributesGLBufferSelfLoop.unbind(gl);
 
         attributesBuffer = new float[ATTRIBS_STRIDE * BATCH_EDGES_SIZE];
+        selfLoopAttributesBuffer = new float[ATTRIBS_STRIDE_SELFLOOP * BATCH_SELFLOOP_EDGES_SIZE];
     }
 
     public void updateBuffers() {
@@ -307,6 +313,20 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         final int maxIndex = edgesCallback.getMaxIndex();
         final boolean directed = edgesCallback.isDirected();
         final boolean undirected = edgesCallback.isUndirected();
+        final boolean hasSelfLoop = edgesCallback.hasSelfLoop();
+
+        if (hasSelfLoop) {
+            selfLoopAttributesBuffer = ArrayUtils.ensureCapacityNoCopy(
+                selfLoopAttributesBuffer, totalEdges * ATTRIBS_STRIDE_SELFLOOP);
+            updateSelfLoop(maxIndex,
+                visibleEdgesArray,
+                edgeWeightsArray,
+                selfLoopAttributesBuffer,
+                0,
+                null);
+        } else {
+            selfLoopCounter.clearCount();
+        }
 
         int attribsIndex = 0;
         attribsIndex = updateUndirectedData(
@@ -327,5 +347,6 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer.destroy();
 
         attributesBuffer = null;
+        selfLoopAttributesBuffer = null;
     }
 }
