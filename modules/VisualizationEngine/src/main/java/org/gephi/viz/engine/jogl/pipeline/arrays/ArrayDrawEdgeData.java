@@ -37,6 +37,12 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     private static final int VERT_BUFFER_SELFLOOP = 4;
     private static final int ATTRIBS_BUFFER_SELFLOOP = 5;
 
+    private float[] attributesBuffer;
+
+    //For drawing in a loop:
+    private float[] attributesDrawBufferBatchOneCopyPerVertex;
+    private ManagedDirectBuffer attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer;
+
 
     public ArrayDrawEdgeData(final EdgesCallback edgesCallback, final NodesCallback nodesCallback) {
         super(edgesCallback, nodesCallback, false, false);
@@ -44,7 +50,9 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
 
     public void drawArrays(GL2ES2 gl, RenderingLayer layer, EdgeWorldData data, float[] mvpFloats) {
         refreshTime();
-        drawSelfLoop(gl, data, layer, mvpFloats);
+        if (edgesCallback.hasSelfLoop()) {
+            drawSelfLoop(gl, data, layer, mvpFloats);
+        }
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
 
@@ -62,8 +70,8 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer.floatBuffer();
 
         final int maxIndex = (instancesOffset + instanceCount);
-        for (int edgeBase = instancesOffset; edgeBase < maxIndex; edgeBase += BATCH_EDGES_SIZE) {
-            final int drawBatchCount = Math.min(maxIndex - edgeBase, BATCH_EDGES_SIZE);
+        for (int edgeBase = instancesOffset; edgeBase < maxIndex; edgeBase += BATCH_SELFLOOP_EDGES_SIZE) {
+            final int drawBatchCount = Math.min(maxIndex - edgeBase, BATCH_SELFLOOP_EDGES_SIZE);
 
             //Need to copy attributes as many times as vertex per model:
             for (int edgeIndex = 0; edgeIndex < drawBatchCount; edgeIndex++) {
@@ -196,14 +204,6 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         unsetupDirectedVertexArrayAttributes(gl);
     }
 
-    private float[] attributesBuffer;
-
-    private static final int BATCH_EDGES_SIZE = 65536;
-
-    //For drawing in a loop:
-    private float[] attributesDrawBufferBatchOneCopyPerVertex;
-    private ManagedDirectBuffer attributesDrawBufferBatchOneCopyPerVertexManagedDirectBuffer;
-
     @Override
     protected void initBuffers(GL gl) {
         super.initBuffers(gl);
@@ -248,10 +248,10 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
 
         {
 
-            float[] selfLoopVertexDataArray = new float[selfLoopMesh.vertexData.length * BATCH_EDGES_SIZE];
+            float[] selfLoopVertexDataArray = new float[selfLoopMesh.vertexData.length * BATCH_SELFLOOP_EDGES_SIZE];
             System.arraycopy(directedEdgeMesh.vertexData, 0, selfLoopVertexDataArray, 0,
                 selfLoopMesh.vertexData.length);
-            ArrayUtils.repeat(selfLoopVertexDataArray, 0, directedEdgeMesh.vertexData.length, BATCH_EDGES_SIZE);
+            ArrayUtils.repeat(selfLoopVertexDataArray, 0, directedEdgeMesh.vertexData.length, BATCH_SELFLOOP_EDGES_SIZE);
 
             final FloatBuffer selfLoopVertexData = GLBuffers.newDirectFloatBuffer(selfLoopVertexDataArray);
 
@@ -281,7 +281,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
             new GLBufferMutable(bufferName[ATTRIBS_BUFFER_SELFLOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
         attributesGLBufferSelfLoop.bind(gl);
         attributesGLBufferSelfLoop.init(gl,
-            (long) selfLoopMesh.vertexData.length * ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_EDGES_SIZE,
+            (long) selfLoopMesh.vertexData.length * ATTRIBS_STRIDE_SELFLOOP * Float.BYTES * BATCH_SELFLOOP_EDGES_SIZE,
             GLBufferMutable.GL_BUFFER_USAGE_DYNAMIC_DRAW);
         attributesGLBufferSelfLoop.unbind(gl);
 
@@ -291,6 +291,7 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
     public void updateBuffers() {
         undirectedInstanceCounter.promoteCountToDraw();
         directedInstanceCounter.promoteCountToDraw();
+        selfLoopCounter.promoteCountToDraw();
     }
 
     @Override

@@ -43,7 +43,9 @@ public class InstancedEdgeData extends AbstractEdgeData {
     public void drawInstanced(GL3ES3 gl, RenderingLayer layer, EdgeWorldData data,
                               float[] mvpFloats) {
         refreshTime();
-        drawSelfLoop(gl, data, layer, mvpFloats);
+        if (edgesCallback.hasSelfLoop()) {
+            drawSelfLoop(gl, data, layer, mvpFloats);
+        }
         drawUndirected(gl, data, layer, mvpFloats);
         drawDirected(gl, data, layer, mvpFloats);
     }
@@ -189,9 +191,8 @@ public class InstancedEdgeData extends AbstractEdgeData {
             attributesGLBufferDirected.unbind(gl);
         }
 
-        {
+        if (edgesCallback.hasSelfLoop()) {
             final FloatBuffer selfLoopBuf = selfLoopAttributesBuffer.floatBuffer();
-
 
             selfLoopBuf.limit(selfLoopCounter.unselectedCount * ATTRIBS_STRIDE_SELFLOOP);
             selfLoopBuf.position(0);
@@ -218,22 +219,27 @@ public class InstancedEdgeData extends AbstractEdgeData {
         final int totalEdges = edgesCallback.getCount();
 
         attributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE);
-        selfLoopAttributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE_SELFLOOP);
 
         final FloatBuffer attribsDirectBuffer = attributesBuffer.floatBuffer();
-        final FloatBuffer attribsSelfLoopBuffer = selfLoopAttributesBuffer.floatBuffer();
         final Edge[] visibleEdgesArray = edgesCallback.getEdgesArray();
         final float[] edgeWeightsArray = edgesCallback.getEdgeWeightsArray();
         final int maxIndex = edgesCallback.getMaxIndex();
         final boolean isDirected = edgesCallback.isDirected();
         final boolean isUndirected = edgesCallback.isUndirected();
+        final boolean hasSelfLoop = edgesCallback.hasSelfLoop();
 
-        updateSelfLoop(maxIndex,
-            visibleEdgesArray,
-            edgeWeightsArray,
-            selfLoopAttributesBufferBatch,
-            0,
-            attribsSelfLoopBuffer);
+        if (hasSelfLoop) {
+            selfLoopAttributesBuffer.ensureCapacity(totalEdges * ATTRIBS_STRIDE_SELFLOOP);
+            final FloatBuffer attribsSelfLoopBuffer = selfLoopAttributesBuffer.floatBuffer();
+            updateSelfLoop(maxIndex,
+                visibleEdgesArray,
+                edgeWeightsArray,
+                selfLoopAttributesBufferBatch,
+                0,
+                attribsSelfLoopBuffer);
+        } else {
+            selfLoopCounter.clearCount();
+        }
         updateUndirectedData(
             isDirected,
             maxIndex,

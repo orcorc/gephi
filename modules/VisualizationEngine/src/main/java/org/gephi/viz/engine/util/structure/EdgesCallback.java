@@ -42,6 +42,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
     private int edgeCount = 0;
     private boolean directed = false;
     private boolean undirected = false;
+    private boolean hasSelfLoop = false;
 
     @Override
     public void run(GraphIndex graphIndex, GraphRenderingOptions renderingOptions, Rect2D viewBoundaries) {
@@ -60,6 +61,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeWeightsArray = ensureEdgeWeightArraySize(edgeWeightsArray, graph.getModel().getMaxEdgeStoreId() + 1);
         maxIndex = 0;
         edgeCount = 0;
+        hasSelfLoop = false;
 
         hasSelection = graphSelection.someNodesOrEdgesSelection();
         if (hasSelection) {
@@ -84,6 +86,10 @@ public class EdgesCallback implements ElementsCallback<Edge> {
             maxIndex = storeId;
         }
         edgesArray[storeId] = edge;
+
+        if (!hasSelfLoop && edge.isSelfLoop()) {
+            hasSelfLoop = true;
+        }
 
         if (hasLabels && edge.getTextProperties().isVisible() && (!hideNonSelectedLabels || isSelected(storeId))) {
             edgeLabelsArray[storeId] = TextLabelBuilder.buildText(edge, graphView, edgeLabelColumns);
@@ -125,6 +131,7 @@ public class EdgesCallback implements ElementsCallback<Edge> {
         edgeCount = 0;
         directed = false;
         undirected = false;
+        hasSelfLoop = false;
         hasSelection = false;
         hideNonSelectedLabels = false;
         selectedBitSet = new BitSet();
@@ -167,6 +174,10 @@ public class EdgesCallback implements ElementsCallback<Edge> {
 
     public boolean isUndirected() {
         return undirected;
+    }
+
+    public boolean hasSelfLoop() {
+        return hasSelfLoop;
     }
 
     public boolean isSelected(int edgeStoreId) {
