@@ -249,17 +249,17 @@ public class ArrayDrawEdgeData extends AbstractEdgeData {
         {
 
             float[] selfLoopVertexDataArray = new float[selfLoopMesh.vertexData.length * BATCH_SELFLOOP_EDGES_SIZE];
-            System.arraycopy(directedEdgeMesh.vertexData, 0, selfLoopVertexDataArray, 0,
+            System.arraycopy(selfLoopMesh.vertexData, 0, selfLoopVertexDataArray, 0,
                 selfLoopMesh.vertexData.length);
-            ArrayUtils.repeat(selfLoopVertexDataArray, 0, directedEdgeMesh.vertexData.length, BATCH_SELFLOOP_EDGES_SIZE);
+            ArrayUtils.repeat(selfLoopVertexDataArray, 0, selfLoopMesh.vertexData.length, BATCH_SELFLOOP_EDGES_SIZE);
 
             final FloatBuffer selfLoopVertexData = GLBuffers.newDirectFloatBuffer(selfLoopVertexDataArray);
 
-            vertexGLBufferDirected =
+            vertexGLBufferSelfLoop =
                 new GLBufferMutable(bufferName[VERT_BUFFER_SELFLOOP], GLBufferMutable.GL_BUFFER_TYPE_ARRAY);
-            vertexGLBufferDirected.bind(gl);
-            vertexGLBufferDirected.init(gl, selfLoopVertexData, GLBufferMutable.GL_BUFFER_USAGE_STATIC_DRAW);
-            vertexGLBufferDirected.unbind(gl);
+            vertexGLBufferSelfLoop.bind(gl);
+            vertexGLBufferSelfLoop.init(gl, selfLoopVertexData, GLBufferMutable.GL_BUFFER_USAGE_STATIC_DRAW);
+            vertexGLBufferSelfLoop.unbind(gl);
         }
 
         //Initialize for batch edges size:
