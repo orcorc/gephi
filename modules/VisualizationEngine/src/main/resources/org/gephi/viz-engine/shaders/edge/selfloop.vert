@@ -31,7 +31,7 @@ void main() {
     float thickness = edge_thickness(edgeScaleMin, edgeScaleMax, size, minWeight, weightDifferenceDivisor);
     float strokeWidth = thickness * STROKE_MULTIPLIER;
     float scaledNodeSize = nodeSize * nodeScale;
-    float loopRadius = scaledNodeSize * 0.5 + strokeWidth * 0.75;
+    float loopRadius = scaledNodeSize * 0.5 + strokeWidth * 0.33;
     vec2 instancePosition = loopRadius * vert + position + vec2(loopRadius);
     gl_Position = mvp * vec4(instancePosition, 0.0, 1.0);
 
