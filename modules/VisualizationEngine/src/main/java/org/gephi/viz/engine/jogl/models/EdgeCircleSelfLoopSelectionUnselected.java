@@ -71,4 +71,11 @@ public class EdgeCircleSelfLoopSelectionUnselected {
             gl.glUniform1f(program.getUniformLocation(UNIFORM_NAME_WEIGHT_DIFFERENCE_DIVISOR), maxWeight - minWeight);
         }
     }
+
+    public void destroy(GL2ES2 gl) {
+        if (program != null) {
+            program.destroy(gl);
+            program = null;
+        }
+    }
 }

@@ -1369,9 +1369,22 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
             directedEdgesVAOSecondary = null;
         }
 
+        if (selfLoopEdgesVAO != null) {
+            selfLoopEdgesVAO.destroy(gl.getGL2ES2());
+            selfLoopEdgesVAO = null;
+        }
+
+        if (selfLoopEdgesVAOSecondary != null) {
+            selfLoopEdgesVAOSecondary.destroy(gl.getGL2ES2());
+            selfLoopEdgesVAOSecondary = null;
+        }
+
         // Destroy shader programs
         lineModelUndirected.destroy(gl.getGL2ES2());
         lineModelDirected.destroy(gl.getGL2ES2());
+        edgeCircleSelfLoopNoSelection.destroy(gl.getGL2ES2());
+        edgeCircleSelfLoopSelectionSelected.destroy(gl.getGL2ES2());
+        edgeCircleSelfLoopSelectionUnselected.destroy(gl.getGL2ES2());
 
         edgesCallback.reset();
     }
