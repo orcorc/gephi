@@ -47,7 +47,6 @@ import java.awt.Color;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import org.apache.commons.math3.analysis.function.Abs;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Configuration;
 import org.gephi.graph.api.Edge;
@@ -174,7 +173,7 @@ public abstract class AbstractProcessor implements Processor, LongTask {
             Color labelColor = nodeDraft.getLabelColor();
             node.getTextProperties().setColor(labelColor);
         } else {
-            node.getTextProperties().setColor(new Color(0, 0, 0, 0));
+            node.getTextProperties().setColor(new Color(0, 0, 0, 255));
         }
 
         if (nodeDraft.getLabelSize() != -1f && node.getTextProperties() != null) {
@@ -295,7 +294,7 @@ public abstract class AbstractProcessor implements Processor, LongTask {
                 edge.setR(0f);
                 edge.setG(0f);
                 edge.setB(0f);
-                edge.setAlpha(0f);
+                edge.setAlpha(1f);
             }
 
             flushLabel(edgeDraft, edge);
@@ -312,7 +311,7 @@ public abstract class AbstractProcessor implements Processor, LongTask {
                 Color labelColor = edgeDraft.getLabelColor();
                 edge.getTextProperties().setColor(labelColor);
             } else {
-                edge.getTextProperties().setColor(new Color(0, 0, 0, 0));
+                edge.getTextProperties().setColor(new Color(0, 0, 0, 255));
             }
 
             //Attributes
