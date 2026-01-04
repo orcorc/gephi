@@ -14,7 +14,7 @@ import javax.swing.event.ChangeListener;
 import org.gephi.ui.components.JPopupButton;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.EdgeColorMode;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.ImageUtilities;
@@ -112,7 +112,7 @@ public class EdgeGroup implements CollapseGroup, VisualizationPropertyChangeList
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("showEdges")) {
             if (showEdgeButton.isSelected() != model.isShowEdges()) {
                 showEdgeButton.setSelected(model.isShowEdges());

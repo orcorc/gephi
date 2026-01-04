@@ -58,7 +58,7 @@ import org.gephi.ui.appearance.plugin.UniqueLabelColorTransformerUI;
 import org.gephi.ui.appearance.plugin.category.DefaultCategory;
 import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.DialogDescriptor;
@@ -173,7 +173,7 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
 
         // Font
         edgeFontButton.addActionListener(e -> {
-            VisualisationModel model = vizController.getModel();
+            VisualizationModel model = vizController.getModel();
             Font font = JFontChooser.showDialog(WindowManager.getDefault().getMainWindow(), model.getEdgeLabelFont());
             if (font != null && font != model.getEdgeLabelFont()) {
                 vizController.setEdgeLabelFont(font);
@@ -186,7 +186,7 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                VisualisationModel model = vizController.getModel();
+                VisualizationModel model = vizController.getModel();
                 LabelAttributesPanel panel = new LabelAttributesPanel(model, true);
                 panel.setup();
                 DialogDescriptor dd = new DialogDescriptor(panel,
@@ -204,7 +204,7 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
             e -> vizController.setHideNonSelectedEdgeLabels(hideNonSelectedCheckbox.isSelected()));
     }
 
-    public void setup(VisualisationModel model) {
+    public void setup(VisualizationModel model) {
         if (model == null) {
             setEnable(false);
             return;
@@ -214,12 +214,12 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         vizController.addPropertyChangeListener(this);
     }
 
-    public void unsetup(VisualisationModel model) {
+    public void unsetup(VisualizationModel model) {
         vizController.removePropertyChangeListener(this);
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("showEdgeLabels")) {
             refreshSharedConfig(model);
         } else if (evt.getPropertyName().equals("edgeLabelFont")) {
@@ -235,7 +235,7 @@ public class EdgeLabelsSettingsPanel extends javax.swing.JPanel implements Visua
         }
     }
 
-    private void refreshSharedConfig(VisualisationModel vizModel) {
+    private void refreshSharedConfig(VisualizationModel vizModel) {
         if (showLabelsCheckbox.isSelected() != vizModel.isShowEdgeLabels()) {
             showLabelsCheckbox.setSelected(vizModel.isShowEdgeLabels());
         }

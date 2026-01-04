@@ -64,7 +64,7 @@ public interface VisualizationController {
      *
      * @return the current visualization model
      */
-    VisualisationModel getModel();
+    VisualizationModel getModel();
 
     /**
      * Returns the visualization model for the specified workspace.
@@ -72,7 +72,7 @@ public interface VisualizationController {
      * @param workspace the workspace
      * @return the visualization model for the workspace
      */
-    VisualisationModel getModel(Workspace workspace);
+    VisualizationModel getModel(Workspace workspace);
 
     /**
      * Returns the screenshot controller.

@@ -8,11 +8,11 @@ package org.gephi.visualization.api;
 public interface ScreenshotModel {
 
     /**
-     * Returns the visualisation model associated with this screenshot model.
+     * Returns the visualization model associated with this screenshot model.
      *
-     * @return the visualisation model
+     * @return the visualization model
      */
-    VisualisationModel getVisualisationModel();
+    VisualizationModel getVisualizationModel();
 
     /**
      * Returns the scale factor for screenshots.

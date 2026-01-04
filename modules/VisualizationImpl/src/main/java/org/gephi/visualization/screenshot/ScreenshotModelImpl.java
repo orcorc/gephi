@@ -3,7 +3,7 @@ package org.gephi.visualization.screenshot;
 import java.io.File;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.ScreenshotModel;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.VizConfig;
 import org.openide.util.NbPreferences;
 
@@ -30,7 +30,7 @@ public class ScreenshotModelImpl implements ScreenshotModel {
     }
 
     @Override
-    public VisualisationModel getVisualisationModel() {
+    public VisualizationModel getVisualizationModel() {
         return vizModel;
     }
 

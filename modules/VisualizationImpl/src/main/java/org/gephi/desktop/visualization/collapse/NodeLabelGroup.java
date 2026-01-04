@@ -12,7 +12,7 @@ import org.gephi.ui.components.JPopupButton;
 import org.gephi.visualization.VizModel;
 import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.DialogDescriptor;
@@ -50,7 +50,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
         attributesButton
             .setToolTipText(NbBundle.getMessage(NodeLabelGroup.class, "VizToolbar.Labels.attributes"));
         attributesButton.addActionListener(e -> {
-            VisualisationModel model = vizController.getModel();
+            VisualizationModel model = vizController.getModel();
             LabelAttributesPanel panel = new LabelAttributesPanel(model, false);
             panel.setup();
             DialogDescriptor dd = new DialogDescriptor(panel,
@@ -154,7 +154,7 @@ public class NodeLabelGroup implements CollapseGroup, VisualizationPropertyChang
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if ("showNodeLabels".equals(evt.getPropertyName())) {
             showLabelsButton.setSelected((Boolean) evt.getNewValue());
             refreshEnable(true);

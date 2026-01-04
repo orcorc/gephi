@@ -57,5 +57,5 @@ public interface VisualizationPropertyChangeListener extends java.util.EventList
      * @param model the visualization model
      * @param evt   the property change event
      */
-    void propertyChange(VisualisationModel model, PropertyChangeEvent evt);
+    void propertyChange(VisualizationModel model, PropertyChangeEvent evt);
 }

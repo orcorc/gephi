@@ -46,7 +46,7 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import org.gephi.ui.components.JColorButton;
 import org.gephi.visualization.VizController;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.Lookup;
@@ -87,7 +87,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel implements Visualiza
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("backgroundColor")) {
             refreshSharedConfig(model);
         } else if (evt.getPropertyName().equals("autoSelectNeighbor")) {
@@ -97,7 +97,7 @@ public class GlobalSettingsPanel extends javax.swing.JPanel implements Visualiza
         }
     }
 
-    public void setup(VisualisationModel model) {
+    public void setup(VisualizationModel model) {
         if (model == null) {
             setEnable(false);
             return;
@@ -107,11 +107,11 @@ public class GlobalSettingsPanel extends javax.swing.JPanel implements Visualiza
         vizController.addPropertyChangeListener(this);
     }
 
-    public void unsetup(VisualisationModel model) {
+    public void unsetup(VisualizationModel model) {
         vizController.removePropertyChangeListener(this);
     }
 
-    private void refreshSharedConfig(VisualisationModel vizModel) {
+    private void refreshSharedConfig(VisualizationModel vizModel) {
         if (autoSelectNeigborCheckbox.isSelected() != vizModel.isAutoSelectNeighbors()) {
             autoSelectNeigborCheckbox.setSelected(vizModel.isAutoSelectNeighbors());
         }

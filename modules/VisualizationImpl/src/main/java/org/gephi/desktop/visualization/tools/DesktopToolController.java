@@ -62,7 +62,7 @@ import org.gephi.tools.spi.Tool;
 import org.gephi.tools.spi.ToolEventListener;
 import org.gephi.tools.spi.ToolUI;
 import org.gephi.tools.spi.UnselectToolException;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationEvent;
 import org.gephi.visualization.api.VisualizationEventListener;
@@ -220,7 +220,7 @@ public class DesktopToolController implements ToolController {
         visualizationController.addPropertyChangeListener(new VisualizationPropertyChangeListener() {
 
             @Override
-            public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+            public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
                 if (evt.getPropertyName().equals("selection")) {
                     if (currentTool != null && !model.isCustomSelection() && !model.isNodeSelection()) {
                         toolbar.clearSelection();

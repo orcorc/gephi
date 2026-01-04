@@ -56,7 +56,7 @@ import org.gephi.graph.api.Estimator;
 import org.gephi.ui.appearance.plugin.UniqueElementColorTransformerUI;
 import org.gephi.ui.appearance.plugin.category.DefaultCategory;
 import org.gephi.visualization.api.EdgeColorMode;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.ImageUtilities;
@@ -200,7 +200,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         });
     }
 
-    public void setup(VisualisationModel model) {
+    public void setup(VisualizationModel model) {
         if (model == null) {
             setEnable(false, null);
             return;
@@ -210,12 +210,12 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         vizController.addPropertyChangeListener(this);
     }
 
-    public void unsetup(VisualisationModel model) {
+    public void unsetup(VisualizationModel model) {
         vizController.removePropertyChangeListener(this);
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("showEdges")) {
             refreshSharedConfig(model);
         } else if (evt.getPropertyName().equals("edgeSelectionColor")) {
@@ -241,7 +241,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         }
     }
 
-    private void refreshSharedConfig(VisualisationModel vizModel) {
+    private void refreshSharedConfig(VisualizationModel vizModel) {
         if (showEdgesCheckbox.isSelected() != vizModel.isShowEdges()) {
             showEdgesCheckbox.setSelected(vizModel.isShowEdges());
         }
@@ -280,7 +280,7 @@ public class EdgeSettingsPanel extends javax.swing.JPanel implements Visualizati
         }
     }
 
-    private void setEnable(boolean enable, VisualisationModel model) {
+    private void setEnable(boolean enable, VisualizationModel model) {
         showEdgesCheckbox.setEnabled(enable);
         edgeColorCombo.setEnabled(enable && showEdgesCheckbox.isSelected());
         edgeColor.setEnabled(enable && showEdgesCheckbox.isSelected());

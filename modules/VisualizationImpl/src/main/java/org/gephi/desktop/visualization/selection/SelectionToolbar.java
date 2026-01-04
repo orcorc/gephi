@@ -53,7 +53,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.ImageUtilities;
@@ -117,25 +117,25 @@ public class SelectionToolbar extends JToolBar implements VisualizationPropertyC
         }
     }
 
-    public void setup(VisualisationModel vizModel) {
+    public void setup(VisualizationModel vizModel) {
         setEnabled(true);
         visualizationController.addPropertyChangeListener(this);
         refresh(vizModel);
     }
 
-    public void unsetup(VisualisationModel vizModel) {
+    public void unsetup(VisualizationModel vizModel) {
         setEnabled(false);
         visualizationController.removePropertyChangeListener(this);
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("selection")) {
             refresh(model);
         }
     }
 
-    private void refresh(VisualisationModel vizModel) {
+    private void refresh(VisualizationModel vizModel) {
         SwingUtilities.invokeLater(new Runnable() {
 
             @Override

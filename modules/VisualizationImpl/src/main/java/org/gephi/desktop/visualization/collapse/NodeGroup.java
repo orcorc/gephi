@@ -6,7 +6,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 import org.gephi.visualization.VizModel;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.Lookup;
@@ -62,7 +62,7 @@ public class NodeGroup implements CollapseGroup, VisualizationPropertyChangeList
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if ("nodeScale".equals(evt.getPropertyName())) {
             if (model.getNodeScale() != (nodeScaleSlider.getValue() / 10f + 0.1f)) {
                 nodeScaleSlider.setValue((int) ((model.getNodeScale() - 0.1f) * 10));

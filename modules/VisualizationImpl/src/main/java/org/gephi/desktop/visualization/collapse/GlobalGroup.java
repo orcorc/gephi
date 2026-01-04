@@ -12,7 +12,7 @@ import org.gephi.ui.components.JDropDownButton;
 import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.VizController;
 import org.gephi.visualization.VizModel;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.gephi.visualization.VizConfig;
 import org.openide.util.ImageUtilities;
@@ -64,7 +64,7 @@ public class GlobalGroup implements CollapseGroup, VisualizationPropertyChangeLi
     }
 
     @Override
-    public void propertyChange(VisualisationModel vizModel, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel vizModel, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("backgroundColor")) {
             backgroundColorButton.setColor(vizModel.getBackgroundColor());
         }

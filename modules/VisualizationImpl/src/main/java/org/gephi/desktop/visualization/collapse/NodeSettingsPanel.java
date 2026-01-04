@@ -43,7 +43,7 @@
 package org.gephi.desktop.visualization.collapse;
 
 import java.beans.PropertyChangeEvent;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.Lookup;
@@ -74,7 +74,7 @@ public class NodeSettingsPanel extends javax.swing.JPanel implements Visualizati
         });
     }
 
-    public void setup(VisualisationModel model) {
+    public void setup(VisualizationModel model) {
         if (model == null) {
             setEnable(false);
             return;
@@ -84,18 +84,18 @@ public class NodeSettingsPanel extends javax.swing.JPanel implements Visualizati
         vizController.addPropertyChangeListener(this);
     }
 
-    public void unsetup(VisualisationModel model) {
+    public void unsetup(VisualizationModel model) {
         vizController.removePropertyChangeListener(this);
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("nodeScale")) {
             refreshSharedConfig(model);
         }
     }
 
-    private void refreshSharedConfig(VisualisationModel vizModel) {
+    private void refreshSharedConfig(VisualizationModel vizModel) {
         if (scaleSlider.getValue() / 10f + 0.1f != vizModel.getNodeScale()) {
             scaleSlider.setValue((int) ((vizModel.getNodeScale() - 0.1f) * 10));
         }

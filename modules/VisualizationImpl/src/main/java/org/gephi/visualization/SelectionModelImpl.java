@@ -11,7 +11,7 @@ import org.gephi.viz.engine.status.GraphSelectionImpl;
 public class SelectionModelImpl {
 
     // Model
-    private final VizModel visualisationModel;
+    private final VizModel visualizationModel;
     // Settings
     private int mouseSelectionDiameter;
     private boolean mouseSelectionZoomProportional;
@@ -22,8 +22,8 @@ public class SelectionModelImpl {
     private boolean singleNodeSelection = false;
     private boolean nodeSelection = false;
 
-    public SelectionModelImpl(VizModel visualisationModel) {
-        this.visualisationModel = visualisationModel;
+    public SelectionModelImpl(VizModel visualizationModel) {
+        this.visualizationModel = visualizationModel;
 
         // Settings
         this.mouseSelectionDiameter = VizConfig.getDefaultMouseSelectionDiameter();
@@ -52,7 +52,7 @@ public class SelectionModelImpl {
     }
 
     protected Optional<GraphSelection> currentEngineSelectionModel() {
-        return visualisationModel.getEngine().map(VizEngine::getGraphSelection);
+        return visualizationModel.getEngine().map(VizEngine::getGraphSelection);
     }
 
     public Collection<Node> getSelectedNodes() {

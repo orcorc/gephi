@@ -59,7 +59,7 @@ import org.gephi.project.spi.Model;
  *
  * @author Mathieu Bastian
  */
-public interface VisualisationModel extends Model {
+public interface VisualizationModel extends Model {
 
     /**
      * Returns the screenshot model.

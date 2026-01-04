@@ -63,7 +63,7 @@ import org.gephi.ui.utils.UIUtils;
 import org.gephi.visualization.api.EdgeColorMode;
 import org.gephi.visualization.api.LabelColorMode;
 import org.gephi.visualization.api.LabelSizeMode;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.gephi.visualization.screenshot.ScreenshotModelImpl;
 import org.gephi.viz.engine.VizEngine;
@@ -78,7 +78,7 @@ import org.openide.util.Lookup;
 /**
  * @author Mathieu Bastian
  */
-public class VizModel implements VisualisationModel {
+public class VizModel implements VisualizationModel {
 
     private final VizController vizController;
     private final Workspace workspace;

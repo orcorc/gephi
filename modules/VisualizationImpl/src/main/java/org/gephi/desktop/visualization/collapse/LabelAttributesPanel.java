@@ -55,7 +55,7 @@ import net.miginfocom.swing.MigLayout;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.GraphController;
 import org.gephi.project.api.Workspace;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.Lookup;
 import org.openide.util.NbPreferences;
@@ -66,7 +66,7 @@ import org.openide.util.NbPreferences;
 public class LabelAttributesPanel extends javax.swing.JPanel {
 
     private final VisualizationController vizController;
-    private final VisualisationModel vizModel;
+    private final VisualizationModel vizModel;
     //Settings
     private ButtonModel selectedModel;
     private boolean showProperties = true;
@@ -87,7 +87,7 @@ public class LabelAttributesPanel extends javax.swing.JPanel {
     /**
      * Creates new form LabelAttributesPanel
      */
-    public LabelAttributesPanel(VisualisationModel vizModel, boolean selectEdges) {
+    public LabelAttributesPanel(VisualizationModel vizModel, boolean selectEdges) {
         vizController = Lookup.getDefault().lookup(VisualizationController.class);
         this.vizModel = vizModel;
         this.showProperties = NbPreferences.forModule(LabelAttributesPanel.class)

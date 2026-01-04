@@ -4,7 +4,7 @@ import java.awt.Component;
 import java.beans.PropertyChangeEvent;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.gephi.visualization.api.VisualizationPropertyChangeListener;
 import org.openide.util.Lookup;
@@ -35,13 +35,13 @@ public class SelectionPropertiesToolbar extends javax.swing.JPanel implements Vi
     }
 
     @Override
-    public void propertyChange(VisualisationModel model, PropertyChangeEvent evt) {
+    public void propertyChange(VisualizationModel model, PropertyChangeEvent evt) {
         if (evt.getPropertyName().equals("selection")) {
             refresh(model);
         }
     }
 
-    public void setup(VisualisationModel vizModel) {
+    public void setup(VisualizationModel vizModel) {
         vizController.addPropertyChangeListener(this);
         refresh(vizModel);
     }
@@ -52,7 +52,7 @@ public class SelectionPropertiesToolbar extends javax.swing.JPanel implements Vi
 
     public JPopupMenu createPopup() {
         VisualizationController controller = Lookup.getDefault().lookup(VisualizationController.class);
-        VisualisationModel model = controller.getModel();
+        VisualizationModel model = controller.getModel();
 
         final MouseSelectionPopupPanel popupPanel = new MouseSelectionPopupPanel();
         popupPanel.setDiameter(model.getMouseSelectionDiameter());
@@ -67,7 +67,7 @@ public class SelectionPropertiesToolbar extends javax.swing.JPanel implements Vi
         return menu;
     }
 
-    public void refresh(VisualisationModel vizModel) {
+    public void refresh(VisualizationModel vizModel) {
         SwingUtilities.invokeLater(() -> {
             if (vizModel == null) {
                 configureLink.setVisible(false);

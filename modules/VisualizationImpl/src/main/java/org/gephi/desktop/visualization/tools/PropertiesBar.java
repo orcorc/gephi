@@ -52,7 +52,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import org.gephi.desktop.visualization.selection.SelectionPropertiesToolbar;
 import org.gephi.ui.utils.UIUtils;
-import org.gephi.visualization.api.VisualisationModel;
+import org.gephi.visualization.api.VisualizationModel;
 import org.gephi.visualization.api.VisualizationController;
 import org.openide.util.Lookup;
 
@@ -77,7 +77,7 @@ public class PropertiesBar extends JPanel {
         setOpaque(true);
     }
 
-    public void setup(VisualisationModel vizModel) {
+    public void setup(VisualizationModel vizModel) {
         selectionBar.setup(vizModel);
         startFpsThread();
     }
@@ -116,7 +116,7 @@ public class PropertiesBar extends JPanel {
         fpsThread = new Thread(() -> {
             final VisualizationController controller = Lookup.getDefault().lookup(VisualizationController.class);
             while (fpsThreadRunning) {
-                VisualisationModel model = controller.getModel();
+                VisualizationModel model = controller.getModel();
                 String text = "";
                 if (model != null) {
                     text = String.valueOf(model.getFps());
