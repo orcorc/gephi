@@ -14,9 +14,9 @@ public class ScreenshotModelImpl implements ScreenshotModel {
     // Model
     private final VizModel vizModel;
     // Settings
-    private int scaleFactor = 1;
-    private boolean transparentBackground = false;
-    private boolean autoSave = false;
+    private int scaleFactor;
+    private boolean transparentBackground;
+    private boolean autoSave;
     private String defaultDirectory;
 
     public ScreenshotModelImpl(VizModel vizModel) {

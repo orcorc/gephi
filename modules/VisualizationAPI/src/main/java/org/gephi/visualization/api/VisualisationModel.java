@@ -53,6 +53,8 @@ import org.gephi.project.spi.Model;
 /**
  * Entry point to access and configure visualization settings.
  * <p>
+ * It also includes selection-related methods like {@link #getSelectedNodes()}.
+ * <p>
  * One model exists for each workspace.
  *
  * @author Mathieu Bastian
