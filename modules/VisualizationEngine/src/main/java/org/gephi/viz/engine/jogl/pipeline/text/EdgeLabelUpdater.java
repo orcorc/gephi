@@ -9,6 +9,9 @@ import org.gephi.viz.engine.util.structure.EdgesCallback;
 
 public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
 
+    // Multiplier to make self-loop stroke visually match regular edge thickness (same as shader)
+    private static final float STROKE_MULTIPLIER = 1.3f;
+
     public EdgeLabelUpdater(VizEngine engine, EdgeLabelData edgeLabelData) {
         super(engine, edgeLabelData);
     }
@@ -45,6 +48,13 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
         final float nodeScale = options.getNodeScale();
         final boolean hideNonSelectedLabels = options.isHideNonSelectedEdgeLabels();
         final float zoom = options.getZoom();
+
+        // Self-loop thickness parameters
+        final float edgeScale = options.getEdgeScale();
+        final float edgeRescaleMin = options.getEdgeRescaleMin();
+        final float edgeRescaleMax = options.getEdgeRescaleMax();
+        final float minWeight = edgesCallback.getMinWeight();
+        final float maxWeight = edgesCallback.getMaxWeight();
 
         // No labels to show
         if (hideNonSelectedLabels && !someSelection) {
@@ -129,7 +139,21 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
             final float dy = edge.getTarget().y() - edge.getSource().y();
             final float edgeLength = (float) Math.sqrt(dx * dx + dy * dy);
 
-            if (edgeLength > 0 && !edge.isSelfLoop()) {
+            if (edge.isSelfLoop()) {
+                // Self-loop: position label at the upper-right of the loop circle (45 degrees)
+                final float weight = (float) edge.getWeight();
+                final float thickness = edgeThickness(edgeScale * edgeRescaleMin, edgeScale * edgeRescaleMax,
+                    weight, minWeight, maxWeight);
+                final float strokeWidth = thickness * STROKE_MULTIPLIER;
+                final float loopRadius = sourceSize * 0.5f + strokeWidth * 0.33f;
+
+                // The loop center is at (node.x + loopRadius, node.y + loopRadius)
+                // Position label at 45 degrees (upper-right) on the loop circumference
+                // cos(45°) = sin(45°) ≈ 0.707
+                final float cos45 = 0.707f;
+                x = edge.getSource().x() + loopRadius * (1 + cos45);
+                y = edge.getSource().y() + loopRadius * (1 + cos45);
+            } else if (edgeLength > 0) {
                 // Normalize edge vector
                 final float ndx = dx / edgeLength;
                 final float ndy = dy / edgeLength;
@@ -146,7 +170,7 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
                     y = edge.getSource().y() + ndy * offsetFromSource;
                 }
             } else {
-                // Fallback for zero-length edges (self-loops or overlapping nodes)
+                // Fallback for zero-length edges (overlapping nodes)
                 x = edge.getSource().x();
                 y = edge.getSource().y();
             }
@@ -182,6 +206,23 @@ public class EdgeLabelUpdater extends AbstractLabelUpdater<Edge> {
                 return edge.getRGBA();
             }
         }
+    }
+
+    /**
+     * Computes edge thickness matching the GLSL edge_thickness function.
+     */
+    private float edgeThickness(float edgeScaleMin, float edgeScaleMax, float weight,
+                                float minWeight, float maxWeight) {
+        if (Math.abs(edgeScaleMin - edgeScaleMax) < 1e-3f) {
+            return weight * edgeScaleMin;
+        }
+        float weightDivisor = maxWeight - minWeight;
+        if (Math.abs(weightDivisor) < 1e-3f) {
+            weightDivisor = 1f;
+        }
+        float t = (weight - minWeight) / weightDivisor;
+        t = Math.max(0f, Math.min(1f, t)); // clamp to [0, 1]
+        return edgeScaleMin + (edgeScaleMax - edgeScaleMin) * t;
     }
 
     @Override

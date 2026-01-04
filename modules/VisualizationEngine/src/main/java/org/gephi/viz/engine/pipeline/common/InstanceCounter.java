@@ -11,6 +11,7 @@ public class InstanceCounter {
     public int unselectedCountToDraw = 0;
     public int selectedCountToDraw = 0;
 
+
     public void promoteCountToDraw() {
         unselectedCountToDraw = unselectedCount;
         selectedCountToDraw = selectedCount;
@@ -31,7 +32,10 @@ public class InstanceCounter {
 
     @Override
     public String toString() {
-        return "InstanceCounter{" + "unselectedCount=" + unselectedCount + ", selectedCount=" + selectedCount +
-            ", unselectedCountToDraw=" + unselectedCountToDraw + ", selectedCountToDraw=" + selectedCountToDraw + '}';
+        return "InstanceCounter{" + "unselectedCount=" + unselectedCount
+            + ", selectedCount=" + selectedCount
+            + ", unselectedCountToDraw=" + unselectedCountToDraw
+            + ", selectedCountToDraw=" + selectedCountToDraw
+            + '}';
     }
 }
