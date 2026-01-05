@@ -81,8 +81,8 @@ public interface LayoutController {
     void executeLayout();
 
     /**
-     * Executes a transformation.
-     * TODO: Add optional workspace input
+     * Executes a transformation. Unlike <code>executeLayout()</code>, this executes the layout synchronously and without
+     * cancellation support.
      */
     void executeLayout(Layout transformation);
 
