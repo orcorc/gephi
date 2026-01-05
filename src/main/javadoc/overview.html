@@ -22,12 +22,20 @@
         </ul>
         <h4>Graph API</h4>
         <ul>
-            <li>Dependency on <code>Joda-Time</code> has been removed and replaced by <code>java.time</code>.</li>
-            <li>A new configuration builder has been added in <code>Configuration.Builder</code> to facilitate configuration customization. A number of configurations - which previously lived as static fields - have been migrated into it. The <code>GraphModel.setConfiguration()</code> method has been deprecated. Configurations is therefore expected to be defined when <code>GraphModel</code> is created.</li>
+            <li>Dependency on <code>Joda-Time</code> has been removed and replaced by <code>java.time</code>. The dependency to the legacy Colt library was also removed.</li>
+            <li>A new configuration builder has been added in <code>Configuration.Builder</code> to facilitate configuration customization. A number of configurations - which previously lived as static fields - have been migrated into it. The <code>GraphModel.setConfiguration()</code> method has been deprecated. Configurations are therefore expected to be defined when <code>GraphModel</code> is created.</li>
             <li>Addition of a <code>getDefaultConfigurationBuilder()</code> method in <code>GraphController</code> that returns the default graph configuration used when creating new <code>GraphModel</code> instances. This should be used as a basis configuration by users willing to create <code>GraphModel</code> with custom configurations.</li>
             <li><code>Instant</code> is now supported as an element type. This allows to store dates and times, but unfortunately it wasn't possible to make the Serialization backward compatible. In other words, if an Instant column is used , it won't be possible to be loaded in previous versions.</li>
-            <li>Addition of <code>Graph.getNodeByStoreId()</code> and <code>Graph.getEdgeByStoreId()</code> methods to retrieve elements based only on their store id.</li>
-            <li>Add new <code>SpatialIndex</code> that holds a quadtree-based spatial index of elements. It can be retrieved from <code>Graph</code>. The spatial index allows to retrieve nodes and edges based on a <code>Rect2D</code>.</li>
+            <li>Addition of <code>Graph.getNodeByStoreId()</code> and <code>Graph.getEdgeByStoreId()</code> methods to retrieve elements based only on their store id. This allows for faster retrieval. Keep in mind though that store ids are re-used when elements are removed. Use those methods in combination with <code>GraphModel.getMaxNodeStoreId()</code> and <code>GraphModel.
+                getMaxEdgeStoreId()</code> when you want to store elements based on their store ids.</li>
+            <li>Add new <code>SpatialIndex</code> that holds a quadtree-based spatial index of elements. It can be retrieved via <code>Graph.
+                getSpatialIndex()</code>. The spatial index allows to retrieve nodes and edges based on a <code>Rect2D</code>.</li>
+            <li>Node/Edge Iterable now have <code>spliterator(), stream() and parallelStream()</code> methods. Therefore, it's possible to iterate/filter over elements in parallel, leading to significant performance gains.</li>
+            <li>Add a new <code>createView()</code> method to <code>GraphModel</code> based on predicates, to facilitate view creation.</li>
+        </ul>
+        <h4>Layout API</h4>
+        <ul>
+            <li>The <code>LayoutController</code> has a new <code>executeLayout(Layout transformation)</code> method to facilitate one-off, synchronous layout execution. This is useful for transformations like rotation or scaling.</li>
         </ul>
         <h4>Tools API</h4>
         <ul>
