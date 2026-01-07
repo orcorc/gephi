@@ -71,10 +71,11 @@ public class EdgeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
 
     @Override
     public Item[] getItems(Graph graph) {
+        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
+
         //Build text
         VisualizationController vizController = Lookup.getDefault().lookup(VisualizationController.class);
-        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
-        VisualizationModel vizModel = vizController.getModel(workspace);
+        VisualizationModel vizModel = vizController != null ? vizController.getModel(workspace) : null;
         GraphView graphView = graph.getView();
 
         return graph.getEdges().parallelStream().map(
@@ -82,7 +83,7 @@ public class EdgeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
                 TextProperties textData = e.getTextProperties();
                 if (textData != null && textData.isVisible()) {
                     EdgeLabelItem labelItem = new EdgeLabelItem(e);
-                    String label = vizModel.getEdgeLabel(e, graphView);
+                    String label = vizModel != null ? vizModel.getEdgeLabel(e, graphView) : e.getLabel();
                     labelItem.setData(EdgeLabelItem.LABEL, label);
 
                     if (label != null && !label.isEmpty()) {

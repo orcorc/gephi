@@ -65,10 +65,11 @@ public class NodeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
 
     @Override
     public Item[] getItems(Graph graph) {
+        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
+
         //Build text
         VisualizationController vizController = Lookup.getDefault().lookup(VisualizationController.class);
-        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
-        VisualizationModel vizModel = vizController.getModel(workspace);
+        VisualizationModel vizModel = vizController != null ? vizController.getModel(workspace) : null;
         GraphView graphView = graph.getView();
 
         return graph.getNodes().parallelStream().map(
@@ -76,7 +77,7 @@ public class NodeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
                 TextProperties textData = n.getTextProperties();
                 if (textData != null && textData.isVisible()) {
                     NodeLabelItem labelItem = new NodeLabelItem(n);
-                    String label = vizModel.getNodeLabel(n, graphView);
+                    String label = vizModel != null ? vizModel.getNodeLabel(n, graphView) : n.getLabel();
                     labelItem.setData(NodeLabelItem.LABEL, label);
 
                     if (label != null && !label.isEmpty()) {
