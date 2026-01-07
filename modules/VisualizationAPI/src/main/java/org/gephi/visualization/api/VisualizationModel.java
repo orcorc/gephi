@@ -46,7 +46,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.Collection;
 import org.gephi.graph.api.Column;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Estimator;
+import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
 import org.gephi.project.spi.Model;
 
@@ -381,6 +384,24 @@ public interface VisualizationModel extends Model {
      * @return the node label columns
      */
     Column[] getNodeLabelColumns();
+
+    /**
+     * Returns the label for the given node, based on {@link #getNodeLabelColumns()}.
+     *
+     * @param node the node
+     * @param view the graph view
+     * @return the node label
+     */
+    String getNodeLabel(Node node, GraphView view);
+
+    /**
+     * Returns the label for the given edge, based on {@link #getEdgeLabelColumns()}.
+     *
+     * @param edge the edge
+     * @param view the graph view
+     * @return the edge label
+     */
+    String getEdgeLabel(Edge edge, GraphView view);
 
     // Edge Labels
 

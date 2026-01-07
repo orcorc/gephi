@@ -53,9 +53,11 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import org.gephi.graph.api.AttributeUtils;
 import org.gephi.graph.api.Column;
+import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.Estimator;
 import org.gephi.graph.api.GraphController;
 import org.gephi.graph.api.GraphModel;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.Node;
 import org.gephi.project.api.Workspace;
 import org.gephi.ui.utils.ColorUtils;
@@ -71,6 +73,7 @@ import org.gephi.viz.engine.jogl.JOGLRenderingTarget;
 import org.gephi.viz.engine.status.GraphRenderingOptions;
 import org.gephi.viz.engine.status.GraphRenderingOptionsImpl;
 import org.gephi.viz.engine.status.GraphSelection;
+import org.gephi.viz.engine.util.text.TextLabelBuilder;
 import org.joml.Vector2f;
 import org.joml.Vector2fc;
 import org.openide.util.Lookup;
@@ -760,6 +763,16 @@ public class VizModel implements VisualizationModel {
     @Override
     public Column[] getNodeLabelColumns() {
         return nodeLabelColumns;
+    }
+
+    @Override
+    public String getNodeLabel(Node node, GraphView view) {
+        return TextLabelBuilder.buildText(node, view, getNodeLabelColumns());
+    }
+
+    @Override
+    public String getEdgeLabel(Edge edge, GraphView view) {
+        return TextLabelBuilder.buildText(edge, view, getEdgeLabelColumns());
     }
 
     public void setNodeLabelColumns(Column[] nodeLabelColumns) {
