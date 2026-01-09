@@ -80,8 +80,6 @@ import org.openide.util.lookup.ServiceProviders;
 public class PreviewControllerImpl implements PreviewController, Controller<PreviewModelImpl> {
 
     //Registered renderers
-    private Renderer[] registeredRenderers = null;
-    private Boolean anyPluginRendererRegistered = null;
     private boolean mousePressed = false;
 
     @Override
@@ -281,37 +279,30 @@ public class PreviewControllerImpl implements PreviewController, Controller<Prev
 
     @Override
     public Renderer[] getRegisteredRenderers() {
-        if (registeredRenderers == null) {
-            LinkedHashMap<String, Renderer> renderers = new LinkedHashMap<>();
-            for (Renderer r : Lookup.getDefault().lookupAll(Renderer.class)) {
-                renderers.put(r.getClass().getName(), r);
-            }
-
-            for (Renderer r : renderers.values().toArray(new Renderer[0])) {
-                Class superClass = r.getClass().getSuperclass();
-                if (superClass != null && superClass.getName().startsWith("org.gephi.preview.plugin.renderers.")) {
-                    //Replace default renderer with plugin by removing it
-                    renderers.remove(superClass.getName());
-                }
-            }
-
-            registeredRenderers = renderers.values().toArray(new Renderer[0]);
+        LinkedHashMap<String, Renderer> renderers = new LinkedHashMap<>();
+        for (Renderer r : Lookup.getDefault().lookupAll(Renderer.class)) {
+            renderers.put(r.getClass().getName(), r);
         }
-        return registeredRenderers;
+
+        for (Renderer r : renderers.values().toArray(new Renderer[0])) {
+            Class superClass = r.getClass().getSuperclass();
+            if (superClass != null && superClass.getName().startsWith("org.gephi.preview.plugin.renderers.")) {
+                //Replace default renderer with plugin by removing it
+                renderers.remove(superClass.getName());
+            }
+        }
+
+        return renderers.values().toArray(new Renderer[0]);
     }
 
     @Override
     public boolean isAnyPluginRendererRegistered() {
-        if (anyPluginRendererRegistered == null) {
-            anyPluginRendererRegistered = false;
-            for (Renderer renderer : getRegisteredRenderers()) {
-                if (!renderer.getClass().getName().startsWith("org.gephi.preview.plugin.renderers.")) {
-                    anyPluginRendererRegistered = true;
-                    break;
-                }
+        for (Renderer renderer : getRegisteredRenderers()) {
+            if (!renderer.getClass().getName().startsWith("org.gephi.preview.plugin.renderers.")) {
+                return true;
             }
         }
-        return anyPluginRendererRegistered;
+        return false;
     }
 
     @Override
