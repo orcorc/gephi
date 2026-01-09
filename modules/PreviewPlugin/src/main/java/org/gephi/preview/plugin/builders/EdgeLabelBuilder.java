@@ -42,15 +42,19 @@
 
 package org.gephi.preview.plugin.builders;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import org.gephi.graph.api.Column;
 import org.gephi.graph.api.Edge;
 import org.gephi.graph.api.EdgeIterable;
 import org.gephi.graph.api.Graph;
+import org.gephi.graph.api.GraphView;
 import org.gephi.graph.api.TextProperties;
 import org.gephi.preview.api.Item;
 import org.gephi.preview.plugin.items.EdgeLabelItem;
+import org.gephi.preview.plugin.items.NodeLabelItem;
 import org.gephi.preview.spi.ItemBuilder;
 import org.gephi.project.api.Workspace;
 import org.gephi.visualization.api.VisualizationModel;
@@ -67,40 +71,35 @@ public class EdgeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
 
     @Override
     public Item[] getItems(Graph graph) {
+        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
+
         //Build text
         VisualizationController vizController = Lookup.getDefault().lookup(VisualizationController.class);
-        Workspace workspace = WorkspaceHelper.getWorkspace(graph);
-        VisualizationModel vizModel = vizController.getModel(workspace);
-        Column[] edgeColumns = vizModel.getEdgeLabelColumns();
+        VisualizationModel vizModel = vizController != null ? vizController.getModel(workspace) : null;
+        GraphView graphView = graph.getView();
 
-        List<Item> items = new ArrayList<>();
-        EdgeIterable edgeIterable = graph.getEdges();
-        try {
-            for (Edge e : edgeIterable) {
-                EdgeLabelItem labelItem = new EdgeLabelItem(e);
-                String label = getLabel(e, edgeColumns, graph.getView());
-                labelItem.setData(EdgeLabelItem.LABEL, label);
+        return graph.getEdges().parallelStream().map(
+            e -> {
                 TextProperties textData = e.getTextProperties();
-                if (textData != null) {
-                    if (textData.getAlpha() != 0) {
-                        labelItem.setData(EdgeLabelItem.COLOR, textData.getColor());
+                if (textData != null && textData.isVisible()) {
+                    EdgeLabelItem labelItem = new EdgeLabelItem(e);
+                    String label = vizModel != null ? vizModel.getEdgeLabel(e, graphView) : e.getLabel();
+                    labelItem.setData(EdgeLabelItem.LABEL, label);
+
+                    if (label != null && !label.isEmpty()) {
+                        labelItem.setData(EdgeLabelItem.COLOR, new Color((int) (textData.getR() * 255),
+                            (int) (textData.getG() * 255),
+                            (int) (textData.getB() * 255),
+                            (int) (textData.getAlpha() * 255)));
+                        labelItem.setData(EdgeLabelItem.SIZE, textData.getSize());
+                        labelItem.setData(EdgeLabelItem.VISIBLE, textData.isVisible());
+                        labelItem.setData(EdgeLabelItem.LABEL, label);
+                        return labelItem;
                     }
-//                labelItem.setData(EdgeLabelItem.WIDTH, textData.getWidth());
-//                labelItem.setData(EdgeLabelItem.HEIGHT, textData.getHeight());
-                    labelItem.setData(EdgeLabelItem.SIZE, textData.getSize());
-                    labelItem.setData(EdgeLabelItem.VISIBLE, textData.isVisible());
-                    if (textData.isVisible() && !label.isEmpty()) {
-                        items.add(labelItem);
-                    }
-                } else if (!label.isEmpty()) {
-                    items.add(labelItem);
                 }
+                return null;
             }
-        } catch (Exception e) {
-            edgeIterable.doBreak();
-            Exceptions.printStackTrace(e);
-        }
-        return items.toArray(new Item[0]);
+        ).filter(Objects::nonNull).toArray(EdgeLabelItem[]::new);
     }
 
     @Override
