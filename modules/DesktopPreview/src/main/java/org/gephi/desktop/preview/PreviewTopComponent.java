@@ -211,10 +211,21 @@ public final class PreviewTopComponent extends TopComponent implements PropertyC
                 @Override
                 public void run() {
                     target.refresh();
+                    refreshBackgroundColorButton();
                 }
             });
         } else if (evt.getPropertyName().equals(PreviewUIController.REFRESHING)) {
             setRefresh((Boolean) evt.getNewValue());
+        }
+    }
+
+    private void refreshBackgroundColorButton() {
+        if (model != null) {
+            PreviewModel previewModel = model.getPreviewModel();
+            Color background = previewModel.getProperties().getColorValue(PreviewProperty.BACKGROUND_COLOR);
+            if (background != null && !background.equals(((JColorButton) backgroundButton).getColor())) {
+                setBackgroundColor(background);
+            }
         }
     }
 
