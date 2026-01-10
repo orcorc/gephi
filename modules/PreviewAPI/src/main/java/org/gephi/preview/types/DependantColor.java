@@ -43,6 +43,7 @@ Portions Copyrighted 2011 Gephi Consortium.
 package org.gephi.preview.types;
 
 import java.awt.Color;
+import org.gephi.utils.ColorUtils;
 
 /**
  * A color that can be custom or depend from a parent color.
@@ -51,6 +52,7 @@ import java.awt.Color;
  */
 public final class DependantColor {
 
+    private static final float DARKEN_FACTOR = 0.498f;
     private final Color customColor;
     private final Mode mode;
 
@@ -81,13 +83,15 @@ public final class DependantColor {
         if (mode.equals(Mode.CUSTOM) && customColor != null) {
             return customColor;
         } else if (mode.equals(Mode.DARKER)){
-            return parentColor.darker();
+            return ColorUtils.darken(parentColor, DARKEN_FACTOR);
+        } else if (mode.equals(Mode.LIGHTER)) {
+            return ColorUtils.lighten(parentColor, 1f + DARKEN_FACTOR);
         }
         return parentColor;
     }
 
     public enum Mode {
 
-        PARENT, CUSTOM, DARKER
+        PARENT, CUSTOM, DARKER, LIGHTER
     }
 }
