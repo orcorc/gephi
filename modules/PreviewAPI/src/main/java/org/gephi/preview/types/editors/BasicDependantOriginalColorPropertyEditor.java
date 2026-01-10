@@ -43,9 +43,6 @@ Portions Copyrighted 2011 Gephi Consortium.
 package org.gephi.preview.types.editors;
 
 import java.awt.Color;
-import java.beans.PropertyEditorSupport;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.gephi.preview.types.DependantOriginalColor;
 
 /**
