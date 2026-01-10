@@ -77,6 +77,8 @@ public class BasicDependantColorPropertyEditor extends AbstractColorPropertyEdit
             setValue(new DependantColor(DependantColor.Mode.PARENT));
         } else if (matchColorMode(s, DependantColor.Mode.DARKER.name().toLowerCase())) {
             setValue(new DependantColor(DependantColor.Mode.DARKER));
+        } else if (matchColorMode(s, DependantColor.Mode.LIGHTER.name().toLowerCase())) {
+            setValue(new DependantColor(DependantColor.Mode.LIGHTER));
         }
     }
 
