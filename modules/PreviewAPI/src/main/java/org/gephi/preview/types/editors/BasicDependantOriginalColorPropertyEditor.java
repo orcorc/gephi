@@ -57,14 +57,18 @@ import org.gephi.preview.types.DependantOriginalColor;
 public class BasicDependantOriginalColorPropertyEditor extends AbstractColorPropertyEditor {
 
     @Override
-    public String getAsText() {
+    public String getAsSerializableText() {
         DependantOriginalColor c = (DependantOriginalColor) getValue();
         if (c.getMode().equals(DependantOriginalColor.Mode.CUSTOM)) {
             return toText(c.getMode().name(), c.getCustomColor() == null ? Color.BLACK : c.getCustomColor());
         } else {
             return c.getMode().name().toLowerCase();
         }
+    }
 
+    @Override
+    public String getAsText() {
+        return getAsSerializableText();
     }
 
     @Override
