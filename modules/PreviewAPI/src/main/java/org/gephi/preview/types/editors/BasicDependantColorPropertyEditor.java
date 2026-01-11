@@ -61,6 +61,11 @@ public class BasicDependantColorPropertyEditor extends AbstractColorPropertyEdit
 
     @Override
     public String getAsText() {
+        return getAsSerializableText();
+    }
+
+    @Override
+    public String getAsSerializableText() {
         DependantColor c = (DependantColor) getValue();
         if (c.getMode().equals(DependantColor.Mode.CUSTOM)) {
             return toText(c.getMode().name(), c.getCustomColor() == null ? Color.BLACK : c.getCustomColor());

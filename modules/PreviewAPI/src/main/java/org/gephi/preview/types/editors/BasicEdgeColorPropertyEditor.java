@@ -60,13 +60,18 @@ import org.gephi.preview.types.EdgeColor;
 public class BasicEdgeColorPropertyEditor extends AbstractColorPropertyEditor {
 
     @Override
-    public String getAsText() {
+    public String getAsSerializableText() {
         EdgeColor c = (EdgeColor) getValue();
         if (c.getMode().equals(EdgeColor.Mode.CUSTOM)) {
             return toText(c.getMode().name(), c.getCustomColor() == null ? Color.BLACK : c.getCustomColor());
         } else {
             return c.getMode().name().toLowerCase();
         }
+    }
+
+    @Override
+    public String getAsText() {
+        return getAsSerializableText();
     }
 
     @Override
