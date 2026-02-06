@@ -638,7 +638,6 @@ public abstract class AbstractEdgeData extends AbstractSelectionData {
         if (isUndirected) {
             directedInstanceCounter.unselectedCount = 0;
             directedInstanceCounter.selectedCount = 0;
-            selfLoopCounter.selectedCount = 0;
             return index;
         }
 
