@@ -256,15 +256,18 @@ public class EdgeRenderer implements Renderer {
                 final float arrowRadiusSize = isDirected ? arrowSize * weight.floatValue() : 0f;
 
                 final float targetRadius = -(edgeRadius
-                    + (Float) targetItem.getData(NodeItem.SIZE) / 2f
+                    + SizeUtils.getNodeSize(targetItem, properties) / 2f
                     + arrowRadiusSize);
                 item.setData(TARGET_RADIUS, targetRadius);
 
                 //Source
                 final Item sourceItem = item.getData(SOURCE);
                 final float sourceRadius = -(edgeRadius
-                    + (Float) sourceItem.getData(NodeItem.SIZE) / 2f);
+                    + SizeUtils.getNodeSize(sourceItem, properties) / 2f);
                 item.setData(SOURCE_RADIUS, sourceRadius);
+            } else {
+                final Item sourceItem = item.getData(SOURCE);
+                item.setData(SOURCE_RADIUS, SizeUtils.getNodeSize(sourceItem, properties));
             }
         }
     }
@@ -830,7 +833,7 @@ public class EdgeRenderer implements Renderer {
                 Item nodeSource = item.getData(SOURCE);
                 x = nodeSource.getData(NodeItem.X);
                 y = nodeSource.getData(NodeItem.Y);
-                Float size = nodeSource.getData(NodeItem.SIZE);
+                Float size = nodeSource.getData(item.getData(SOURCE_RADIUS));
 
                 v1 = new Vector(x, y);
                 v1.add(size, -size);

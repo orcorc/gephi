@@ -69,9 +69,13 @@ public class PreviewProperty {
 
     //Constants global
     /**
-     * General <code>Boolean</code> property which indicates wheter the graph is directed
+     * General <code>Boolean</code> property which indicates whether the graph is directed
      */
     public static final String DIRECTED = "directed";
+    /**
+     * General <code>Float</code> property defining a global scale factor applied to all nodes sizes
+     */
+    public static final String NODE_SCALE_FACTOR = "node.scale.factor";
     /**
      * General <code>Color</code> property of the background color
      */

@@ -108,7 +108,7 @@ public class NodeRenderer implements Renderer {
         final PreviewProperties properties) {
         final float x = item.getData(NodeItem.X);
         final float y = item.getData(NodeItem.Y);
-        final float s = item.getData(NodeItem.SIZE);
+        final float s = SizeUtils.getNodeSize(item, properties);
         final float r = s / 2F;
         final int intS = Math.round(s);
         return new CanvasSize(
@@ -130,7 +130,7 @@ public class NodeRenderer implements Renderer {
         //Params
         Float x = item.getData(NodeItem.X);
         Float y = item.getData(NodeItem.Y);
-        Float size = item.getData(NodeItem.SIZE);
+        float size = SizeUtils.getNodeSize(item, properties);
         Color color = item.getData(NodeItem.COLOR);
         Color borderColor = ((DependantColor) properties.getValue(PreviewProperty.NODE_BORDER_COLOR)).getColor(color);
         float borderSize = getBorderWidth(properties, size);
@@ -183,7 +183,7 @@ public class NodeRenderer implements Renderer {
         //Params
         Float x = item.getData(NodeItem.X);
         Float y = item.getData(NodeItem.Y);
-        Float size = item.getData(NodeItem.SIZE);
+        float size = SizeUtils.getNodeSize(item, properties);
         Color color = item.getData(NodeItem.COLOR);
         Color borderColor = ((DependantColor) properties.getValue(PreviewProperty.NODE_BORDER_COLOR)).getColor(color);
         float borderSize = getBorderWidth(properties, size);
@@ -234,7 +234,7 @@ public class NodeRenderer implements Renderer {
     public void renderPDF(Item item, PDFTarget target, PreviewProperties properties) {
         Float x = item.getData(NodeItem.X);
         Float y = item.getData(NodeItem.Y);
-        Float size = item.getData(NodeItem.SIZE);
+        float size = SizeUtils.getNodeSize(item, properties);
         Color color = item.getData(NodeItem.COLOR);
         Color borderColor = ((DependantColor) properties.getValue(PreviewProperty.NODE_BORDER_COLOR)).getColor(color);
         float borderSize = getBorderWidth(properties, size);

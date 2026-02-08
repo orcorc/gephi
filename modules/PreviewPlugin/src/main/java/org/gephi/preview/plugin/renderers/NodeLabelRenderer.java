@@ -136,7 +136,7 @@ public class NodeLabelRenderer implements Renderer {
             Node node = (Node) item.getSource();
             Item nodeItem = previewModel.getItem(Item.NODE, node);
             item.setData(NODE_COLOR, nodeItem.getData(NodeItem.COLOR));
-            item.setData(NODE_SIZE, nodeItem.getData(NodeItem.SIZE));
+            item.setData(NODE_SIZE, SizeUtils.getNodeSize(nodeItem, properties));
             item.setData(NODE_X, nodeItem.getData(NodeItem.X));
             item.setData(NODE_Y, nodeItem.getData(NodeItem.Y));
         }
@@ -282,7 +282,7 @@ public class NodeLabelRenderer implements Renderer {
                           float outlineSize, Color outlineColor, boolean showBox, Color boxColor) {
         Text labelText = target.createTextNode(label);
         Font font = fontCache.get(fontSize);
-        
+
         // Calculate proper baseline Y position using font metrics
         // This matches G2D and TextRenderer approaches for consistency
 
