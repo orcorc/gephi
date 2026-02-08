@@ -136,7 +136,7 @@ public class EdgeLabelRenderer implements Renderer {
                 //Middle
                 Float x = sourceItem.getData(NodeItem.X);
                 Float y = sourceItem.getData(NodeItem.Y);
-                Float size = sourceItem.getData(NodeItem.SIZE);
+                float size = SizeUtils.getNodeSize(sourceItem, properties);
 
                 Vector v1 = new Vector(x, y);
                 v1.add(size, -size);

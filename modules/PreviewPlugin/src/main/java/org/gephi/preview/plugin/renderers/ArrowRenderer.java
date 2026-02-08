@@ -228,7 +228,7 @@ public class ArrowRenderer implements Renderer {
             final float size = properties.getFloatValue(PreviewProperty.ARROW_SIZE)
                 * weight.floatValue();
             float radius = -(properties.getFloatValue(PreviewProperty.EDGE_RADIUS)
-                + (Float) targetItem.getData(NodeItem.SIZE) / 2f);
+                + SizeUtils.getNodeSize(targetItem, properties) / 2f);
 
             //Avoid arrow from passing the node's center:
             if (radius > 0) {
