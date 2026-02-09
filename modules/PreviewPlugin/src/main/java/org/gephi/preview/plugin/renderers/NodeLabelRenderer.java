@@ -212,6 +212,7 @@ public class NodeLabelRenderer implements Renderer {
 
         //Box
         Boolean showBox = properties.getValue(PreviewProperty.NODE_LABEL_SHOW_BOX);
+        float borderWidth = SizeUtils.getBorderWidth(properties, item.getData(NODE_SIZE));
         DependantColor boxDependantColor = properties.getValue(PreviewProperty.NODE_LABEL_BOX_COLOR);
         Color boxColor = boxDependantColor.getColor(nodeColor);
         int boxAlpha = (int) ((properties.getFloatValue(PreviewProperty.NODE_LABEL_BOX_OPACITY) / 100f) * 255f);
@@ -224,7 +225,7 @@ public class NodeLabelRenderer implements Renderer {
         boxColor = new Color(boxColor.getRed(), boxColor.getGreen(), boxColor.getBlue(), boxAlpha);
 
         if (target instanceof G2DTarget) {
-            renderG2D((G2DTarget) target, label, x, y, fontSize, color, outlineSize, outlineColor, showBox, boxColor);
+            renderG2D((G2DTarget) target, label, x, y, fontSize, color, outlineSize, outlineColor, showBox, boxColor, borderWidth);
         } else if (target instanceof SVGTarget) {
             renderSVG((SVGTarget) target, node, label, x, y, fontSize, color, outlineSize, outlineColor, showBox,
                 boxColor);
@@ -255,7 +256,7 @@ public class NodeLabelRenderer implements Renderer {
     }
 
     public void renderG2D(G2DTarget target, String label, float x, float y, int fontSize, Color color,
-                          float outlineSize, Color outlineColor, boolean showBox, Color boxColor) {
+                          float outlineSize, Color outlineColor, boolean showBox, Color boxColor, float boxThickness) {
         Graphics2D graphics = target.getGraphics();
 
         Font font = fontCache.get(fontSize);
@@ -272,11 +273,12 @@ public class NodeLabelRenderer implements Renderer {
         //Box
         if (showBox) {
             graphics.setColor(boxColor);
+            graphics.setStroke(new BasicStroke(boxThickness));
             Rectangle2D.Float rect = new Rectangle2D.Float();
-            rect.setFrame(posX - outlineSize / 2f,
-                y - (fm.getAscent() + fm.getDescent()) / 2f - outlineSize / 2f,
-                fm.stringWidth(label) + outlineSize,
-                fm.getAscent() + fm.getDescent() + outlineSize);
+            rect.setFrame(posX - outlineSize / 2f - boxThickness / 2f,
+                y - (fm.getAscent() + fm.getDescent()) / 2f - outlineSize / 2f - boxThickness / 2f,
+                fm.stringWidth(label) + outlineSize + boxThickness,
+                fm.getAscent() + fm.getDescent() + outlineSize + boxThickness);
             graphics.draw(rect);
         }
 
