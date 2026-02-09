@@ -122,8 +122,10 @@ public class PreviewControllerImpl implements PreviewController, Controller<Prev
         VisualizationModel vizModel = workspace.getLookup().lookup(VisualizationModel.class);
         if (vizModel != null) {
             previewModel.getProperties().putValue(PreviewProperty.NODE_SCALE_FACTOR, vizModel.getNodeScale());
+            previewModel.getProperties().putValue(PreviewProperty.NODE_LABEL_SCALE, vizModel.getNodeLabelScale());
         } else {
             previewModel.getProperties().putValue(PreviewProperty.NODE_SCALE_FACTOR, 1f);
+            previewModel.getProperties().putValue(PreviewProperty.NODE_LABEL_SCALE, 1f);
         }
 
         //Graph
