@@ -66,7 +66,7 @@ public class EdgeBuilder implements ItemBuilder {
                     item.setData(EdgeItem.MUTUAL, ((DirectedGraph) graph).getMutualEdge(e) != null);
                 }
                 item.setData(EdgeItem.SELF_LOOP, e.isSelfLoop());
-                item.setData(EdgeItem.COLOR, e.alpha() == 0 ? null : e.getColor());
+                item.setData(EdgeItem.COLOR, e.getColor());
                 return item;
             }
         ).toArray(EdgeItem[]::new);
