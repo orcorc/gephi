@@ -77,6 +77,7 @@ import org.gephi.preview.spi.ItemBuilder;
 import org.gephi.preview.spi.Renderer;
 import org.gephi.preview.types.DependantColor;
 import org.gephi.preview.types.DependantOriginalColor;
+import org.gephi.visualization.api.VisualizationModel;
 import org.openide.util.NbBundle;
 import org.openide.util.lookup.ServiceProvider;
 import org.w3c.dom.Element;
@@ -97,7 +98,8 @@ public class NodeLabelRenderer implements Renderer {
     public static final String NODE_Y = "node.y";
     public static final String FONT_SIZE = "node.label.fontSize";
     //Default values
-    protected final boolean defaultShowLabels = true;
+    protected final boolean defaultShowLabels = false;
+    protected final boolean defaultCustomFont = false;
     protected final Font defaultFont = new Font("Arial", Font.PLAIN, 12);
     protected final boolean defaultShorten = false;
     protected final DependantOriginalColor defaultColor =
@@ -136,21 +138,39 @@ public class NodeLabelRenderer implements Renderer {
             Node node = (Node) item.getSource();
             Item nodeItem = previewModel.getItem(Item.NODE, node);
             item.setData(NODE_COLOR, nodeItem.getData(NodeItem.COLOR));
-            item.setData(NODE_SIZE, SizeUtils.getNodeSize(nodeItem, properties));
+            item.setData(NODE_SIZE, SizeUtils.getNodeSize(nodeItem, properties) / 2f);
             item.setData(NODE_X, nodeItem.getData(NodeItem.X));
             item.setData(NODE_Y, nodeItem.getData(NodeItem.Y));
         }
 
-        //Calculate font size and cache fonts
+        // Get Viz model
+        final VisualizationModel vizModel = previewModel.getWorkspace().getLookup().lookup(VisualizationModel.class);
+
+        // Get font
         Font font = properties.getFontValue(PreviewProperty.NODE_LABEL_FONT);
+        if (!properties.getBooleanValue(PreviewProperty.NODE_LABEL_CUSTOM_FONT)) {
+            // Use font from visualization model for consistent font family and style with the graph view
+            if (vizModel != null && vizModel.getNodeLabelFont() != null) {
+                font = vizModel.getNodeLabelFont();
+            }
+        }
+
+        // TODO: Access those values directly from GraphRenderingOptions
+        float fitNodeLabelsToNodeSizeFactor = 0.05f;
+
+        //Calculate font size and cache fonts
         for (Item item : previewModel.getItems(Item.NODE_LABEL)) {
-            float fontSize = font.getSize();
+            float nodeSize = item.getData(NODE_SIZE);
+            float fontSize = font.getSize() * properties.getFloatValue(PreviewProperty.NODE_LABEL_SCALE);
             if (properties.getBooleanValue(PreviewProperty.NODE_LABEL_PROPORTIONAL_SIZE)) {
-                Float nodeSize = item.getData(NODE_SIZE);
-                fontSize *= (nodeSize / 2f) * 0.05f;
-            } else if (item.getData(NodeLabelItem.SIZE) != null) {
+                fontSize *= nodeSize * fitNodeLabelsToNodeSizeFactor;
+            } else {
+                // Add tiny bias (<1%) based on node size to prioritize labels of larger nodes in overlap detection
+                fontSize *= (1.0f + nodeSize * 0.00001f);
+            }
+            if (item.getData(NodeLabelItem.SIZE) != null) {
                 Float labelSize = item.getData(NodeLabelItem.SIZE);
-                fontSize *= labelSize;
+                fontSize *= (float) Math.sqrt(labelSize);
             }
             Font labelFont = font.deriveFont(fontSize);
             fontCache.put(labelFont.getSize(), labelFont);
@@ -178,7 +198,7 @@ public class NodeLabelRenderer implements Renderer {
 
         //Outline
         DependantColor outlineDependantColor = properties.getValue(PreviewProperty.NODE_LABEL_OUTLINE_COLOR);
-        Float outlineSize = properties.getFloatValue(PreviewProperty.NODE_LABEL_OUTLINE_SIZE);
+        float outlineSize = properties.getFloatValue(PreviewProperty.NODE_LABEL_OUTLINE_SIZE);
         outlineSize = outlineSize * (fontSize / 32f);
         int outlineAlpha = (int) ((properties.getFloatValue(PreviewProperty.NODE_LABEL_OUTLINE_OPACITY) / 100f) * 255f);
         if (outlineAlpha < 0) {
@@ -413,10 +433,14 @@ public class NodeLabelRenderer implements Renderer {
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.display.displayName"),
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.display.description"),
                 PreviewProperty.CATEGORY_NODE_LABELS).setValue(defaultShowLabels),
+            PreviewProperty.createProperty(this, PreviewProperty.NODE_LABEL_CUSTOM_FONT, Boolean.class,
+                NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.customFont.displayName"),
+                NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.customFont.description"),
+                PreviewProperty.CATEGORY_NODE_LABELS, PreviewProperty.SHOW_NODE_LABELS).setValue(defaultCustomFont),
             PreviewProperty.createProperty(this, PreviewProperty.NODE_LABEL_FONT, Font.class,
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.font.displayName"),
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.font.description"),
-                PreviewProperty.CATEGORY_NODE_LABELS, PreviewProperty.SHOW_NODE_LABELS).setValue(defaultFont),
+                PreviewProperty.CATEGORY_NODE_LABELS, PreviewProperty.SHOW_NODE_LABELS, PreviewProperty.NODE_LABEL_CUSTOM_FONT).setValue(defaultFont),
             PreviewProperty.createProperty(this, PreviewProperty.NODE_LABEL_PROPORTIONAL_SIZE, Boolean.class,
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.proportionalSize.displayName"),
                 NbBundle.getMessage(NodeLabelRenderer.class, "NodeLabelRenderer.property.proportionalSize.description"),

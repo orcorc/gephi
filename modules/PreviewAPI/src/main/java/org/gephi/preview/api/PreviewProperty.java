@@ -172,9 +172,19 @@ public class PreviewProperty {
      */
     public static final String SHOW_NODE_LABELS = "node.label.show";
     /**
+     * When <code>True</code>, uses the node label <code>Font</code>, and otherwise uses the font from the
+     * Visualization API.
+     */
+    public static final String NODE_LABEL_CUSTOM_FONT = "node.label.customFont";
+    /**
      * Node Label <code>Font</code> property defining node label's font.
      */
     public static final String NODE_LABEL_FONT = "node.label.font";
+
+    /**
+     * Node Label <code>Float</code> property defining a global scale factor applied to all node labels sizes.
+     */
+    public static final String NODE_LABEL_SCALE = "node.label.scale";
     /**
      * Node Label <code>Boolean</code> property defining whether to use node's size
      * in label size calculation.

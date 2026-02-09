@@ -86,6 +86,7 @@ public class DefaultPreset extends PreviewPreset {
         properties.put(PreviewProperty.NODE_LABEL_BOX_COLOR, new DependantColor(DependantColor.Mode.PARENT));
         properties.put(PreviewProperty.NODE_LABEL_BOX_OPACITY, 100f);
         properties.put(PreviewProperty.NODE_LABEL_COLOR, new DependantOriginalColor(Color.BLACK));
+        properties.put(PreviewProperty.NODE_LABEL_CUSTOM_FONT, false);
         properties.put(PreviewProperty.NODE_LABEL_FONT, new Font("Arial", Font.PLAIN, 12));
         properties.put(PreviewProperty.NODE_LABEL_MAX_CHAR, 30);
         properties.put(PreviewProperty.NODE_LABEL_OUTLINE_COLOR, new DependantColor(Color.WHITE));
