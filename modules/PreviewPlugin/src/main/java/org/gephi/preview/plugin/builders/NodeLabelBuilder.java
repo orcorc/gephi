@@ -87,7 +87,6 @@ public class NodeLabelBuilder extends AbstractLabelBuilder implements ItemBuilde
                             (int) (textData.getAlpha() * 255)));
                         labelItem.setData(NodeLabelItem.SIZE, textData.getSize());
                         labelItem.setData(NodeLabelItem.VISIBLE, textData.isVisible());
-                        labelItem.setData(NodeLabelItem.LABEL, label);
                         return labelItem;
                     }
                 }
