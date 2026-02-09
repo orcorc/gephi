@@ -51,6 +51,7 @@
         <ul>
             <li>A <code>Mode.LIGHTER</code> was added to <code>DependantColor</code>, so that it matches the new engine options set.</li>
             <li>Node scale (defined in Visualization API) is now taken in account to determine final node size. It defaults to 1.0 otherwise.</li>
+            <li>A new <code>NODE_LABEL_CUSTOM_FONT</code> boolean property was added. When false, the font used by Visualization API is used. The label sizing formula has been revisited to match settings from Overview.</li>
         </ul>
         <h3>0.10.0</h3>
         <h4>Project API</h4>
@@ -63,7 +64,7 @@
             <li>Removal of <code>org.gephi.project.spi.ProjectPropertiesUI</code> as it had no clear purpose.</li>
             <li>The <code>ProjectController.startup()</code> method was removed as it wasn't used.</li>
             <li>Deprecation of <code>ProjectInformation</code>. Relevant methods have been ported to <code>Project</code>.</li>
-            <li>Also deprecation of <code>WorkspaceInformation</code>. Relevant methods have been ported to <code>Workspace</code>.</li>
+            <li>Also, deprecation of <code>WorkspaceInformation</code>. Relevant methods have been ported to <code>Workspace</code>.</li>
             <li>Finally, deprecation of <code>WorkspaceProvider</code>. Relevant methods were ported to <code>Project</code>.</li>
             <li>The duplication of workspaces is now managed through existing persistence providers. Therefore, the <code>WorkspaceDuplicateProvider</code> SPI has been removed.</li>
         </ul>
